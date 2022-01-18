@@ -1210,6 +1210,7 @@ processResults(CdbDispatchResult *dispatchResult)
 
 			PG_TRY();
 			{
+				CHECK_FOR_INTERRUPTS();
 				nextval_qd(seq_oid, &last, &cached, &increment, &overflow);
 			}
 			PG_CATCH();
