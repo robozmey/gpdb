@@ -913,7 +913,6 @@ AlterObjectOwner_internal(Relation rel, Oid objectId, Oid new_ownerId)
 							 HeapTupleGetOid(oldtup));
 					objname = namebuf;
 				}
-				elog(WARNING,"2");
 				aclcheck_error(ACLCHECK_NOT_OWNER, aclkind, objname);
 			}
 			/* Must be able to become new owner */
