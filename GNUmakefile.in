@@ -21,6 +21,7 @@ all:
 	$(MAKE) -C contrib/fuzzystrmatch all
 	$(MAKE) -C contrib/extprotocol all
 	$(MAKE) -C contrib/pg_trgm all
+	$(MAKE) -C contrib/tablefunc all
 	$(MAKE) -C contrib/btree_gin all
 	$(MAKE) -C contrib/isn all
 ifeq ($(OS),Darwin)
@@ -74,6 +75,7 @@ install:
 	$(MAKE) -C contrib/fuzzystrmatch $@
 	$(MAKE) -C contrib/extprotocol $@
 	$(MAKE) -C contrib/pg_trgm $@
+	$(MAKE) -C contrib/tablefunc $@
 	$(MAKE) -C contrib/btree_gin $@
 	$(MAKE) -C contrib/isn $@
 ifneq ($(OS),Darwin)
@@ -176,7 +178,7 @@ ICW_TARGETS  = src/test src/pl src/interfaces/gppc
 ICW_TARGETS += contrib/amcheck contrib/auto_explain contrib/citext
 ICW_TARGETS += contrib/formatter_fixedwidth
 ICW_TARGETS += contrib/extprotocol
-ICW_TARGETS += contrib/pg_trgm contrib/btree_gin contrib/isn
+ICW_TARGETS += contrib/pg_trgm contrib/tablefunc contrib/btree_gin contrib/isn
 ifneq ($(OS),Darwin)
 	ICW_TARGETS += contrib/dblink contrib/postgres_fdw
 endif
