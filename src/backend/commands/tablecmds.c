@@ -15286,6 +15286,7 @@ ATExecExpandTableCTAS(AlterTableCmd *rootCmd, Relation rel, AlterTableCmd *cmd)
 	rel = NULL;
 	tmprelid = RangeVarGetRelid(tmprv, NoLock, false);
 
+	origtablespace = rel->rd_node.spcNode;
 
 	swap_relation_files(relid, tmprelid,
 						false, /* target_is_pg_class */
