@@ -4012,6 +4012,32 @@ ProcessInterrupts(const char* filename, int lineno)
 		}
 	}
 	/* If we get here, do nothing (probably, QueryCancelPending was reset) */
+
+	if (IdleInTransactionSessionTimeoutPending)
+	{
+		/*
+		 * If the GUC has been reset to zero, ignore the signal.  This is
+		 * important because the GUC update itself won't disable any pending
+		 * interrupt.
+		 */
+		if (IdleInTransactionSessionTimeout > 0)
+			ereport(FATAL,
+					(errcode(ERRCODE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT),
+					 errmsg("terminating connection due to idle-in-transaction timeout")));
+		else
+			IdleInTransactionSessionTimeoutPending = false;
+	}
+
+	if (IdleSessionTimeoutPending)
+	{
+		/* As above, ignore the signal if the GUC has been reset to zero. */
+		if (IdleSessionTimeout > 0)
+			ereport(FATAL,
+					(errcode(ERRCODE_IDLE_SESSION_TIMEOUT),
+					 errmsg("terminating connection due to idle-session timeout")));
+		else
+			IdleSessionTimeoutPending = false;
+	}
 }
 
 /*
@@ -4661,6 +4687,8 @@ PostgresMain(int argc, char *argv[],
 	StringInfoData input_message;
 	sigjmp_buf	local_sigjmp_buf;
 	volatile bool send_ready_for_query = true;
+	bool		idle_in_transaction_timeout_enabled = false;
+	bool		idle_session_timeout_enabled = false;
 
 	MemoryAccountIdType postgresMainMemoryAccountId = MEMORY_OWNER_TYPE_Undefined;
 
@@ -5187,6 +5215,8 @@ PostgresMain(int argc, char *argv[],
 		 * processing of batched messages, and because we don't want to report
 		 * uncommitted updates (that confuses autovacuum).  The notification
 		 * processor wants a call too, if we are not in a transaction block.
+		 *
+		 * Also, if an idle timeout is enabled, start the timer for that.
 		 */
 		if (send_ready_for_query)
 		{
@@ -5204,12 +5234,28 @@ PostgresMain(int argc, char *argv[],
 				strncat(activity, "idle in transaction (aborted)", remain);
 				set_ps_display(activity, false);
 				pgstat_report_activity(STATE_IDLEINTRANSACTION_ABORTED, NULL);
+
+				/* Start the idle-in-transaction timer */
+				if (IdleInTransactionSessionTimeout > 0)
+				{
+					idle_in_transaction_timeout_enabled = true;
+					enable_timeout_after(IDLE_IN_TRANSACTION_SESSION_TIMEOUT,
+										 IdleInTransactionSessionTimeout);
+				}
 			}
 			else if (IsTransactionOrTransactionBlock())
 			{
 				strncat(activity, "idle in transaction", remain);
 				set_ps_display(activity, false);
 				pgstat_report_activity(STATE_IDLEINTRANSACTION, NULL);
+
+				/* Start the idle-in-transaction timer */
+				if (IdleInTransactionSessionTimeout > 0)
+				{
+					idle_in_transaction_timeout_enabled = true;
+					enable_timeout_after(IDLE_IN_TRANSACTION_SESSION_TIMEOUT,
+										 IdleInTransactionSessionTimeout);
+				}
 			}
 			else
 			{
@@ -5220,6 +5266,14 @@ PostgresMain(int argc, char *argv[],
 				strncat(activity, "idle", remain);
 				set_ps_display(activity, false);
 				pgstat_report_activity(STATE_IDLE, NULL);
+
+				/* Start the idle-session timer */
+				if (IdleSessionTimeout > 0)
+				{
+					idle_session_timeout_enabled = true;
+					enable_timeout_after(IDLE_SESSION_TIMEOUT,
+										 IdleSessionTimeout);
+				}
 			}
 
 			ReadyForQuery(whereToSendOutput);
@@ -5275,7 +5329,25 @@ PostgresMain(int argc, char *argv[],
 		DoingCommandRead = false;
 
 		/*
-		 * (5) check for any other interesting events that happened while we
+		 * (5) turn off the idle-in-transaction and idle-session timeouts, if
+		 * active.
+		 *
+		 * At most one of these two will be active, so there's no need to
+		 * worry about combining the timeout.c calls into one.
+		 */
+		if (idle_in_transaction_timeout_enabled)
+		{
+			disable_timeout(IDLE_IN_TRANSACTION_SESSION_TIMEOUT, false);
+			idle_in_transaction_timeout_enabled = false;
+		}
+		if (idle_session_timeout_enabled)
+		{
+			disable_timeout(IDLE_SESSION_TIMEOUT, false);
+			idle_session_timeout_enabled = false;
+		}
+
+		/*
+		 * (6) check for any other interesting events that happened while we
 		 * slept.
 		 */
 		if (ConfigReloadPending)
@@ -5285,7 +5357,7 @@ PostgresMain(int argc, char *argv[],
 		}
 
 		/*
-		 * (6) process the command.  But ignore it if we're skipping till
+		 * (7) process the command.  But ignore it if we're skipping till
 		 * Sync.
 		 */
 		if (ignore_till_sync && firstchar != EOF)
