@@ -813,7 +813,7 @@ class SegmentTemplate:
             segStopCmd = SegmentStop(
                 name="Stopping new segment dbid %s on host %s." % (str(seg.getSegmentDbId), seg.getSegmentHostName())
                 , dataDir=seg.getSegmentDataDirectory()
-                , mode='smart'
+                , mode='fast'
                 , nowait=False
                 , ctxt=REMOTE
                 , remoteHost=seg.getSegmentHostName()
@@ -1384,7 +1384,7 @@ class gpexpand:
         dbconn.execSQL(self.conn, "CHECKPOINT")
         self.conn.close()
 
-        # increase expand version 
+        # increase expand version
         self.conn = dbconn.connect(self.dburl, utility=True, encoding='UTF8')
         dbconn.execSQL(self.conn, "select gp_expand_bump_version()")
         self.conn.close()
