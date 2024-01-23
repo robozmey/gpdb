@@ -547,4 +547,6 @@
 		"xmlbinary",
 		"xmloption",
 		"zero_damaged_pages",
-		"ycmdb.yc_allow_copy_to_program"
+		"ycmdb.yc_allow_copy_to_program",
+		"ycmdb.yc_allow_copy_to_file",
+		"ycmdb.yc_allow_copy_from_file",
