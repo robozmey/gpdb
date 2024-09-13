@@ -149,6 +149,7 @@ OpenAOSegmentFile(Relation aorel, const char *nspname, char *filepathname, int64
 	errno = 0;
 	
 
+	RelationOpenSmgr(aorel);
 
 	fd = aorel->rd_smgr->smgr_ao->smgr_AORelOpenSegFile(RelationGetRelid(aorel), nspname, RelationGetRelationName(aorel), filepathname, O_RDWR | PG_BINARY, 0600, modcount);
 	if (fd < 0)
@@ -162,6 +163,8 @@ OpenAOSegmentFile(Relation aorel, const char *nspname, char *filepathname, int64
 						filepathname),
 				 errdetail("logicalEof for open operation: %ld", logicalEof)));
 	}
+
+	RelationCloseSmgr(aorel);
 	return fd;
 }
 
@@ -172,7 +175,12 @@ OpenAOSegmentFile(Relation aorel, const char *nspname, char *filepathname, int64
 void
 CloseAOSegmentFile(Relation aorel, File fd)
 {
+	RelationOpenSmgr(aorel);
+	Assert(aorel->rd_smgr != NULL);
+
 	aorel->rd_smgr->smgr_ao->smgr_FileClose(fd);
+
+	RelationCloseSmgr(aorel);
 }
 
 /*
@@ -185,6 +193,10 @@ TruncateAOSegmentFile(File fd, Relation rel, int32 segFileNum, int64 offset)
 
 	Assert(fd > 0);
 	Assert(offset >= 0);
+
+	RelationOpenSmgr(rel);
+
+	Assert(rel->rd_smgr != NULL);
 
 	/*
 	 * Call the 'fd' module with a 64-bit length since AO segment files
@@ -204,6 +216,8 @@ TruncateAOSegmentFile(File fd, Relation rel, int32 segFileNum, int64 offset)
 		rnode.backend = rel->rd_backend;
 		(*file_truncate_hook)(rnode);
 	}
+
+	RelationCloseSmgr(rel);
 }
 
 struct mdunlink_ao_callback_ctx
@@ -520,8 +534,6 @@ truncate_ao_perFile(const int segno, void *ctx)
 
 	nspname = get_namespace_name(RelationGetNamespace(aorel));
 
-	RelationOpenSmgr(aorel);
-
 	fd = OpenAOSegmentFile(aorel, nspname, segPath, 0, -1);
 
 	if (fd >= 0)
@@ -541,6 +553,5 @@ truncate_ao_perFile(const int segno, void *ctx)
 	}
 
 	pfree(nspname);
-	RelationCloseSmgr(aorel);
 	return true;
 }
