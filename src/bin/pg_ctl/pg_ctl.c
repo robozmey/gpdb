@@ -519,6 +519,8 @@ start_postmaster(void)
 		snprintf(cmd, MAXPGPATH, "exec %s \"%s\" %s%s < \"%s\" 2>&1",
 				 launcher, exec_path, pgdata_opt, post_opts, DEVNULL);
 
+	/* write log with 0640 permissions */
+	umask(S_IXUSR | S_IWGRP | S_IXGRP | S_IRWXO);
 	(void) execl("/bin/sh", "/bin/sh", "-c", cmd, (char *) NULL);
 
 	/* exec failed */
