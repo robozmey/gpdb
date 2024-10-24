@@ -281,11 +281,13 @@ int			gp_hashagg_groups_per_bucket = 5;
 /* Analyzing aid */
 int			gp_motion_slice_noop = 0;
 
+/* Greenplum Database EXPLAIN Feature GUCs */
+bool		gp_enable_explain_node_summary = FALSE;
+
 /* Greenplum Database Experimental Feature GUCs */
 int			gp_distinct_grouping_sets_threshold = 32;
 bool		gp_enable_explain_rows_out = FALSE;
 bool		gp_enable_explain_allstat = FALSE;
-bool		gp_enable_explain_node_summary = FALSE;
 bool		gp_enable_motion_deadlock_sanity = FALSE;	/* planning time sanity
 														 * check */
 

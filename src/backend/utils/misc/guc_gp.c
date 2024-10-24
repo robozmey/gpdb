@@ -893,7 +893,7 @@ struct config_bool ConfigureNamesBool_gp[] =
 
 	{
 		{"gp_enable_explain_node_summary", PGC_USERSET, CLIENT_CONN_OTHER,
-			gettext_noop("Experimental feature: dump CdbExplain_NodeSummary for every node in EXPLAIN ANALYZE."),
+			gettext_noop("Dump CdbExplain_NodeSummary for every node in EXPLAIN ANALYZE."),
 			NULL,
 			GUC_NO_SHOW_ALL | GUC_NOT_IN_SAMPLE
 		},
