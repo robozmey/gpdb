@@ -43,6 +43,7 @@ SUBDIRS = \
 		test_decoding	\
 		test_parser	\
 		test_shm_mq	\
+		try_convert \
 		tsearch2	\
 		tablefunc	\
 		unaccent
