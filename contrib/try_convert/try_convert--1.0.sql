@@ -10,6 +10,6 @@
 /* generic file access functions */
 
 CREATE FUNCTION try_convert(anyelement, regtype)
-RETURNS int4
+RETURNS anyelement
 AS 'MODULE_PATHNAME', 'try_convert'
 LANGUAGE C STRICT;
