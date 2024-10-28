@@ -59,40 +59,39 @@ try_convert(PG_FUNCTION_ARGS)
         
         funcId = castForm->castfunc;
 
-		// ReleaseSysCache(tuple);
-		// PG_RETURN_OID(funcId);
+		// // ReleaseSysCache(tuple);
+		// // PG_RETURN_OID(funcId);
 
-		Datum		result;
-		FunctionCallInfoData convert_fcinfodata;
-		FunctionCallInfo convert_fcinfo = &convert_fcinfodata; /// RENAME ALLL
-		PgStat_FunctionCallUsage fcusage;
+		// Datum		result;
+		// FunctionCallInfoData convert_fcinfodata;
+		// FunctionCallInfo convert_fcinfo = &convert_fcinfodata; /// RENAME ALLL
+		// PgStat_FunctionCallUsage fcusage;
 
-		/// SETUP FCINFO
+		// /// SETUP FCINFO
 
-		FmgrInfo convert_flinfo;
-		fmgr_info(funcId, &convert_flinfo);
+		// FmgrInfo convert_flinfo;
+		// fmgr_info(funcId, &convert_flinfo);
 
-		InitFunctionCallInfoData(*convert_fcinfo, &convert_flinfo, 1, InvalidOid, NULL, NULL);
+		// InitFunctionCallInfoData(*convert_fcinfo, &convert_flinfo, 1, InvalidOid, NULL, NULL);
 
-		convert_fcinfo->arg[0] = fcinfo->arg[0];
-		convert_fcinfo->argnull[0] = fcinfo->arg[0];
+		// convert_fcinfo->arg[0] = fcinfo->arg[0];
+		// convert_fcinfo->argnull[0] = fcinfo->arg[0];
 
-		/* Guard against stack overflow due to overly complex expressions */
-		check_stack_depth();
+		// /* Guard against stack overflow due to overly complex expressions */
+		// check_stack_depth();
 
-		pgstat_init_function_usage(convert_fcinfo, &fcusage);
+		// pgstat_init_function_usage(convert_fcinfo, &fcusage);
 
-		convert_fcinfo->isnull = false;
-		result = FunctionCallInvoke(convert_fcinfo);
-		fcinfo->isnull = convert_fcinfo->isnull;
-		fcinfo->resultinfo = convert_fcinfo->resultinfo;
+		// convert_fcinfo->isnull = false;
+		// result = FunctionCallInvoke(convert_fcinfo);
+		// fcinfo->isnull = convert_fcinfo->isnull;
+		// fcinfo->resultinfo = convert_fcinfo->resultinfo;
 
-		pgstat_end_function_usage(&fcusage, true);
+		// pgstat_end_function_usage(&fcusage, true);
 
         ReleaseSysCache(tuple);
 
-
-		PG_RETURN_DATUM(result);
+		PG_RETURN_DATUM(OidFunctionCall1(funcId, fcinfo->arg[0]));
     }
 
     PG_RETURN_NULL();
