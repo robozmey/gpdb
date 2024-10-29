@@ -135,6 +135,7 @@ static void base_yyerror(YYLTYPE *yylloc, core_yyscan_t yyscanner,
 static Node *makeColumnRef(char *colname, List *indirection,
 						   int location, core_yyscan_t yyscanner);
 static Node *makeTypeCast(Node *arg, TypeName *typename, int location);
+static Node *makeTypeTryCast(Node *arg, TypeName *typename, int location);
 static Node *makeStringConst(char *str, int location);
 static Node *makeStringConstCast(char *str, int location, TypeName *typename);
 static Node *makeIntConst(int val, int location);
@@ -4983,7 +4984,7 @@ tab_part_val_no_paran: AexprConst { $$ = $1; }
 				}
 			| TRY_CAST '(' tab_part_val AS Typename ')'
 				{ 
-					$$ = makeTypeCast($3, $5, @4);
+					$$ = makeTypeTryCast($3, $5, @4);
 				}
 			| tab_part_val_no_paran TYPECAST Typename
 				{ 
@@ -14406,7 +14407,7 @@ func_expr_common_subexpr:
 			| CAST '(' a_expr AS Typename ')'
 				{ $$ = makeTypeCast($3, $5, @1); }
 			| TRY_CAST '(' a_expr AS Typename ')'
-				{ $$ = makeTypeCast($3, $5, @1); }
+				{ $$ = makeTypeTryCast($3, $5, @1); }
 			| EXTRACT '(' extract_list ')'
 				{
 					$$ = (Node *) makeFuncCall(SystemFuncName("date_part"), $3, @1);
@@ -16619,6 +16620,17 @@ makeTypeCast(Node *arg, TypeName *typename, int location)
 	n->arg = arg;
 	n->typeName = typename;
 	n->is_trycast = false;
+	n->location = location;
+	return (Node *) n;
+}
+
+static Node *
+makeTypeTryCast(Node *arg, TypeName *typename, int location)
+{
+	TypeCast *n = makeNode(TypeCast);
+	n->arg = arg;
+	n->typeName = typename;
+	n->is_trycast = true;
 	n->location = location;
 	return (Node *) n;
 }
