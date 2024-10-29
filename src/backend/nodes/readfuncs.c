@@ -2198,6 +2198,7 @@ _readTypeCast(void)
 
 	READ_NODE_FIELD(arg);
 	READ_NODE_FIELD(typeName);
+	READ_BOOL_FIELD(is_trycast);
 	READ_LOCATION_FIELD(location);
 
 	READ_DONE();

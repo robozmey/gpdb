@@ -2928,6 +2928,7 @@ _copyTypeCast(const TypeCast *from)
 
 	COPY_NODE_FIELD(arg);
 	COPY_NODE_FIELD(typeName);
+	COPY_SCALAR_FIELD(is_trycast);
 	COPY_LOCATION_FIELD(location);
 
 	return newnode;

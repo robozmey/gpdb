@@ -3682,6 +3682,7 @@ _outTypeCast(StringInfo str, const TypeCast *node)
 
 	WRITE_NODE_FIELD(arg);
 	WRITE_NODE_FIELD(typeName);
+	WRITE_BOOL_FIELD(is_trycast);
 	WRITE_LOCATION_FIELD(location);
 }
 

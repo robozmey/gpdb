@@ -24,13 +24,13 @@ PG_FUNCTION_INFO_V1(try_convert);
 Datum
 try_convert(PG_FUNCTION_ARGS)
 {
+    HeapTuple tuple, tuple1, tuple2;
+
     Oid sourceTypeId = get_fn_expr_argtype(fcinfo->flinfo, 0);
     Datum value_datum = PG_GETARG_DATUM(0);
     int64 int_value = 0;
 
     Datum targetTypeId = PG_GETARG_DATUM(1);
-
-    HeapTuple   tuple;
 
     Oid funcId = InvalidOid;
 
@@ -44,55 +44,58 @@ try_convert(PG_FUNCTION_ARGS)
     if (sourceTypeId == targetTypeId)
         PG_RETURN_DATUM(value_datum);
 
-
     /* Look in pg_cast */
     tuple = SearchSysCache2(CASTSOURCETARGET,
                             ObjectIdGetDatum(sourceTypeId),
                             ObjectIdGetDatum(targetTypeId));
 
-    if (HeapTupleIsValid(tuple))
-    {
-		    
-		/* SELECT castcontext from pg_cast */
-        Form_pg_cast castForm = (Form_pg_cast) GETSTRUCT(tuple);
-        CoercionContext castcontext;
-        
-        funcId = castForm->castfunc;
+    tuple1 = SearchSysCache1(TYPEOID, ObjectIdGetDatum(sourceTypeId));
+    tuple2 = SearchSysCache1(TYPEOID, ObjectIdGetDatum(targetTypeId));
 
-		// // ReleaseSysCache(tuple);
-		// // PG_RETURN_OID(funcId);
+	PG_TRY();
+	{
 
-		// Datum		result;
-		// FunctionCallInfoData convert_fcinfodata;
-		// FunctionCallInfo convert_fcinfo = &convert_fcinfodata; /// RENAME ALLL
-		// PgStat_FunctionCallUsage fcusage;
+        if (HeapTupleIsValid(tuple))
+        {
+            /* SELECT castcontext from pg_cast */
+            Form_pg_cast castForm = (Form_pg_cast) GETSTRUCT(tuple);
+            CoercionContext castcontext;
+            
+            funcId = castForm->castfunc;
 
-		// /// SETUP FCINFO
+            Datum res = OidFunctionCall1(funcId, fcinfo->arg[0]);
 
-		// FmgrInfo convert_flinfo;
-		// fmgr_info(funcId, &convert_flinfo);
+            ReleaseSysCache(tuple);
 
-		// InitFunctionCallInfoData(*convert_fcinfo, &convert_flinfo, 1, InvalidOid, NULL, NULL);
+            PG_RETURN_DATUM(res);
+        } else {
 
-		// convert_fcinfo->arg[0] = fcinfo->arg[0];
-		// convert_fcinfo->argnull[0] = fcinfo->arg[0];
+            // ReleaseSysCache(tuple);
 
-		// /* Guard against stack overflow due to overly complex expressions */
-		// check_stack_depth();
+            // Form_pg_type typeForm1 = (Form_pg_type) GETSTRUCT(tuple1);
+            // Form_pg_type typeForm2 = (Form_pg_type) GETSTRUCT(tuple2);
 
-		// pgstat_init_function_usage(convert_fcinfo, &fcusage);
+            // Oid outFunc = typeForm1->typoutput;
+            // Oid inFunc  = typeForm1->typinput;
 
-		// convert_fcinfo->isnull = false;
-		// result = FunctionCallInvoke(convert_fcinfo);
-		// fcinfo->isnull = convert_fcinfo->isnull;
-		// fcinfo->resultinfo = convert_fcinfo->resultinfo;
+            // Datum txt = OidFunctionCall1(outFunc, fcinfo->arg[0]);
+            // Datum res = OidFunctionCall1(inFunc, txt); 
 
-		// pgstat_end_function_usage(&fcusage, true);
+            // ReleaseSysCache(tuple1);
+            // ReleaseSysCache(tuple2);
 
-        ReleaseSysCache(tuple);
+            // PG_RETURN_DATUM(res);
 
-		PG_RETURN_DATUM(OidFunctionCall1(funcId, fcinfo->arg[0]));
+            PG_RETURN_NULL();
+        }
     }
+	PG_CATCH();
+	{
+        // ReleaseSysCache(tuple);
+        // ReleaseSysCache(tuple1);
+        // ReleaseSysCache(tuple2);
 
-    PG_RETURN_NULL();
+		PG_RETURN_NULL();
+	}
+	PG_END_TRY();
 }

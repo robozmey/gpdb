@@ -327,6 +327,7 @@ typedef struct TypeCast
 	NodeTag		type;
 	Node	   *arg;			/* the expression being casted */
 	TypeName   *typeName;		/* the target type */
+	bool		is_trycast;		/* TODO */
 	int			location;		/* token location, or -1 if unknown */
 } TypeCast;
 

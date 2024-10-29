@@ -2385,6 +2385,7 @@ _equalTypeCast(const TypeCast *a, const TypeCast *b)
 {
 	COMPARE_NODE_FIELD(arg);
 	COMPARE_NODE_FIELD(typeName);
+	COMPARE_SCALAR_FIELD(is_trycast);
 	COMPARE_LOCATION_FIELD(location);
 
 	return true;

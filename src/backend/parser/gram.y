@@ -16602,6 +16602,7 @@ makeTypeCast(Node *arg, TypeName *typename, int location)
 	TypeCast *n = makeNode(TypeCast);
 	n->arg = arg;
 	n->typeName = typename;
+	n->is_trycast = false;
 	n->location = location;
 	return (Node *) n;
 }
