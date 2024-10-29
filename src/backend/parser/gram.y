@@ -685,7 +685,7 @@ static Node *makeIsNotDistinctFromNode(Node *expr, int position);
 
 	TABLE TABLES TABLESPACE TEMP TEMPLATE TEMPORARY TEXT_P THEN TIME TIMESTAMP
 	TO TRAILING TRANSACTION TREAT TRIGGER TRIM TRUE_P
-	TRUNCATE TRUSTED TYPE_P TYPES_P
+	TRUNCATE TRUSTED TRY_CAST TYPE_P TYPES_P
 
 	UNBOUNDED UNCOMMITTED UNENCRYPTED UNION UNIQUE UNKNOWN UNLISTEN UNLOGGED
 	UNTIL UPDATE USER USING
@@ -4981,6 +4981,10 @@ tab_part_val_no_paran: AexprConst { $$ = $1; }
 				{ 
 					$$ = makeTypeCast($3, $5, @4);
 				}
+			| TRY_CAST '(' tab_part_val AS Typename ')'
+				{ 
+					$$ = makeTypeCast($3, $5, @4);
+				}
 			| tab_part_val_no_paran TYPECAST Typename
 				{ 
 					$$ = makeTypeCast($1, $3, @2); 
@@ -7971,6 +7975,15 @@ CommentStmt:
 					$$ = (Node *) n;
 				}
 			| COMMENT ON CAST '(' Typename AS Typename ')' IS comment_text
+				{
+					CommentStmt *n = makeNode(CommentStmt);
+					n->objtype = OBJECT_CAST;
+					n->objname = list_make1($5);
+					n->objargs = list_make1($7);
+					n->comment = $10;
+					$$ = (Node *) n;
+				}
+			| COMMENT ON TRY_CAST '(' Typename AS Typename ')' IS comment_text
 				{
 					CommentStmt *n = makeNode(CommentStmt);
 					n->objtype = OBJECT_CAST;
@@ -14392,6 +14405,8 @@ func_expr_common_subexpr:
 				}
 			| CAST '(' a_expr AS Typename ')'
 				{ $$ = makeTypeCast($3, $5, @1); }
+			| TRY_CAST '(' a_expr AS Typename ')'
+				{ $$ = makeTypeCast($3, $5, @1); }
 			| EXTRACT '(' extract_list ')'
 				{
 					$$ = (Node *) makeFuncCall(SystemFuncName("date_part"), $3, @1);
@@ -16519,6 +16534,7 @@ reserved_keyword:
 			| TO
 			| TRAILING
 			| TRUE_P
+			| TRY_CAST
 			| UNBOUNDED
 			| UNION
 			| UNIQUE
