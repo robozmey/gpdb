@@ -1250,6 +1250,60 @@ build_coercion_expression(Node *node,
 		fexpr->location = location;
 		return (Node *) fexpr;
 	}
+	else if (pathtype == COERCION_PATH_FUNC_SAFE)
+	{
+		/* We build an ordinary FuncExpr with special arguments */
+		FuncExpr   *fexpr;
+		List	   *args;
+		Const	   *cons;
+
+		Assert(OidIsValid(funcId));
+
+		cons = makeConst(REGPROCEDUREOID,
+						 -1,
+						 InvalidOid,
+						 sizeof(regproc),
+						 funcId,
+						 false,
+						 true);
+
+		args = list_make2(node, cons);
+
+
+
+		if (nargs >= 2)
+		{
+			/* Pass target typmod as an int4 constant */
+			cons = makeConst(INT4OID,
+							 -1,
+							 InvalidOid,
+							 sizeof(int32),
+							 Int32GetDatum(targetTypMod),
+							 false,
+							 true);
+
+			args = lappend(args, cons);
+		}
+
+		if (nargs == 3)
+		{
+			/* Pass it a boolean isExplicit parameter, too */
+			cons = makeConst(BOOLOID,
+							 -1,
+							 InvalidOid,
+							 sizeof(bool),
+							 BoolGetDatum(isExplicit),
+							 false,
+							 true);
+
+			args = lappend(args, cons);
+		}
+
+		fexpr = makeFuncExpr(TRY_CAST_FUNCTION_OID, targetTypeId, args,
+							 InvalidOid, InvalidOid, cformat);
+		fexpr->location = location;
+		return (Node *) fexpr;
+	}
 	else if (pathtype == COERCION_PATH_ARRAYCOERCE)
 	{
 		/* We need to build an ArrayCoerceExpr */
@@ -2563,7 +2617,10 @@ find_coercion_pathway(Oid targetTypeId, Oid sourceTypeId,
 			switch (castForm->castmethod)
 			{
 				case COERCION_METHOD_FUNCTION:
-					result = COERCION_PATH_FUNC;
+					if (ccontext == COERCION_EXPLICIT_SAFE)
+						result = COERCION_PATH_FUNC_SAFE;
+					else
+						result = COERCION_PATH_FUNC;
 					*funcid = castForm->castfunc;
 					break;
 				case COERCION_METHOD_INOUT:

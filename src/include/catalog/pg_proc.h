@@ -5234,6 +5234,10 @@ DESCR("import collations from operating system");
 DATA(insert OID = 3994 ( mdb_locale_enabled	PGNSP PGUID 12 1 0 0 0 f f f f t f v 0 0 16 "" _null_ _null_ _null_ _null_ mdb_locale_enabled _null_ _null_ _null_ ));
 DESCR("true if mdb locales enabled");
 
+DATA(insert OID = 3995 (  try_cast_func			   PGNSP PGUID 12 1 0 0 0 f f f f t f i 1 0 2283 "2283 24" _null_ _null_ _null_ _null_ try_cast _null_ _null_ _null_ ));
+DESCR("try_cast function");
+#define TRY_CAST_FUNCTION_OID 3995
+
 /*
  * Include more definitions from pg_proc_gp.h, for GPDB-added functions. They
  * are kept in a separate file to make diffing and merging with upstream

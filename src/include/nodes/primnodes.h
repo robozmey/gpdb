@@ -437,7 +437,8 @@ typedef enum CoercionContext
 {
 	COERCION_IMPLICIT,			/* coercion in context of expression */
 	COERCION_ASSIGNMENT,		/* coercion in context of assignment */
-	COERCION_EXPLICIT			/* explicit cast operation */
+	COERCION_EXPLICIT,			/* explicit cast operation */
+	COERCION_EXPLICIT_SAFE		/* explicit cast operation */
 } CoercionContext;
 
 /*

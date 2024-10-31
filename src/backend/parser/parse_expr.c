@@ -2467,9 +2467,13 @@ transformTypeCast(ParseState *pstate, TypeCast *tc)
 	if (location < 0)
 		location = tc->typeName->location;
 
+	CoercionContext ccontext = COERCION_EXPLICIT;
+	if (tc->is_trycast)
+		ccontext = COERCION_EXPLICIT_SAFE;
+
 	result = coerce_to_target_type(pstate, expr, inputType,
 								   targetType, targetTypmod,
-								   COERCION_EXPLICIT,
+								   ccontext,
 								   COERCE_EXPLICIT_CAST,
 								   location);
 	if (result == NULL)
