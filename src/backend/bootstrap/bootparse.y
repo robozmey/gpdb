@@ -272,7 +272,8 @@ Boot_CreateStmt:
 													  false,
 													  /* valid_opts */ false,
 													  /* is_part_child */ false,
-													  /* is_part_parent */ false);
+													  /* is_part_parent */ false,
+													  &InvalidObjectAddress);
 						elog(DEBUG4, "relation created with oid %u", id);
 					}
 					do_end();

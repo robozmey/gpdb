@@ -18,7 +18,7 @@
 
 #include "parser/parse_node.h"
 #include "catalog/indexing.h"
-
+#include "catalog/objectaddress.h"
 
 typedef struct RawColumnDefault
 {
@@ -90,7 +90,8 @@ extern Oid heap_create_with_catalog(const char *relname,
 									bool is_internal,
 									bool valid_opts,
 									bool is_part_child,
-									bool is_part_parent);
+									bool is_part_parent, 
+									ObjectAddress *typaddress);
 
 extern void heap_create_init_fork(Relation rel);
 

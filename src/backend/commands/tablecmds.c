@@ -918,7 +918,8 @@ DefineRelation(CreateStmt *stmt, char relkind, Oid ownerId, char relstorage, boo
 										  false,
 										  valid_opts,
 										  stmt->is_part_child,
-										  stmt->is_part_parent);
+										  stmt->is_part_parent,
+										  &InvalidObjectAddress);
 
 	/*
 	 * Give a warning if you use OIDS=TRUE on user tables. We do this after calling

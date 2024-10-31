@@ -38,6 +38,8 @@ typedef struct ObjectAddress
 #define ObjectAddressSet(addr, class_id, object_id) \
 	ObjectAddressSubSet(addr, class_id, object_id, 0)
 
+extern const ObjectAddress InvalidObjectAddress;
+
 extern ObjectAddress get_object_address(ObjectType objtype, List *objname,
 				   List *objargs, Relation *relp,
 				   LOCKMODE lockmode, bool missing_ok);

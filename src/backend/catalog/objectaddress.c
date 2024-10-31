@@ -440,6 +440,15 @@ static const ObjectPropertyType ObjectProperty[] =
 	},
 };
 
+
+const ObjectAddress InvalidObjectAddress =
+{
+	InvalidOid,
+	InvalidOid,
+	0
+};
+
+
 static ObjectAddress get_object_address_unqualified(ObjectType objtype,
 							   List *qualname, bool missing_ok);
 static ObjectAddress get_relation_by_qualified_name(ObjectType objtype,

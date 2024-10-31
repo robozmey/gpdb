@@ -129,31 +129,32 @@ CreateAOAuxiliaryTable(
 	 * the aovisimap relation as temp.
 	 */
 	aoauxiliary_relid = heap_create_with_catalog(aoauxiliary_relname,
-											     namespaceid,
-											     rel->rd_rel->reltablespace == YEZZEYTABLESPACE_OID ? 0 : rel->rd_rel->reltablespace,
-											     InvalidOid,
+												 namespaceid,
+												 rel->rd_rel->reltablespace == YEZZEYTABLESPACE_OID ? 0 : rel->rd_rel->reltablespace,
 												 InvalidOid,
 												 InvalidOid,
-											     rel->rd_rel->relowner,
-											     tupledesc,
+												 InvalidOid,
+												 rel->rd_rel->relowner,
+												 tupledesc,
 												 NIL,
-											     /* relam */ InvalidOid,
-											     relkind,
+												 /* relam */ InvalidOid,
+												 relkind,
 												 rel->rd_rel->relpersistence,
-											     RELSTORAGE_HEAP,
-											     shared_relation,
+												 RELSTORAGE_HEAP,
+												 shared_relation,
 												 mapped_relation,
-											     true,
-											     0,
-											     ONCOMMIT_NOOP,
-											     NULL, /* GP Policy */
-											     (Datum) 0,
+												 true,
+												 0,
+												 ONCOMMIT_NOOP,
+												 NULL, /* GP Policy */
+												 (Datum) 0,
 												 /* use_user_acl */ false,
-											     true,
+												 true,
 												 true,
 												 /* valid_opts */ false,
 												 /* is_part_child */ false,
-												 is_part_parent);
+												 is_part_parent,
+												 &InvalidObjectAddress);
 
 	/* Make this table visible, else index creation will fail */
 	CommandCounterIncrement();
