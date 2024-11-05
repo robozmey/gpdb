@@ -963,4 +963,6 @@ WorkfileResetBackendStats(void)
 {
 	total_bytes_written = 0;
 	total_files_created = 0;
+
+	return 0;
 }
