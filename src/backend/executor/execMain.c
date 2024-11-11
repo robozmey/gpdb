@@ -2555,7 +2555,7 @@ CheckValidResultRel(Relation resultRel, CmdType operation)
 		
 		/* Yezzey additions */
 		case RELKIND_YEZZEYINDEX:
-			if (!allowSystemTableMods)
+			if (Gp_role == GP_ROLE_DISPATCH && !allowSystemTableMods)
 				ereport(ERROR,
 						(errcode(ERRCODE_WRONG_OBJECT_TYPE),
 						 errmsg("cannot change yezzey index map relation \"%s\"",
