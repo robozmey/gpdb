@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------
 
-![Greenplum](logo-greenplum.png)
+![Greenplum](mascot-opengpdb.png)
 
 We've forked here the original GPDB repository after Greenplum became a closed-source project. And continue to make it production-ready.
 
@@ -16,7 +16,32 @@ If you want to try it right away - https://yandex.cloud/en/services/managed-gree
 
 ## Roadmap
 
+You can check our [open-gpdb roadmap 2024/2025](https://github.com/orgs/open-gpdb/discussions/11) to see the
+product plans and goals we want to achieve in 2024/2025. Welcome to share your thoughts and ideas.
+
 ## Build and try out
+
+See detailed instruction about building, testing, build options, using Docker and Vagrant in [Build readme](README.build.md)
+
+```
+# Configure build environment to install at /usr/local/gpdb
+./configure --with-perl --with-python --with-libxml --with-gssapi --prefix=/usr/local/gpdb --without-mdblocales
+# Compile and install
+make -j8
+make -j8 install
+# Bring in greenplum environment into your running shell
+source /usr/local/gpdb/greenplum_path.sh
+# Start demo cluster
+make create-demo-cluster
+# (gpdemo-env.sh contains __PGPORT__ and __MASTER_DATA_DIRECTORY__ values)
+source gpAux/gpdemo/gpdemo-env.sh
+```
+
+The default regression tests
+
+```
+make installcheck-world
+```
 
 ## Repositories
 
