@@ -12607,7 +12607,7 @@ ATExecChangeOwner(Oid relationOid, Oid newOwnerId, bool recursing, LOCKMODE lock
 						ereport(ERROR,
 								(errcode(ERRCODE_INSUFFICIENT_PRIVILEGE),
 								 errmsg("cannot transfer ownership to superuser \"%s\"",
-										GetUserNameFromId(newOwnerId))));
+										GetUserNameFromId(newOwnerId, false))));
 						
 					}
 				}

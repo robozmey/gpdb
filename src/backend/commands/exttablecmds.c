@@ -171,7 +171,7 @@ DefineExternalRelation(CreateExternalStmt *createExtStmt)
 					ereport(ERROR,
 							(errcode(ERRCODE_UNDEFINED_OBJECT),
 							 errmsg("role \"%s\" does not exist (in DefineExternalRelation)",
-									GetUserNameFromId(userid))));
+									GetUserNameFromId(userid, false))));
 
 				if ((uri->protocol == URI_GPFDIST || uri->protocol == URI_GPFDISTS) && iswritable)
 				{

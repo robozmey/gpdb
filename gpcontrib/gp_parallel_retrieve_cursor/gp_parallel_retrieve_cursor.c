@@ -221,7 +221,7 @@ gp_get_endpoints(PG_FUNCTION_ARGS)
 					StrNCpy(info->cursorName, entry->cursorName, NAMEDATALEN);
 					info->state = entry->state;
 					info->sessionId = entry->sessionID;
-					StrNCpy(info->userName, GetUserNameFromId(entry->userID), NAMEDATALEN);
+					StrNCpy(info->userName, GetUserNameFromId(entry->userID, false), NAMEDATALEN);
 					idx++;
 				}
 			}
@@ -349,7 +349,7 @@ gp_get_segment_endpoints(PG_FUNCTION_ARGS)
 			values[4] = CStringGetTextDatum(state);
 			values[5] = Int32GetDatum(GpIdentity.segindex);
 			values[6] = Int32GetDatum(entry->sessionID);
-			values[7] = CStringGetTextDatum(GetUserNameFromId(entry->userID));
+			values[7] = CStringGetTextDatum(GetUserNameFromId(entry->userID, false));
 			values[8] = CStringGetTextDatum(entry->name);
 			values[9] = CStringGetTextDatum(entry->cursorName);
 

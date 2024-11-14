@@ -489,7 +489,7 @@ AlterSchemaOwner_internal(HeapTuple tup, Relation rel, Oid newOwnerId)
 				ereport(ERROR,
 						(errcode(ERRCODE_INSUFFICIENT_PRIVILEGE),
 						 errmsg("cannot transfer ownership to superuser \"%s\"",
-								GetUserNameFromId(newOwnerId))));
+								GetUserNameFromId(newOwnerId, false))));
 
 			}
 		}

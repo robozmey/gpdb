@@ -952,7 +952,7 @@ AlterObjectOwner_internal(Relation rel, Oid objectId, Oid new_ownerId)
 					ereport(ERROR,
 							(errcode(ERRCODE_INSUFFICIENT_PRIVILEGE),
 							 errmsg("cannot transfer ownership to superuser \"%s\"",
-									GetUserNameFromId(new_ownerId))));
+									GetUserNameFromId(new_ownerId, false))));
 					
 				}	
 			}

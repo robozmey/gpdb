@@ -995,7 +995,7 @@ execute_extension_script(Node *stmt,
 		if (strstr(c_sql, "@extowner@"))
 		{
 			Oid			uid = switch_to_superuser ? save_userid : GetUserId();
-			const char *userName = GetUserNameFromId(uid);
+			const char *userName = GetUserNameFromId(uid, false);
 			const char *qUserName = quote_identifier(userName);
 
 			t_sql = DirectFunctionCall3Coll(replace_text,
