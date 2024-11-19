@@ -63,6 +63,18 @@ This is the main repository for Greenplum Database. Alongside this, there are se
 
 ## Community & Support 
 
+We have many channels for community members to discuss, ask for help and feedback:
+
+| Type | Description |
+|------|-------------|
+| Q&A | Ask for help when running/developing, visit [GitHub Discussions - QA](https://github.com/orgs/open-gpdb/discussions/categories/q-a). |
+| New ideas / Feature Requests | Share ideas for new features, visit [GitHub Discussions - Ideas](https://github.com/orgs/open-gpdb/discussions/categories/ideas).  |
+| Report bugs | Problems and issues in database core. If you find bugs, welcome to submit them [here](https://github.com/open-gpdb/gpdb/issues).  |
+| Report a security vulnerability | View our [security policy](https://github.com/open-gpdb/gpdb/security/policy) to learn how to report and contact us.  |
+| Community events | Including meetups, webinars, conferences, and more events, visit the [Events page](https://yandex.cloud/ru/events?page=0&services=246) and subscribe events calendar.  |
+| Documentation | [Official documentation](https://yandex.cloud/en/docs/managed-greenplum/) for Managed Database. You can explore it to discover more details about us. |
+
+
 ## Contribution
 
 ## Acknowledgment
