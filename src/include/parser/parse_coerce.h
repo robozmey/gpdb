@@ -24,6 +24,7 @@ typedef char TYPCATEGORY;
 typedef enum CoercionPathType
 {
 	COERCION_PATH_NONE,			/* failed to find any coercion pathway */
+	COERCION_PATH_NONE_SAFE,	/* failed to find any coercion pathway, but */
 	COERCION_PATH_FUNC,			/* apply the specified coercion function */
 	COERCION_PATH_FUNC_SAFE,			/* apply the specified coercion function safe */
 	COERCION_PATH_RELABELTYPE,	/* binary-compatible cast, no function */

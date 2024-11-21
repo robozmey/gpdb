@@ -1341,6 +1341,12 @@ build_coercion_expression(Node *node,
 
 		return (Node *) iocoerce;
 	}
+	else if (pathtype == COERCION_PATH_NONE_SAFE) {
+		Const *nullconst = makeNullConst(targetTypeId, targetTypMod, InvalidOid);
+		nullconst->location = location;
+
+		return (Node *) nullconst;
+	}
 	else
 	{
 		elog(ERROR, "unsupported pathtype %d in build_coercion_expression",
@@ -2700,6 +2706,8 @@ find_coercion_pathway(Oid targetTypeId, Oid sourceTypeId,
 			else if (ccontext >= COERCION_EXPLICIT &&
 					 TypeCategory(sourceTypeId) == TYPCATEGORY_STRING)
 				result = COERCION_PATH_COERCEVIAIO;
+			else if (ccontext == COERCION_EXPLICIT_SAFE)
+				result = COERCION_PATH_NONE_SAFE;
 		}
 	}
 
