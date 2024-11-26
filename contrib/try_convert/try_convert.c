@@ -1,20 +1,10 @@
 #include "postgres.h"
 
-#include <sys/file.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
-#include "catalog/pg_type.h"
 #include "catalog/pg_cast.h"
-#include "nodes/makefuncs.h"
 #include "utils/syscache.h"
 #include "utils/lsyscache.h"
-#include "pgstat.h"
 
 #include "funcapi.h"
-#include "miscadmin.h"
-#include "postmaster/syslogger.h"
-#include "storage/fd.h"
 
 
 PG_MODULE_MAGIC;
@@ -26,8 +16,6 @@ Datum
 try_convert_from_pg_cast(Datum value, Oid sourceTypeId, Oid targetTypeId, bool *is_null)
 {
     HeapTuple tuple;
-
-    Oid funcId = InvalidOid;
 
     /* Look in pg_cast */
     tuple = SearchSysCache2(CASTSOURCETARGET,
@@ -42,7 +30,7 @@ try_convert_from_pg_cast(Datum value, Oid sourceTypeId, Oid targetTypeId, bool *
         Form_pg_cast castForm = (Form_pg_cast) GETSTRUCT(tuple);
         CoercionContext castcontext;
 
-        funcId = castForm->castfunc;
+        Oid funcId = castForm->castfunc;
 
         PG_TRY();
         {
@@ -141,7 +129,7 @@ try_convert(PG_FUNCTION_ARGS)
      || TypeCategory(targetTypeId) == TYPCATEGORY_STRING) {
         is_null = fcinfo->isnull;
         res = try_convert_via_io(fcinfo->arg[0], sourceTypeId, targetTypeId, &is_null);
-     }
+    }
 
     fcinfo->isnull = is_null;
     return res;
