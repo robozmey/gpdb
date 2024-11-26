@@ -17,15 +17,19 @@ try_cast(PG_FUNCTION_ARGS)
 
     Datum funcId = PG_GETARG_DATUM(1);
 
+	Datum res = 0;
+
 	PG_TRY();
 	{
-        Datum res = OidFunctionCall1(funcId, value);
-
-        PG_RETURN_DATUM(res);
+        res = OidFunctionCall1(funcId, value);
     }
 	PG_CATCH();
 	{
-		PG_RETURN_NULL();
+		fcinfo->isnull = true;
+
+		FlushErrorState();
 	}
 	PG_END_TRY();
+
+	PG_RETURN_DATUM(res);
 }
