@@ -1,18 +1,33 @@
 create schema tryconvert;
 set search_path = tryconvert;
-
 -- start_ignore
 CREATE EXTENSION IF NOT EXISTS try_convert;
 -- end_ignore
-
 -- not date
 select try_convert('12', '2002-10-26'::date);
+ try_convert 
+-------------
+ 
+(1 row)
 
 -- not int
 select try_convert('11/11/20111', 0::int);
+ try_convert 
+-------------
+            
+(1 row)
+
 select try_convert('111d', 0::int);
+ try_convert 
+-------------
+            
+(1 row)
 
 -- to big for int2
 select try_convert('112344466343', 0::int2);
+ try_convert 
+-------------
+            
+(1 row)
 
 reset search_path;
