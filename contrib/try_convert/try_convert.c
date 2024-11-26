@@ -36,31 +36,30 @@ try_convert_from_pg_cast(Datum value, Oid sourceTypeId, Oid targetTypeId, bool *
 
     Datum res = 0;
 
-	PG_TRY();
-	{
-        if (HeapTupleIsValid(tuple))
+    if (HeapTupleIsValid(tuple))
+    {
+        /* SELECT castcontext from pg_cast */
+        Form_pg_cast castForm = (Form_pg_cast) GETSTRUCT(tuple);
+        CoercionContext castcontext;
+
+        funcId = castForm->castfunc;
+
+        PG_TRY();
         {
-            /* SELECT castcontext from pg_cast */
-            Form_pg_cast castForm = (Form_pg_cast) GETSTRUCT(tuple);
-            CoercionContext castcontext;
-
-            funcId = castForm->castfunc;
-
             res = OidFunctionCall1(funcId, value);
-        } else {
-            is_null = true;
         }
-
-        ReleaseSysCache(tuple);
-    }
-	PG_CATCH();
-	{
-        ReleaseSysCache(tuple);
-
+        PG_CATCH();
+        {
+            *is_null = true;
+            FlushErrorState();  /// TODO replace
+        }
+        PG_END_TRY();
+    } else {
         *is_null = true;
-        FlushErrorState();  /// TODO replace
-	}
-	PG_END_TRY();
+    }
+
+    ReleaseSysCache(tuple);
+
 
     return res;
 }
@@ -133,9 +132,16 @@ try_convert(PG_FUNCTION_ARGS)
 
     bool is_null = fcinfo->isnull;
 
+    res = try_convert_from_pg_cast(fcinfo->arg[0], sourceTypeId, targetTypeId, &is_null);
+
+    if (!is_null)
+        return res;
+
     if (TypeCategory(sourceTypeId) == TYPCATEGORY_STRING 
-     || TypeCategory(targetTypeId) == TYPCATEGORY_STRING)
+     || TypeCategory(targetTypeId) == TYPCATEGORY_STRING) {
+        is_null = fcinfo->isnull;
         res = try_convert_via_io(fcinfo->arg[0], sourceTypeId, targetTypeId, &is_null);
+     }
 
     fcinfo->isnull = is_null;
     return res;
