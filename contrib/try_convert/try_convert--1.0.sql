@@ -13,3 +13,18 @@ CREATE FUNCTION try_convert(text, anyelement)
 RETURNS anyelement
 AS 'MODULE_PATHNAME', 'try_convert'
 LANGUAGE C STRICT;
+
+CREATE FUNCTION try_convert(int8, anyelement)
+RETURNS anyelement
+AS 'MODULE_PATHNAME', 'try_convert'
+LANGUAGE C STRICT;
+
+CREATE FUNCTION try_convert(int4, anyelement)
+RETURNS anyelement
+AS 'MODULE_PATHNAME', 'try_convert'
+LANGUAGE C STRICT;
+
+CREATE FUNCTION try_convert(int2, anyelement)
+RETURNS anyelement
+AS 'MODULE_PATHNAME', 'try_convert'
+LANGUAGE C STRICT;
