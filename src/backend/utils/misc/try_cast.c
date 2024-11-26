@@ -27,7 +27,7 @@ try_cast(PG_FUNCTION_ARGS)
 	{
 		fcinfo->isnull = true;
 
-		FlushErrorState();
+		FlushErrorState();  /// TODO replace
 	}
 	PG_END_TRY();
 

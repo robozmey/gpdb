@@ -57,7 +57,7 @@ try_convert_from_pg_cast(Datum value, Oid sourceTypeId, Oid targetTypeId, bool *
 	{
         ReleaseSysCache(tuple);
 
-        is_null = true;
+        *is_null = true;
         FlushErrorState();  /// TODO replace
 	}
 	PG_END_TRY();
@@ -101,7 +101,7 @@ try_convert_via_io(Datum value, Oid sourceTypeId, Oid targetTypeId, bool *is_nul
     }
 	PG_CATCH();
 	{
-        is_null = true;
+        *is_null = true;
 
         FlushErrorState(); /// TODO replace
 	}
@@ -129,20 +129,9 @@ try_convert(PG_FUNCTION_ARGS)
 	if (sourceTypeId == targetTypeId)
 		return fcinfo->arg[0];
 
-    Oid			infunc;
-    bool		typisvarlena;
-
-    getTypeInputInfo(targetTypeId, &infunc, &typisvarlena);
     Datum res = 0;
 
     bool is_null = fcinfo->isnull;
-
-    res = try_convert_from_pg_cast(fcinfo->arg[0], sourceTypeId, targetTypeId, &is_null);
-
-    if (!is_null)
-        return res;
-
-    is_null = fcinfo->isnull;
 
     if (TypeCategory(sourceTypeId) == TYPCATEGORY_STRING 
      || TypeCategory(targetTypeId) == TYPCATEGORY_STRING)
