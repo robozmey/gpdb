@@ -9,7 +9,7 @@
 
 /* generic file access functions */
 
-CREATE FUNCTION try_convert(anyelement, regtype)
+CREATE FUNCTION try_convert(text, anyelement)
 RETURNS anyelement
 AS 'MODULE_PATHNAME', 'try_convert'
 LANGUAGE C STRICT;
