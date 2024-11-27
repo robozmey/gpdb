@@ -97,8 +97,6 @@ try_convert_via_io(Datum value, Oid sourceTypeId, Oid targetTypeId, bool *is_nul
 }
 
 
-// NO NULL INPUTS!!!!
-
 Datum
 try_convert(PG_FUNCTION_ARGS)
 {
@@ -130,7 +128,11 @@ try_convert(PG_FUNCTION_ARGS)
         is_null = fcinfo->isnull;
         res = try_convert_via_io(value, sourceTypeId, targetTypeId, &is_null);
     }
-
-    fcinfo->isnull = is_null;
+    
+    if (is_null) {
+        fcinfo->isnull = fcinfo->argnull[1];
+        res = fcinfo->arg[1];
+    }
+    
     return res;
 }
