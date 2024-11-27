@@ -42,12 +42,11 @@ try_convert_from_pg_cast(Datum value, Oid sourceTypeId, Oid targetTypeId, bool *
             FlushErrorState();  /// TODO replace
         }
         PG_END_TRY();
+
+        ReleaseSysCache(tuple);
     } else {
         *is_null = true;
     }
-
-    ReleaseSysCache(tuple);
-
 
     return res;
 }
@@ -112,15 +111,16 @@ try_convert(PG_FUNCTION_ARGS)
 	if (OidIsValid(targetTypeId))
 		targetTypeId = getBaseType(targetTypeId);
 
-	/* Domains are always coercible to and from their base type */
-	if (sourceTypeId == targetTypeId)
-		return fcinfo->arg[0];
-
+    Datum value = fcinfo->arg[0];
     Datum res = 0;
+
+    	/* Domains are always coercible to and from their base type */
+	if (sourceTypeId == targetTypeId)
+		return value;
 
     bool is_null = fcinfo->isnull;
 
-    res = try_convert_from_pg_cast(fcinfo->arg[0], sourceTypeId, targetTypeId, &is_null);
+    res = try_convert_from_pg_cast(value, sourceTypeId, targetTypeId, &is_null);
 
     if (!is_null)
         return res;
@@ -128,7 +128,7 @@ try_convert(PG_FUNCTION_ARGS)
     if (TypeCategory(sourceTypeId) == TYPCATEGORY_STRING 
      || TypeCategory(targetTypeId) == TYPCATEGORY_STRING) {
         is_null = fcinfo->isnull;
-        res = try_convert_via_io(fcinfo->arg[0], sourceTypeId, targetTypeId, &is_null);
+        res = try_convert_via_io(value, sourceTypeId, targetTypeId, &is_null);
     }
 
     fcinfo->isnull = is_null;
