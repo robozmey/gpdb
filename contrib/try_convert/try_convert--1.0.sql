@@ -12,7 +12,7 @@
 CREATE FUNCTION try_convert(text, anyelement)
 RETURNS anyelement
 AS 'MODULE_PATHNAME', 'try_convert'
-LANGUAGE C STRICT;
+LANGUAGE C;
 
 
 CREATE OR REPLACE FUNCTION add_type_for_try_convert(type regtype)
@@ -23,7 +23,7 @@ BEGIN
    EXECUTE 'CREATE FUNCTION try_convert(' || type || ', anyelement)
             RETURNS anyelement
             AS ''MODULE_PATHNAME'', ''try_convert''
-            LANGUAGE C STRICT;';
+            LANGUAGE C;';
 END
 $func$;
 
