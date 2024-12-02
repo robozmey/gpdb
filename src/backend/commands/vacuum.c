@@ -446,7 +446,7 @@ vacuum(VacuumStmt *vacstmt, Oid relid, bool do_toast,
 /*
  * Assigns the compaction segment information.
  *
- * The segment to compact is returned in *compact_segno, and
+ * The segments to compact are returned in **compactNowList, and
  * the segment to move rows to, is returned in *insert_segno.
  */
 static bool
