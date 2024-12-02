@@ -1,6 +1,6 @@
 -- SCRIPT-GENERATED TEST for TRY_CONVERT
--- Tests 17 types of 91 from pg_types.h
--- Tests 56 cast of 206 from pg_cast.h
+-- Tests 18 types of 91 from pg_types.h
+-- Tests 60 cast of 206 from pg_cast.h
 create schema tryconvert;
 set search_path = tryconvert;
 -- start_ignore
@@ -176,49 +176,79 @@ $func$
         -- do nothing: _out already carries default
     END
 $func$;
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in money, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::%s', $1, source_type)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
 -- LOAD DATA
 CREATE TABLE tt_temp (v text) DISTRIBUTED BY (v);
-CREATE TABLE tt_int8 (v int8) DISTRIBUTED BY (v);
-COPY tt_int8 from '@abs_srcdir@/data/tt_int8.data';
-CREATE TABLE tt_int4 (v int4) DISTRIBUTED BY (v);
-COPY tt_int4 from '@abs_srcdir@/data/tt_int4.data';
-CREATE TABLE tt_int2 (v int2) DISTRIBUTED BY (v);
-COPY tt_int2 from '@abs_srcdir@/data/tt_int2.data';
-CREATE TABLE tt_float8 (v float8) DISTRIBUTED BY (v);
-COPY tt_float8 from '@abs_srcdir@/data/tt_float8.data';
-CREATE TABLE tt_float4 (v float4) DISTRIBUTED BY (v);
-COPY tt_float4 from '@abs_srcdir@/data/tt_float4.data';
-CREATE TABLE tt_numeric (v numeric) DISTRIBUTED BY (v);
-COPY tt_numeric from '@abs_srcdir@/data/tt_numeric.data';
-CREATE TABLE tt_bool (v bool) DISTRIBUTED BY (v);
-COPY tt_bool from '@abs_srcdir@/data/tt_bool.data';
-CREATE TABLE tt_date (v date) DISTRIBUTED BY (v);
-COPY tt_date from '@abs_srcdir@/data/tt_date.data';
-CREATE TABLE tt_time (v time) DISTRIBUTED BY (v);
-COPY tt_time from '@abs_srcdir@/data/tt_time.data';
-CREATE TABLE tt_timetz (v timetz) DISTRIBUTED BY (v);
-COPY tt_timetz from '@abs_srcdir@/data/tt_timetz.data';
-CREATE TABLE tt_timestamp (v timestamp) DISTRIBUTED BY (v);
-COPY tt_timestamp from '@abs_srcdir@/data/tt_timestamp.data';
-CREATE TABLE tt_timestamptz (v timestamptz) DISTRIBUTED BY (v);
-COPY tt_timestamptz from '@abs_srcdir@/data/tt_timestamptz.data';
-CREATE TABLE tt_interval (v interval) DISTRIBUTED BY (v);
-COPY tt_interval from '@abs_srcdir@/data/tt_interval.data';
-CREATE TABLE tt_cidr (v cidr) DISTRIBUTED BY (v);
-COPY tt_cidr from '@abs_srcdir@/data/tt_cidr.data';
-CREATE TABLE tt_inet (v inet) DISTRIBUTED BY (v);
-COPY tt_inet from '@abs_srcdir@/data/tt_inet.data';
-CREATE TABLE tt_macaddr (v macaddr) DISTRIBUTED BY (v);
-COPY tt_macaddr from '@abs_srcdir@/data/tt_macaddr.data';
-CREATE TABLE tt_text (v text) DISTRIBUTED BY (v);
-COPY tt_text from '@abs_srcdir@/data/tt_text.data';
+CREATE TABLE tt_int8 (id serial, v int8) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_int8.data';
+INSERT INTO tt_int8(id, v) SELECT row_number() OVER(), v::int8 from tt_temp;
+CREATE TABLE tt_int4 (id serial, v int4) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_int4.data';
+INSERT INTO tt_int4(id, v) SELECT row_number() OVER(), v::int4 from tt_temp;
+CREATE TABLE tt_int2 (id serial, v int2) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_int2.data';
+INSERT INTO tt_int2(id, v) SELECT row_number() OVER(), v::int2 from tt_temp;
+CREATE TABLE tt_float8 (id serial, v float8) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_float8.data';
+INSERT INTO tt_float8(id, v) SELECT row_number() OVER(), v::float8 from tt_temp;
+CREATE TABLE tt_float4 (id serial, v float4) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_float4.data';
+INSERT INTO tt_float4(id, v) SELECT row_number() OVER(), v::float4 from tt_temp;
+CREATE TABLE tt_numeric (id serial, v numeric) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_numeric.data';
+INSERT INTO tt_numeric(id, v) SELECT row_number() OVER(), v::numeric from tt_temp;
+CREATE TABLE tt_bool (id serial, v bool) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_bool.data';
+INSERT INTO tt_bool(id, v) SELECT row_number() OVER(), v::bool from tt_temp;
+CREATE TABLE tt_date (id serial, v date) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_date.data';
+INSERT INTO tt_date(id, v) SELECT row_number() OVER(), v::date from tt_temp;
+CREATE TABLE tt_time (id serial, v time) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_time.data';
+INSERT INTO tt_time(id, v) SELECT row_number() OVER(), v::time from tt_temp;
+CREATE TABLE tt_timetz (id serial, v timetz) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_timetz.data';
+INSERT INTO tt_timetz(id, v) SELECT row_number() OVER(), v::timetz from tt_temp;
+CREATE TABLE tt_timestamp (id serial, v timestamp) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_timestamp.data';
+INSERT INTO tt_timestamp(id, v) SELECT row_number() OVER(), v::timestamp from tt_temp;
+CREATE TABLE tt_timestamptz (id serial, v timestamptz) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_timestamptz.data';
+INSERT INTO tt_timestamptz(id, v) SELECT row_number() OVER(), v::timestamptz from tt_temp;
+CREATE TABLE tt_interval (id serial, v interval) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_interval.data';
+INSERT INTO tt_interval(id, v) SELECT row_number() OVER(), v::interval from tt_temp;
+CREATE TABLE tt_cidr (id serial, v cidr) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_cidr.data';
+INSERT INTO tt_cidr(id, v) SELECT row_number() OVER(), v::cidr from tt_temp;
+CREATE TABLE tt_inet (id serial, v inet) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_inet.data';
+INSERT INTO tt_inet(id, v) SELECT row_number() OVER(), v::inet from tt_temp;
+CREATE TABLE tt_macaddr (id serial, v macaddr) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_macaddr.data';
+INSERT INTO tt_macaddr(id, v) SELECT row_number() OVER(), v::macaddr from tt_temp;
+CREATE TABLE tt_text (id serial, v text) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_text.data';
+INSERT INTO tt_text(id, v) SELECT row_number() OVER(), v::text from tt_temp;
+CREATE TABLE tt_money (id serial, v money) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_money.data';
+INSERT INTO tt_money(id, v) SELECT row_number() OVER(), v::money from tt_temp;
 -- TEXT TESTS
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_int8) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
 
-COPY tt_temp from '@abs_srcdir@/data/tt_int8.data';
+DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_int8.data';
 select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
@@ -234,7 +264,7 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-COPY tt_temp from '@abs_srcdir@/data/tt_int4.data';
+DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_int4.data';
 select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
@@ -250,7 +280,7 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-COPY tt_temp from '@abs_srcdir@/data/tt_int2.data';
+DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_int2.data';
 select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NULL::int2) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
@@ -266,7 +296,7 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-COPY tt_temp from '@abs_srcdir@/data/tt_float8.data';
+DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_float8.data';
 select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
@@ -282,7 +312,7 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-COPY tt_temp from '@abs_srcdir@/data/tt_float4.data';
+DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_float4.data';
 select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, NULL::float4) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
@@ -298,7 +328,7 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-COPY tt_temp from '@abs_srcdir@/data/tt_numeric.data';
+DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_numeric.data';
 select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
@@ -314,7 +344,7 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-COPY tt_temp from '@abs_srcdir@/data/tt_bool.data';
+DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_bool.data';
 select * from (select try_convert(v, NULL::bool) as v1, try_convert_by_sql(v, NULL::bool) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
@@ -330,7 +360,7 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-COPY tt_temp from '@abs_srcdir@/data/tt_date.data';
+DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_date.data';
 select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NULL::date) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
@@ -346,7 +376,7 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-COPY tt_temp from '@abs_srcdir@/data/tt_time.data';
+DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_time.data';
 select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
@@ -362,7 +392,7 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-COPY tt_temp from '@abs_srcdir@/data/tt_timetz.data';
+DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_timetz.data';
 select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, NULL::timetz) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
@@ -378,7 +408,7 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-COPY tt_temp from '@abs_srcdir@/data/tt_timestamp.data';
+DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_timestamp.data';
 select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
@@ -394,7 +424,7 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-COPY tt_temp from '@abs_srcdir@/data/tt_timestamptz.data';
+DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_timestamptz.data';
 select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
@@ -410,7 +440,7 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-COPY tt_temp from '@abs_srcdir@/data/tt_interval.data';
+DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_interval.data';
 select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
@@ -426,7 +456,7 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-COPY tt_temp from '@abs_srcdir@/data/tt_cidr.data';
+DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_cidr.data';
 select * from (select try_convert(v, NULL::cidr) as v1, try_convert_by_sql(v, NULL::cidr) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
@@ -442,7 +472,7 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-COPY tt_temp from '@abs_srcdir@/data/tt_inet.data';
+DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_inet.data';
 select * from (select try_convert(v, NULL::inet) as v1, try_convert_by_sql(v, NULL::inet) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
@@ -458,7 +488,7 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-COPY tt_temp from '@abs_srcdir@/data/tt_macaddr.data';
+DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_macaddr.data';
 select * from (select try_convert(v, NULL::macaddr) as v1, try_convert_by_sql(v, NULL::macaddr) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
@@ -474,13 +504,29 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-COPY tt_temp from '@abs_srcdir@/data/tt_text.data';
+DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_text.data';
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text) as t(v)) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_money) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_money.data';
+select * from (select try_convert(v, NULL::money) as v1, try_convert_by_sql(v, NULL::money) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::money) as v1, try_convert_by_sql(v, NULL::money) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_money) as t(v)) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
@@ -632,6 +678,26 @@ select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, 
 (0 rows)
 
 select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from tt_numeric) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from tt_money) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::money) as v1, try_convert_by_sql(v, NULL::money) as v2 from tt_numeric) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::money) as v1, try_convert_by_sql(v, NULL::money) as v2 from tt_int4) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::money) as v1, try_convert_by_sql(v, NULL::money) as v2 from tt_int8) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)

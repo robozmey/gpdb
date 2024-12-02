@@ -46,6 +46,8 @@ select add_type_for_try_convert('text'::regtype);
 
 select add_type_for_try_convert('bool'::regtype);
 
+select add_type_for_try_convert('money'::regtype);
+
 -- IP/MAC
 select add_type_for_try_convert('cidr'::regtype);
 select add_type_for_try_convert('inet'::regtype);

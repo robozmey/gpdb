@@ -32,7 +32,7 @@ supported_types = [
     # 'char',
     # 'varchar',
     'text',
-    # 'money',
+    'money',
     # # 'pg_lsn',
     # # 'tsquery',
     # # 'tsvector',
@@ -41,7 +41,7 @@ supported_types = [
     # 'xml'
 ]
 
-print(supported_types)
+print('Supported types:', ' '.join(supported_types))
 
 
 pg_type_path = '/home/robozmey/gpdb_src/src/include/catalog/pg_type.h'
@@ -153,18 +153,20 @@ test_load_data = '-- LOAD DATA\n'
 
 test_load_data += f'CREATE TABLE tt_temp (v text) DISTRIBUTED BY (v);\n'
 
-def copy_data(table_name, filename):
-    return f'COPY {table_name} from \'@abs_srcdir@/{filename}\';'  
+def copy_data(table_name, filename, type_name):
+    return  f'DELETE FROM tt_temp;' \
+            f'COPY tt_temp from \'@abs_srcdir@/{filename}\';\n' \
+            f'INSERT INTO {table_name}(id, v) SELECT row_number() OVER(), v::{type_name} from tt_temp;'  
 
 for type_name in supported_types:
 
     table_name = f'tt_{type_name}'
 
-    test_load_data += f'CREATE TABLE {table_name} (v {type_name}) DISTRIBUTED BY (v);\n'
+    test_load_data += f'CREATE TABLE {table_name} (id serial, v {type_name}) DISTRIBUTED BY (id);\n'
 
     filename = f'data/{table_name}.data'
 
-    test_load_data += copy_data(table_name, filename) + '\n'
+    test_load_data += copy_data(table_name, filename, type_name) + '\n'
 
 
 ## GET DATA
@@ -203,7 +205,7 @@ text_tests_out = []
 for type_name in supported_types:
     test_type_data = get_data(type_name)
 
-    load_text_data_text = copy_data("tt_temp", f'data/tt_{type_name}.data')
+    load_text_data_text = f'DELETE FROM tt_temp; COPY tt_temp from \'@abs_srcdir@/data/tt_{type_name}.data\';'
     test_text_data = 'tt_temp'
 
     test_corrupted_text_data = f'(select (\'!@#%^&*\' || v || \'!@#%^&*\') from {test_type_data}) as t(v)'
