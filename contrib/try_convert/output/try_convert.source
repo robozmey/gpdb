@@ -1,6 +1,6 @@
 -- SCRIPT-GENERATED TEST for TRY_CONVERT
--- Tests 14 types of 91 from pg_types.h
--- Tests 52 cast of 206 from pg_cast.h
+-- Tests 17 types of 91 from pg_types.h
+-- Tests 56 cast of 206 from pg_cast.h
 create schema tryconvert;
 set search_path = tryconvert;
 -- start_ignore
@@ -136,6 +136,36 @@ $func$
         -- do nothing: _out already carries default
     END
 $func$;
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in cidr, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::%s', $1, source_type)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in inet, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::%s', $1, source_type)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in macaddr, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::%s', $1, source_type)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
 CREATE OR REPLACE FUNCTION try_convert_by_sql(_in text, INOUT _out ANYELEMENT)
   LANGUAGE plpgsql AS
 $func$
@@ -173,6 +203,12 @@ CREATE TABLE tt_timestamptz (v timestamptz) DISTRIBUTED BY (v);
 COPY tt_timestamptz from '@abs_srcdir@/data/tt_timestamptz.data';
 CREATE TABLE tt_interval (v interval) DISTRIBUTED BY (v);
 COPY tt_interval from '@abs_srcdir@/data/tt_interval.data';
+CREATE TABLE tt_cidr (v cidr) DISTRIBUTED BY (v);
+COPY tt_cidr from '@abs_srcdir@/data/tt_cidr.data';
+CREATE TABLE tt_inet (v inet) DISTRIBUTED BY (v);
+COPY tt_inet from '@abs_srcdir@/data/tt_inet.data';
+CREATE TABLE tt_macaddr (v macaddr) DISTRIBUTED BY (v);
+COPY tt_macaddr from '@abs_srcdir@/data/tt_macaddr.data';
 CREATE TABLE tt_text (v text) DISTRIBUTED BY (v);
 COPY tt_text from '@abs_srcdir@/data/tt_text.data';
 -- TEXT TESTS
@@ -367,6 +403,51 @@ select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v
 (0 rows)
 
 select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_interval) as t(v)) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_cidr) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::cidr) as v1, try_convert_by_sql(v, NULL::cidr) as v2 from (select v::text from tt_cidr) as t(v)) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::cidr) as v1, try_convert_by_sql(v, NULL::cidr) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_cidr) as t(v)) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_inet) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::inet) as v1, try_convert_by_sql(v, NULL::inet) as v2 from (select v::text from tt_inet) as t(v)) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::inet) as v1, try_convert_by_sql(v, NULL::inet) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_inet) as t(v)) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_macaddr) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::macaddr) as v1, try_convert_by_sql(v, NULL::macaddr) as v2 from (select v::text from tt_macaddr) as t(v)) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::macaddr) as v1, try_convert_by_sql(v, NULL::macaddr) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_macaddr) as t(v)) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
@@ -608,6 +689,26 @@ select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NU
 (0 rows)
 
 select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from tt_timetz) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::inet) as v1, try_convert_by_sql(v, NULL::inet) as v2 from tt_cidr) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::cidr) as v1, try_convert_by_sql(v, NULL::cidr) as v2 from tt_inet) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_cidr) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_inet) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)

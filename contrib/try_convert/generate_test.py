@@ -23,16 +23,15 @@ supported_types = [
     # 'path',
     # 'point',
     # 'polygon',
-    # 'cidr',             # IP
-    # 'inet',
+    'cidr',             # IP
+    'inet',
+    'macaddr',
     # 'json',             # JSON
     # 'jsonb',
     # 'bytea',            # STRINGS
     # 'char',
     # 'varchar',
     'text',
-    # 'macaddr',
-    # 'macaddr8',
     # 'money',
     # # 'pg_lsn',
     # # 'tsquery',
