@@ -1,0 +1,175 @@
+-- SCRIPT-GENERATED TEST for TRY_CONVERT
+
+create schema tryconvert;
+set search_path = tryconvert;
+
+-- start_ignore
+CREATE EXTENSION IF NOT EXISTS try_convert;
+-- end_ignore
+
+-- SQL try_convert to compare with C one
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in text, INOUT _out ANYELEMENT, source_type text default 'text')
+  LANGUAGE plpgsql AS
+$func$
+BEGIN
+   EXECUTE format('SELECT (%L::%s)::%s', $1, source_type, pg_typeof(_out))
+   INTO  _out;
+EXCEPTION WHEN others THEN
+   -- do nothing: _out already carries default
+END
+$func$;
+-- corrupts string
+CREATE OR REPLACE FUNCTION corrupt(value text) RETURNS text
+  LANGUAGE SQL AS 'select ''!@#$%^&*'' || value || ''!@#$%^&*''';
+-- corrupts by random
+CREATE OR REPLACE FUNCTION corrupt_random(value text, r float default 0.5) RETURNS text
+  LANGUAGE SQL AS 'select case when random() < r then corrupt(value) else value end';
+-- r
+CREATE OR REPLACE FUNCTION test_cast_random(_source regtype, _target regtype, n int default 20, k int default 1000, OUT _out int)
+  LANGUAGE plpgsql AS
+$func$
+BEGIN
+   EXECUTE 
+   'select count(*) from (
+        select (try_convert(v, NULL::' || _target || ') is not distinct from try_convert_by_sql(v::text, NULL::' || _target || ', ''' || _source || '''::text))
+            from (select (random()*' || k || ')::' || _source || ' from generate_series(1, ' || n || ')) as g(v)
+    ) as t(eq) where not eq;'
+   INTO  _out;
+END
+$func$;
+-- test cast
+CREATE OR REPLACE FUNCTION test_cast(_source regtype, _target regtype, n int default 20, k int default 1000, OUT _out int)
+  LANGUAGE plpgsql AS
+$func$
+BEGIN
+   EXECUTE 
+   'select count(*) from (
+        select (try_convert(v, NULL::' || _target || ') is not distinct from try_convert_by_sql(v::text, NULL::' || _target || ', ''' || _source || '''::text))
+            from (select (random()*' || k || ')::' || _source || ' from generate_series(1, ' || n || ')) as g(v)
+    ) as t(eq) where not eq;'
+   INTO  _out;
+END
+$func$;
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in int8, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::%s', $1, source_type)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in int4, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::%s', $1, source_type)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in int2, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::%s', $1, source_type)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in float8, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::%s', $1, source_type)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in float4, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::%s', $1, source_type)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in numeric, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::%s', $1, source_type)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+
+-- CREATE DATA
+CREATE TABLE tt_int2 (v int2) DISTRIBUTED BY (v);
+COPY tt_int2 from '@abs_srcdir@/data/tt_int2.data';
+CREATE TABLE tt_int4 (v int4) DISTRIBUTED BY (v);
+COPY tt_int4 from '@abs_srcdir@/data/tt_int4.data';
+CREATE TABLE tt_int8 (v int8) DISTRIBUTED BY (v);
+COPY tt_int8 from '@abs_srcdir@/data/tt_int8.data';
+CREATE TABLE tt_float4 (v float4) DISTRIBUTED BY (v);
+COPY tt_float4 from '@abs_srcdir@/data/tt_float4.data';
+CREATE TABLE tt_float8 (v float8) DISTRIBUTED BY (v);
+COPY tt_float8 from '@abs_srcdir@/data/tt_float8.data';
+CREATE TABLE tt_numeric (v numeric) DISTRIBUTED BY (v);
+COPY tt_numeric from '@abs_srcdir@/data/tt_numeric.data';
+
+-- TEXT TESTS
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_int8) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from (select v::text from tt_int8) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_int4) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from (select v::text from tt_int4) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_int2) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NULL::int2) as v2 from (select v::text from tt_int2) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_float8) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from (select v::text from tt_float8) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_float4) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, NULL::float4) as v2 from (select v::text from tt_float4) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_numeric) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from (select v::text from tt_numeric) as t(v)) as t(v1, v2) where not (v1 = v2);
+-- FUNCTION TESTS
+select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NULL::int2) as v2 from tt_int8) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_int8) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, NULL::float4) as v2 from tt_int8) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from tt_int8) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from tt_int8) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from tt_int2) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_int2) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, NULL::float4) as v2 from tt_int2) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from tt_int2) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from tt_int2) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from tt_int4) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NULL::int2) as v2 from tt_int4) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, NULL::float4) as v2 from tt_int4) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from tt_int4) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from tt_int4) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from tt_float4) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NULL::int2) as v2 from tt_float4) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_float4) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from tt_float4) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from tt_float4) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from tt_float8) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NULL::int2) as v2 from tt_float8) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_float8) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, NULL::float4) as v2 from tt_float8) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from tt_float8) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from tt_numeric) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NULL::int2) as v2 from tt_numeric) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_numeric) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, NULL::float4) as v2 from tt_numeric) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from tt_numeric) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from tt_numeric) as t(v1, v2) where not (v1 = v2);
+-- FOOTER
+
+reset search_path;

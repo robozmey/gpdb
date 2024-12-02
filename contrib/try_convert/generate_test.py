@@ -96,6 +96,25 @@ test_header = open('test_header.sql').read()
 test_footer = open('test_footer.sql').read()
 
 
+### TRY_CONVERT_BY_SQL
+
+test_funcs = ''
+
+for type_name in supported_types:
+    func_text = \
+        f'CREATE OR REPLACE FUNCTION try_convert_by_sql(_in {type_name}, INOUT _out ANYELEMENT)\n' \
+        f'  LANGUAGE plpgsql AS\n' \
+        f'$func$\n' \
+        f'    BEGIN\n' \
+        f'        EXECUTE format(\'SELECT %L::%s\', $1, source_type)\n' \
+        f'        INTO  _out;\n' \
+        f'        EXCEPTION WHEN others THEN\n' \
+        f'        -- do nothing: _out already carries default\n' \
+        f'    END\n' \
+        f'$func$;\n'
+
+    test_funcs += func_text
+
 ### CREATE DATA
 
 import random
@@ -112,7 +131,7 @@ numbers = {
 }
 
 
-test_create_data = '-- CREATE DATA\n'
+test_load_data = '-- CREATE DATA\n'
 
 for number_type in numbers:
 
@@ -127,26 +146,11 @@ for number_type in numbers:
 
     table_name = f'tt_{number_type}'
 
-    test_create_data += f'CREATE TABLE {table_name} (v {number_type}) DISTRIBUTED BY (v);\n'
+    test_load_data += f'CREATE TABLE {table_name} (v {number_type}) DISTRIBUTED BY (v);\n'
 
-    test_create_data += f'INSERT INTO {table_name} (v) VALUES\n'
+    filename = f'data/{table_name}.data'
 
-    values = []
-
-    for c in range(nln, ln):
-        rep = 20 // ln + 1
-        for _ in range(rep):
-            n = random.random()
-            if c >= 0:
-                n *= (10 ** (c+1))
-            else:
-                n /= (10 ** (-c))
-            if not is_float:
-                n = int(n)
-            
-            values += [f'({n})']
-
-    test_create_data += ',\n'.join(values) + ';'
+    test_load_data += f'COPY {table_name} from \'@abs_srcdir@/{filename}\';\n'      
 
 ##### COPY real_city FROM '@abs_srcdir@/data/real_city.data';
 
@@ -165,20 +169,17 @@ def get_data(type_name):
 
 def create_test(source_name, target_name, test_data):
 
-    query = f'select test_cast({source_name}, {target_name}, {test_data});'
     query = \
-        f'select count(*) from (' \
-            f'select (' \
-                f'try_convert(v, NULL::{target_name}) ' \
-                    f'is not distinct from '\
-                f'try_convert_by_sql(v::text, NULL::{target_name}, \'{source_name}\'::text)' \
-            f') from {test_data}' \
-    f') as t(eq) where not eq;'
+        f'select * from (' \
+            f'select ' \
+                f'try_convert(v, NULL::{target_name}) as v1, ' \
+                f'try_convert_by_sql(v, NULL::{target_name}) as v2' \
+            f' from {test_data}' \
+    f') as t(v1, v2) where not (v1 = v2);'
     result = \
-        ' count \n' \
-        '-------\n' \
-        '     0\n' \
-        '(1 row)\n' \
+        ' v1 | v2 \n' \
+        '----+----\n' \
+        '(0 rows)\n' \
 
     input_source = query
     output_source = remove_empty_lines(query) + '\n' + result
@@ -231,8 +232,10 @@ print(function_tests_in[0])
 
 test_str = '\n'.join([
     test_header, \
+    # FUNCTIONS
+    test_funcs, \
     # CREATE DATA
-    test_create_data, \
+    test_load_data, \
     '-- TEXT TESTS', \
     '\n'.join(text_tests_in), \
     '-- FUNCTION TESTS', \
@@ -240,14 +243,16 @@ test_str = '\n'.join([
     test_footer
     ]) + '\n'
 
-test_f = open('sql/try_convert.sql', 'w')
+test_f = open('input/try_convert.source', 'w')
 test_f.write(test_str)
 
 
 test_str = '\n'.join([
     remove_empty_lines(test_header), \
+    # FUNCTIONS
+    remove_empty_lines(test_funcs), \
     # CREATE DATA
-    remove_empty_lines(test_create_data), \
+    remove_empty_lines(test_load_data), \
     '-- TEXT TESTS', \
     '\n'.join(text_tests_out), \
     '-- FUNCTION TESTS', \
@@ -255,5 +260,5 @@ test_str = '\n'.join([
     remove_empty_lines(test_footer)
     ]) + '\n'
 
-test_f = open('expected/try_convert.out', 'w')
+test_f = open('output/try_convert.source', 'w')
 test_f.write(test_str)
