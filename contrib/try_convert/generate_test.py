@@ -39,11 +39,32 @@ supported_types = [
     # # 'tsvector',
     # # 'txid_snapshot',
     # 'uuid',
+
+    'citext',
 ]
 
 uncomparable_types = [
     'json',
     'xml',
+]
+
+extensions = [
+    'citext'
+]
+
+extension_types = [
+    'citext'
+]
+
+extension_casts = [
+    ('citext', 'text'),
+    ('citext', 'varchar'),
+    ('citext', 'bpchar'),
+    ('text', 'citext'),
+    ('varchar', 'citext'),
+    ('bpchar', 'citext'),
+    ('boolean', 'citext'),
+    ('inet', 'citext'),
 ]
 
 print('Supported types:', ' '.join(supported_types))
@@ -80,7 +101,12 @@ for (id, name) in re.findall(type_pattern, content):
         if name in supported_types:
             supported_types_count += 1
 
-print(f'Types found: {len(type_id_name)}, supported: {supported_types_count}')
+supported_extension_types_count = 0
+for name in extension_types:
+    if name in extension_types:
+        supported_extension_types_count += 1
+
+print(f'Types found: {len(type_id_name)}, supported: {supported_types_count}, from ext: {len(extension_types)}, from ext sup {supported_extension_types_count}')
 
 
 ### GET CONVERTS
@@ -115,6 +141,12 @@ test_header = \
     f'CREATE EXTENSION IF NOT EXISTS try_convert;\n' \
     f'-- end_ignore\n' \
     f'\n' \
+
+for extension in extensions:
+    test_header += \
+        f'-- start_ignore\n' \
+        f'CREATE EXTENSION IF NOT EXISTS {extension};\n' \
+        f'-- end_ignore\n' \
 
 test_footer = 'reset search_path;'
 
@@ -157,6 +189,7 @@ numbers = {
 test_load_data = '-- LOAD DATA\n'
 
 test_load_data += f'CREATE TABLE tt_temp (v text) DISTRIBUTED BY (v);\n'
+test_load_data += f'CREATE TABLE tt_temp_citext (v citext) DISTRIBUTED BY (v);\n'
 
 def copy_data(table_name, filename, type_name):
     return  f'DELETE FROM tt_temp;' \
@@ -209,20 +242,24 @@ def create_test(source_name, target_name, test_data):
 text_tests_in = []
 text_tests_out = []
 
-for type_name in supported_types:
-    test_type_data = get_data(type_name)
+text_types = [('text', 'tt_temp'), ('citext', 'tt_temp_citext')]
 
-    load_text_data_text = f'DELETE FROM tt_temp; COPY tt_temp from \'@abs_srcdir@/data/tt_{type_name}.data\';'
-    test_text_data = 'tt_temp'
+for text_type, text_type_table in text_types:
 
-    test_corrupted_text_data = f'(select (\'!@#%^&*\' || v || \'!@#%^&*\') from {test_type_data}) as t(v)'
+    for type_name in supported_types:
 
-    to_text_in, to_text_out = create_test(type_name, 'text', test_type_data)
-    from_text_in, from_text_out = create_test('text', type_name, test_text_data)
-    from_corrupted_text_in, from_corrupted_text_out = create_test('text', type_name, test_corrupted_text_data)
+        test_type_data = get_data(type_name)
 
-    text_tests_in += [to_text_in, load_text_data_text, from_text_in, from_corrupted_text_in]
-    text_tests_out += [to_text_out, load_text_data_text, from_text_out, from_corrupted_text_out]
+        load_text_data_text = f'DELETE FROM {text_type_table}; COPY {text_type_table} from \'@abs_srcdir@/data/tt_{type_name}.data\';'
+
+        test_corrupted_text_data = f'(select (\'!@#%^&*\' || v || \'!@#%^&*\') from {text_type_table}) as t(v)'
+
+        to_text_in, to_text_out = create_test(type_name, text_type, test_type_data)
+        from_text_in, from_text_out = create_test(text_type, type_name, text_type_table)
+        from_corrupted_text_in, from_corrupted_text_out = create_test(text_type, type_name, test_corrupted_text_data)
+
+        text_tests_in += [to_text_in, load_text_data_text, from_text_in, from_corrupted_text_in]
+        text_tests_out += [to_text_out, load_text_data_text, from_text_out, from_corrupted_text_out]
 
 # print(text_tests_in[0])
 # print(text_tests_in[1])
@@ -233,10 +270,11 @@ for type_name in supported_types:
 function_tests_in = []
 function_tests_out = []
 
-for (source_id, target_id, method) in casts:
+type_casts = [(type_id_name[source_id], type_id_name[target_id]) for (source_id, target_id, method) in casts]  \
+    + extension_casts
 
-    source_name = type_id_name[source_id]
-    target_name = type_id_name[target_id]
+for source_name, target_name in type_casts:
+
     test_data = get_data(source_name)
 
     if (source_name not in supported_types or target_name not in supported_types):
