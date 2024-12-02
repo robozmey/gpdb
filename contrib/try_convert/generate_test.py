@@ -38,7 +38,7 @@ supported_types = [
     # # 'tsquery',
     # # 'tsvector',
     # # 'txid_snapshot',
-    # 'uuid',
+    'uuid',
 
     'citext',
 ]
@@ -103,10 +103,11 @@ for (id, name) in re.findall(type_pattern, content):
 
 supported_extension_types_count = 0
 for name in extension_types:
-    if name in extension_types:
+    if name in supported_types:
         supported_extension_types_count += 1
 
-print(f'Types found: {len(type_id_name)}, supported: {supported_types_count}, from ext: {len(extension_types)}, from ext sup {supported_extension_types_count}')
+print(f'Types found: {len(type_id_name)}, supported: {supported_types_count}')
+print(f'Extensions types found: {len(extension_types)}, supported: {supported_extension_types_count}')
 
 
 ### GET CONVERTS
@@ -124,7 +125,13 @@ for (source, target, _, _, meth) in re.findall(cast_pattern, content):
     if type_id_name[int(source)] in supported_types and type_id_name[int(target)] in supported_types:
             supported_cast_count += 1
 
+supported_extension_casts_count = 0
+for s, t in extension_casts:
+     if s in supported_types and t in supported_types:
+        supported_extension_casts_count += 1
+
 print(f'Casts found: {len(casts)}, supported: {supported_cast_count}')
+print(f'Extensions casts found: {len(extension_casts)}, supported: {supported_extension_casts_count}')
 
 
 ### HEADER & FOOTER
@@ -133,6 +140,8 @@ test_header = \
     f'-- SCRIPT-GENERATED TEST for TRY_CONVERT\n' \
     f'-- Tests {supported_types_count} types of {len(type_id_name)} from pg_types.h\n' \
     f'-- Tests {supported_cast_count} cast of {len(casts)} from pg_cast.h\n' \
+    f'-- Tests {supported_extension_types_count} types of {len(extension_types)} from extensions\n' \
+        f'-- Tests {supported_extension_casts_count} casts of {len(extension_casts)} from extensions\n' \
     f'\n' \
     f'create schema tryconvert;\n' \
     f'set search_path = tryconvert;\n' \

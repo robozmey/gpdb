@@ -48,6 +48,8 @@ select add_type_for_try_convert('bool'::regtype);
 
 select add_type_for_try_convert('money'::regtype);
 
+select add_type_for_try_convert('uuid'::regtype);
+
 -- IP/MAC
 select add_type_for_try_convert('cidr'::regtype);
 select add_type_for_try_convert('inet'::regtype);
