@@ -171,7 +171,7 @@ for type_name in supported_types:
         f'  LANGUAGE plpgsql AS\n' \
         f'$func$\n' \
         f'    BEGIN\n' \
-        f'        EXECUTE format(\'SELECT %L::%s\', $1, source_type)\n' \
+        f'        EXECUTE format(\'SELECT %L::{type_name}::%s\', $1, pg_typeof(_out))\n' \
         f'        INTO  _out;\n' \
         f'        EXCEPTION WHEN others THEN\n' \
         f'        -- do nothing: _out already carries default\n' \
@@ -221,18 +221,28 @@ for type_name in supported_types:
 def get_data(type_name):
     return f'tt_{type_name}'
 
+def get_len_from_data(type_name):
+    f = open(f'data/tt_{type_name}')
+    return(len(f.read().split('\n')))
+
+def get_from_data(type_name, i = None):
+    f = open(f'data/tt_{type_name}.data')
+    values = f.read().split('\n')
+    if i is None:
+        return content
+    return values[i]
 
 ## TEST
 
-def create_test(source_name, target_name, test_data):
+def create_test(source_name, target_name, test_data, default='NULL'):
 
-    test_filter = 'not (v1 = v2)' if target_name not in uncomparable_types else 'not (v1::text = v2::text)'
+    test_filter = 'v1 is distinct from v2' if target_name not in uncomparable_types else 'v1::text is distinct from  v2::text'
 
     query = \
         f'select * from (' \
             f'select ' \
-                f'try_convert(v, NULL::{target_name}) as v1, ' \
-                f'try_convert_by_sql(v, NULL::{target_name}) as v2' \
+                f'try_convert(v, {default}::{target_name}) as v1, ' \
+                f'try_convert_by_sql(v, {default}::{target_name}) as v2' \
             f' from {test_data}' \
     f') as t(v1, v2) where {test_filter};'
     result = \
@@ -284,17 +294,36 @@ type_casts = [(type_id_name[source_id], type_id_name[target_id]) for (source_id,
 
 for source_name, target_name in type_casts:
 
-    test_data = get_data(source_name)
-
     if (source_name not in supported_types or target_name not in supported_types):
         continue
 
-    test_in, test_out = create_test(source_name, target_name, test_data)
+    d = f'\'{get_from_data(target_name, 0)}\''
 
-    function_tests_in += [test_in]
-    function_tests_out += [test_out]
+    for default in ['NULL']:
+
+        test_data = get_data(source_name)
+
+        test_in, test_out = create_test(source_name, target_name, test_data, default)
+
+        function_tests_in += [test_in]
+        function_tests_out += [test_out]
 
 # print(function_tests_in[0])
+
+
+### DEFAULTS TEST
+
+# for type_name in supported_types:
+    
+#     query = f'SELECT try_convert({}::{}, {get_from_data(type_name, 0)}::{type_name});'
+
+### ONE MILLION ERRORS
+
+# TODO
+
+### NESTED CASTS
+
+# TODO
 
 ### CONSTRUCT TEST
 
