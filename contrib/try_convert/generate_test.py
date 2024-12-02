@@ -1,50 +1,5 @@
 import re
 
-pg_type_path = '/home/robozmey/gpdb_src/src/include/catalog/pg_type.h'
-pg_cast_path = '/home/robozmey/gpdb_src/src/include/catalog/pg_cast.h'
-
-
-def remove_empty_lines(t):
-    return "\n".join([s for s in t.split("\n") if s])
-
-
-### GET TYPE IDs
-
-# TODO Is_have_IO
-
-f = open(pg_type_path)
-content = f.read()
-
-type_pattern = r'DATA\(insert OID = (.*) \([\s]*(.*?)[\s]';
-
-type_name_id = {}
-type_id_name = {}
-
-for (id, name) in re.findall(type_pattern, content):
-    if name != '' and name[0] != '_':
-        id = int(id)
-        type_id_name[id] = name
-        type_name_id[name] = id
-
-print('Types found:', len(type_id_name))
-# print('\n'.join([str(i) + ' ' + type_id_name[i] for i in sorted(type_id_name)]))
-
-
-### GET CONVERTS
-
-f = open(pg_cast_path)
-content = f.read()
-
-cast_pattern = r'DATA\(insert \([\s]*(\d+)[\s]+(\d+)[\s]+(\d+)[\s]+(.)[\s]+(.)';
-
-casts = []
-
-for (source, target, _, _, meth) in re.findall(cast_pattern, content):
-    casts += [(int(source), int(target), meth)]
-
-print('Casts found:', len(casts))
-# print('\n'.join([str(c[0]) + ' ' + c[1] + ' ' + c[2] for c in casts]))
-
 supported_types = [
     'int8',             # NUMBERS
     'int4',
@@ -75,7 +30,7 @@ supported_types = [
     # 'bytea',            # STRINGS
     # 'char',
     # 'varchar',
-    # 'text',
+    'text',
     # 'macaddr',
     # 'macaddr8',
     # 'money',
@@ -90,10 +45,74 @@ supported_types = [
 print(supported_types)
 
 
+pg_type_path = '/home/robozmey/gpdb_src/src/include/catalog/pg_type.h'
+pg_cast_path = '/home/robozmey/gpdb_src/src/include/catalog/pg_cast.h'
+
+
+def remove_empty_lines(t):
+    return "\n".join([s for s in t.split("\n") if s])
+
+
+### GET TYPE IDs
+
+# TODO Is_have_IO
+
+f = open(pg_type_path)
+content = f.read()
+
+type_pattern = r'DATA\(insert OID = (.*) \([\s]*(.*?)[\s]';
+
+type_name_id = {}
+type_id_name = {}
+
+supported_types_count = 0
+
+for (id, name) in re.findall(type_pattern, content):
+    if name != '' and name[0] != '_':
+        id = int(id)
+        type_id_name[id] = name
+        type_name_id[name] = id
+
+        if name in supported_types:
+            supported_types_count += 1
+
+print(f'Types found: {len(type_id_name)}, supported: {supported_types_count}')
+
+
+### GET CONVERTS
+
+f = open(pg_cast_path)
+content = f.read()
+
+cast_pattern = r'DATA\(insert \([\s]*(\d+)[\s]+(\d+)[\s]+(\d+)[\s]+(.)[\s]+(.)';
+
+casts = []
+supported_cast_count = 0
+
+for (source, target, _, _, meth) in re.findall(cast_pattern, content):
+    casts += [(int(source), int(target), meth)]
+    if type_id_name[int(source)] in supported_types and type_id_name[int(target)] in supported_types:
+            supported_cast_count += 1
+
+print(f'Casts found: {len(casts)}, supported: {supported_cast_count}')
+
+
 ### HEADER & FOOTER
 
-test_header = open('test_header.sql').read()
-test_footer = open('test_footer.sql').read()
+test_header = \
+    f'-- SCRIPT-GENERATED TEST for TRY_CONVERT\n' \
+    f'-- Tests {supported_types_count} types of {len(type_id_name)} from pg_types.h\n' \
+    f'-- Tests {supported_cast_count} cast of {len(casts)} from pg_cast.h\n' \
+    f'\n' \
+    f'create schema tryconvert;\n' \
+    f'set search_path = tryconvert;\n' \
+    f'\n' \
+    f'-- start_ignore\n' \
+    f'CREATE EXTENSION IF NOT EXISTS try_convert;\n' \
+    f'-- end_ignore\n' \
+    f'\n' \
+
+test_footer = 'reset search_path;'
 
 
 ### TRY_CONVERT_BY_SQL
@@ -131,7 +150,6 @@ numbers = {
     'numeric' : ((10**20, 10**20), True),
 }
 
-
 test_load_data = '-- LOAD DATA\n'
 
 for type_name in supported_types:
@@ -144,17 +162,11 @@ for type_name in supported_types:
 
     test_load_data += f'COPY {table_name} from \'@abs_srcdir@/{filename}\';\n'      
 
-##### COPY real_city FROM '@abs_srcdir@/data/real_city.data';
 
 ## GET DATA
 
-data_sources = {
-    'json' : '@abs_srcdir@/data/jsonb.data'
-}
-
 def get_data(type_name):
     return f'tt_{type_name}'
-
 
 
 ## TEST
@@ -194,8 +206,8 @@ for type_name in supported_types:
     text_tests_in += [to_text_in, from_text_in]
     text_tests_out += [to_text_out, from_text_out]
 
-print(text_tests_in[0])
-print(text_tests_in[1])
+# print(text_tests_in[0])
+# print(text_tests_in[1])
 
 
 ### CAST from pg_cast
@@ -217,8 +229,7 @@ for (source_id, target_id, method) in casts:
     function_tests_in += [test_in]
     function_tests_out += [test_out]
 
-print(function_tests_in[0])
-
+# print(function_tests_in[0])
 
 ### CONSTRUCT TEST
 
