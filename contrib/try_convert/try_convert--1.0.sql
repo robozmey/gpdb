@@ -43,3 +43,5 @@ select add_type_for_try_convert('timestamptz'::regtype);
 select add_type_for_try_convert('interval'::regtype);
 
 select add_type_for_try_convert('text'::regtype);
+
+select add_type_for_try_convert('bool'::regtype);

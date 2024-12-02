@@ -8,7 +8,7 @@ supported_types = [
     'float4',
     'numeric',
     # 'bit',
-    # 'bool',
+    'bool',
     # 'varbit',
     'date',             # TIME
     'time',

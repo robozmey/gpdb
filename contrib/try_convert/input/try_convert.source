@@ -1,6 +1,6 @@
 -- SCRIPT-GENERATED TEST for TRY_CONVERT
--- Tests 13 types of 91 from pg_types.h
--- Tests 49 cast of 206 from pg_cast.h
+-- Tests 14 types of 91 from pg_types.h
+-- Tests 52 cast of 206 from pg_cast.h
 
 create schema tryconvert;
 set search_path = tryconvert;
@@ -61,6 +61,16 @@ $func$
     END
 $func$;
 CREATE OR REPLACE FUNCTION try_convert_by_sql(_in numeric, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::%s', $1, source_type)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in bool, INOUT _out ANYELEMENT)
   LANGUAGE plpgsql AS
 $func$
     BEGIN
@@ -154,6 +164,8 @@ CREATE TABLE tt_float4 (v float4) DISTRIBUTED BY (v);
 COPY tt_float4 from '@abs_srcdir@/data/tt_float4.data';
 CREATE TABLE tt_numeric (v numeric) DISTRIBUTED BY (v);
 COPY tt_numeric from '@abs_srcdir@/data/tt_numeric.data';
+CREATE TABLE tt_bool (v bool) DISTRIBUTED BY (v);
+COPY tt_bool from '@abs_srcdir@/data/tt_bool.data';
 CREATE TABLE tt_date (v date) DISTRIBUTED BY (v);
 COPY tt_date from '@abs_srcdir@/data/tt_date.data';
 CREATE TABLE tt_time (v time) DISTRIBUTED BY (v);
@@ -188,6 +200,9 @@ select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, 
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_numeric) as t(v1, v2) where not (v1 = v2);
 select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from (select v::text from tt_numeric) as t(v)) as t(v1, v2) where not (v1 = v2);
 select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_numeric) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_bool) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::bool) as v1, try_convert_by_sql(v, NULL::bool) as v2 from (select v::text from tt_bool) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::bool) as v1, try_convert_by_sql(v, NULL::bool) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_bool) as t(v)) as t(v1, v2) where not (v1 = v2);
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_date) as t(v1, v2) where not (v1 = v2);
 select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NULL::date) as v2 from (select v::text from tt_date) as t(v)) as t(v1, v2) where not (v1 = v2);
 select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NULL::date) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_date) as t(v)) as t(v1, v2) where not (v1 = v2);
@@ -240,6 +255,8 @@ select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NU
 select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_numeric) as t(v1, v2) where not (v1 = v2);
 select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, NULL::float4) as v2 from tt_numeric) as t(v1, v2) where not (v1 = v2);
 select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from tt_numeric) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::bool) as v1, try_convert_by_sql(v, NULL::bool) as v2 from tt_int4) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_bool) as t(v1, v2) where not (v1 = v2);
 select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from tt_date) as t(v1, v2) where not (v1 = v2);
 select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from tt_date) as t(v1, v2) where not (v1 = v2);
 select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from tt_time) as t(v1, v2) where not (v1 = v2);
@@ -253,6 +270,7 @@ select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(
 select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, NULL::timetz) as v2 from tt_timestamptz) as t(v1, v2) where not (v1 = v2);
 select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from tt_interval) as t(v1, v2) where not (v1 = v2);
 select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from tt_timetz) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_bool) as t(v1, v2) where not (v1 = v2);
 select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from tt_time) as t(v1, v2) where not (v1 = v2);
 select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from tt_timestamp) as t(v1, v2) where not (v1 = v2);
 select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from tt_timestamptz) as t(v1, v2) where not (v1 = v2);
