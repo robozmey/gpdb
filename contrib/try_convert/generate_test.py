@@ -199,12 +199,14 @@ text_tests_out = []
 for type_name in supported_types:
     test_type_data = get_data(type_name)
     test_text_data = f'(select v::text from {test_type_data}) as t(v)'
+    test_corrupted_text_data = f'(select (\'!@#%^&*\' || v::text || \'!@#%^&*\') from {test_type_data}) as t(v)'
 
     to_text_in, to_text_out = create_test(type_name, 'text', test_type_data)
     from_text_in, from_text_out = create_test('text', type_name, test_text_data)
+    from_corrupted_text_in, from_corrupted_text_out = create_test('text', type_name, test_corrupted_text_data)
 
-    text_tests_in += [to_text_in, from_text_in]
-    text_tests_out += [to_text_out, from_text_out]
+    text_tests_in += [to_text_in, from_text_in, from_corrupted_text_in]
+    text_tests_out += [to_text_out, from_text_out, from_corrupted_text_out]
 
 # print(text_tests_in[0])
 # print(text_tests_in[1])
