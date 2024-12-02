@@ -55,11 +55,12 @@ supported_types = [
     # 'bit',
     # 'bool',
     # 'varbit',
-    # 'date',             # TIME
-    # 'time',
-    # 'timez',
-    # 'timestamp',
-    # 'timestampz',
+    'date',             # TIME
+    'time',
+    'timetz',
+    'timestamp',
+    'timestamptz',
+    'interval',
     # 'box',              # GEOMENTY
     # 'circle',
     # 'line',
@@ -75,7 +76,6 @@ supported_types = [
     # 'char',
     # 'varchar',
     # 'text',
-    # 'interval',
     # 'macaddr',
     # 'macaddr8',
     # 'money',
@@ -101,6 +101,7 @@ test_footer = open('test_footer.sql').read()
 test_funcs = ''
 
 for type_name in supported_types:
+
     func_text = \
         f'CREATE OR REPLACE FUNCTION try_convert_by_sql(_in {type_name}, INOUT _out ANYELEMENT)\n' \
         f'  LANGUAGE plpgsql AS\n' \
@@ -131,22 +132,13 @@ numbers = {
 }
 
 
-test_load_data = '-- CREATE DATA\n'
+test_load_data = '-- LOAD DATA\n'
 
-for number_type in numbers:
+for type_name in supported_types:
 
-    type_range = numbers[number_type][0]
-    is_float = numbers[number_type][1]
+    table_name = f'tt_{type_name}'
 
-    mn = type_range[0]
-    mx = type_range[1]
-
-    nln = 0
-    ln = len(str(type_range[1]))-1
-
-    table_name = f'tt_{number_type}'
-
-    test_load_data += f'CREATE TABLE {table_name} (v {number_type}) DISTRIBUTED BY (v);\n'
+    test_load_data += f'CREATE TABLE {table_name} (v {type_name}) DISTRIBUTED BY (v);\n'
 
     filename = f'data/{table_name}.data'
 

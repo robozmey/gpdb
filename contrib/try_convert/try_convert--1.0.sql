@@ -20,16 +20,24 @@ CREATE OR REPLACE FUNCTION add_type_for_try_convert(type regtype)
   LANGUAGE plpgsql AS
 $func$
 BEGIN
-   EXECUTE 'CREATE FUNCTION try_convert(' || type || ', anyelement)
+   EXECUTE 'CREATE OR REPLACE FUNCTION try_convert(' || type || ', anyelement)
             RETURNS anyelement
             AS ''MODULE_PATHNAME'', ''try_convert''
             LANGUAGE C;';
 END
 $func$;
 
+-- NUMBERS
 select add_type_for_try_convert('int2'::regtype);
 select add_type_for_try_convert('int4'::regtype);
 select add_type_for_try_convert('int8'::regtype);
 select add_type_for_try_convert('float4'::regtype);
 select add_type_for_try_convert('float8'::regtype);
+
+-- TIME
 select add_type_for_try_convert('date'::regtype);
+select add_type_for_try_convert('time'::regtype);
+select add_type_for_try_convert('timetz'::regtype);
+select add_type_for_try_convert('timestamp'::regtype);
+select add_type_for_try_convert('timestamptz'::regtype);
+select add_type_for_try_convert('interval'::regtype);

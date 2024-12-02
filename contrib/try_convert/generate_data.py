@@ -1,6 +1,11 @@
 import random
+import datetime
+import time
+import pytz
 
 random.seed(42)
+
+### NUMBERS
 
 numbers = {
     'int2' : ((-32768, 32767), False),
@@ -9,11 +14,6 @@ numbers = {
     'float4' : ((10**6, 10**6), True),
     'float8' : ((10**15, 10**15), True),
     'numeric' : ((10**20, 10**20), True),
-    # 'float8',
-    # 'int4',
-    # 'float4',
-    # 'int2',
-    # 'numeric',
 }
 
 
@@ -54,3 +54,47 @@ for number_type in numbers:
             values += [n]
 
     filename = save_datafile(number_type, values)
+
+### TIMES
+
+MINTIME = datetime.datetime.fromtimestamp(0)
+MAXTIME = datetime.datetime(2024,12,2,10,39,59)
+mintime_ts = int(time.mktime(MINTIME.timetuple()))
+maxtime_ts = int(time.mktime(MAXTIME.timetuple()))
+
+timestamp_values = []
+timestamptz_values = []
+time_values = []
+timetz_values = []
+date_values = []
+interval_values = []
+
+timezones = [pytz.timezone("UTC"), pytz.timezone("Asia/Istanbul"), pytz.timezone("US/Eastern"), pytz.timezone("Asia/Tokyo")]
+
+for _ in range(12):
+    random_ts = random.randint(mintime_ts, maxtime_ts)
+    randtom_tz = timezones[random.randint(0, len(timezones)-1)]
+    RANDOMTIME = datetime.datetime.fromtimestamp(random_ts, randtom_tz)
+    R_clear = datetime.datetime.fromtimestamp(RANDOMTIME.timestamp())
+    
+    timestamp_text = str(R_clear)
+    timestamptz_text = str(RANDOMTIME)
+    timetz_text = str(RANDOMTIME.time()) + " " + RANDOMTIME.tzname()
+    time_text = str(RANDOMTIME.time())
+    date_text = str(RANDOMTIME.date())
+    dt = (R_clear-MINTIME)
+    interval_text = str(dt)
+
+    timestamp_values += [timestamp_text]
+    timestamptz_values += [timestamptz_text]
+    time_values += [time_text]
+    timetz_values += [timetz_text]
+    date_values += [date_text]
+    interval_values += [interval_text]
+
+save_datafile("timestamp", timestamp_values)
+save_datafile("timestamptz", timestamptz_values)
+save_datafile("time", time_values)
+save_datafile("timetz", timetz_values)
+save_datafile("date", date_values)
+save_datafile("interval", interval_values)

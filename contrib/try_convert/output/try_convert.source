@@ -107,19 +107,91 @@ $func$
         -- do nothing: _out already carries default
     END
 $func$;
--- CREATE DATA
-CREATE TABLE tt_int2 (v int2) DISTRIBUTED BY (v);
-COPY tt_int2 from '@abs_srcdir@/data/tt_int2.data';
-CREATE TABLE tt_int4 (v int4) DISTRIBUTED BY (v);
-COPY tt_int4 from '@abs_srcdir@/data/tt_int4.data';
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in date, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::%s', $1, source_type)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in time, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::%s', $1, source_type)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in timetz, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::%s', $1, source_type)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in timestamp, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::%s', $1, source_type)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in timestamptz, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::%s', $1, source_type)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in interval, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::%s', $1, source_type)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+-- LOAD DATA
 CREATE TABLE tt_int8 (v int8) DISTRIBUTED BY (v);
 COPY tt_int8 from '@abs_srcdir@/data/tt_int8.data';
-CREATE TABLE tt_float4 (v float4) DISTRIBUTED BY (v);
-COPY tt_float4 from '@abs_srcdir@/data/tt_float4.data';
+CREATE TABLE tt_int4 (v int4) DISTRIBUTED BY (v);
+COPY tt_int4 from '@abs_srcdir@/data/tt_int4.data';
+CREATE TABLE tt_int2 (v int2) DISTRIBUTED BY (v);
+COPY tt_int2 from '@abs_srcdir@/data/tt_int2.data';
 CREATE TABLE tt_float8 (v float8) DISTRIBUTED BY (v);
 COPY tt_float8 from '@abs_srcdir@/data/tt_float8.data';
+CREATE TABLE tt_float4 (v float4) DISTRIBUTED BY (v);
+COPY tt_float4 from '@abs_srcdir@/data/tt_float4.data';
 CREATE TABLE tt_numeric (v numeric) DISTRIBUTED BY (v);
 COPY tt_numeric from '@abs_srcdir@/data/tt_numeric.data';
+CREATE TABLE tt_date (v date) DISTRIBUTED BY (v);
+COPY tt_date from '@abs_srcdir@/data/tt_date.data';
+CREATE TABLE tt_time (v time) DISTRIBUTED BY (v);
+COPY tt_time from '@abs_srcdir@/data/tt_time.data';
+CREATE TABLE tt_timetz (v timetz) DISTRIBUTED BY (v);
+COPY tt_timetz from '@abs_srcdir@/data/tt_timetz.data';
+CREATE TABLE tt_timestamp (v timestamp) DISTRIBUTED BY (v);
+COPY tt_timestamp from '@abs_srcdir@/data/tt_timestamp.data';
+CREATE TABLE tt_timestamptz (v timestamptz) DISTRIBUTED BY (v);
+COPY tt_timestamptz from '@abs_srcdir@/data/tt_timestamptz.data';
+CREATE TABLE tt_interval (v interval) DISTRIBUTED BY (v);
+COPY tt_interval from '@abs_srcdir@/data/tt_interval.data';
 -- TEXT TESTS
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_int8) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
@@ -177,6 +249,66 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 (0 rows)
 
 select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from (select v::text from tt_numeric) as t(v)) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_date) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NULL::date) as v2 from (select v::text from tt_date) as t(v)) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_time) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from (select v::text from tt_time) as t(v)) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_timetz) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, NULL::timetz) as v2 from (select v::text from tt_timetz) as t(v)) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_timestamp) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from (select v::text from tt_timestamp) as t(v)) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_timestamptz) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from (select v::text from tt_timestamptz) as t(v)) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_interval) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from (select v::text from tt_interval) as t(v)) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
@@ -328,6 +460,96 @@ select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, 
 (0 rows)
 
 select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from tt_numeric) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from tt_date) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from tt_date) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from tt_time) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, NULL::timetz) as v2 from tt_time) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NULL::date) as v2 from tt_timestamp) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from tt_timestamp) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from tt_timestamp) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NULL::date) as v2 from tt_timestamptz) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from tt_timestamptz) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from tt_timestamptz) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, NULL::timetz) as v2 from tt_timestamptz) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from tt_interval) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from tt_timetz) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from tt_time) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from tt_timestamp) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from tt_timestamptz) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from tt_interval) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, NULL::timetz) as v2 from tt_timetz) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
