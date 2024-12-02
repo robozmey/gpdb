@@ -100,6 +100,10 @@ try_convert_via_io(Datum value, Oid sourceTypeId, Oid targetTypeId, bool *is_nul
 Datum
 try_convert(PG_FUNCTION_ARGS)
 {
+    if (fcinfo->argnull[0]) {
+        PG_RETURN_NULL();
+    }
+
     Oid sourceTypeId = get_fn_expr_argtype(fcinfo->flinfo, 0);
     Oid targetTypeId = get_fn_expr_argtype(fcinfo->flinfo, 1);
         
