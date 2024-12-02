@@ -151,6 +151,11 @@ numbers = {
 
 test_load_data = '-- LOAD DATA\n'
 
+test_load_data += f'CREATE TABLE tt_temp (v text) DISTRIBUTED BY (v);\n'
+
+def copy_data(table_name, filename):
+    return f'COPY {table_name} from \'@abs_srcdir@/{filename}\';'  
+
 for type_name in supported_types:
 
     table_name = f'tt_{type_name}'
@@ -159,7 +164,7 @@ for type_name in supported_types:
 
     filename = f'data/{table_name}.data'
 
-    test_load_data += f'COPY {table_name} from \'@abs_srcdir@/{filename}\';\n'      
+    test_load_data += copy_data(table_name, filename) + '\n'
 
 
 ## GET DATA
@@ -197,15 +202,18 @@ text_tests_out = []
 
 for type_name in supported_types:
     test_type_data = get_data(type_name)
-    test_text_data = f'(select v::text from {test_type_data}) as t(v)'
-    test_corrupted_text_data = f'(select (\'!@#%^&*\' || v::text || \'!@#%^&*\') from {test_type_data}) as t(v)'
+
+    load_text_data_text = copy_data("tt_temp", f'data/tt_{type_name}.data')
+    test_text_data = 'tt_temp'
+
+    test_corrupted_text_data = f'(select (\'!@#%^&*\' || v || \'!@#%^&*\') from {test_type_data}) as t(v)'
 
     to_text_in, to_text_out = create_test(type_name, 'text', test_type_data)
     from_text_in, from_text_out = create_test('text', type_name, test_text_data)
     from_corrupted_text_in, from_corrupted_text_out = create_test('text', type_name, test_corrupted_text_data)
 
-    text_tests_in += [to_text_in, from_text_in, from_corrupted_text_in]
-    text_tests_out += [to_text_out, from_text_out, from_corrupted_text_out]
+    text_tests_in += [to_text_in, load_text_data_text, from_text_in, from_corrupted_text_in]
+    text_tests_out += [to_text_out, load_text_data_text, from_text_out, from_corrupted_text_out]
 
 # print(text_tests_in[0])
 # print(text_tests_in[1])

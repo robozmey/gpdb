@@ -177,6 +177,7 @@ $func$
     END
 $func$;
 -- LOAD DATA
+CREATE TABLE tt_temp (v text) DISTRIBUTED BY (v);
 CREATE TABLE tt_int8 (v int8) DISTRIBUTED BY (v);
 COPY tt_int8 from '@abs_srcdir@/data/tt_int8.data';
 CREATE TABLE tt_int4 (v int4) DISTRIBUTED BY (v);
@@ -217,12 +218,13 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from (select v::text from tt_int8) as t(v)) as t(v1, v2) where not (v1 = v2);
+COPY tt_temp from '@abs_srcdir@/data/tt_int8.data';
+select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_int8) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_int8) as t(v)) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
@@ -232,12 +234,13 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from (select v::text from tt_int4) as t(v)) as t(v1, v2) where not (v1 = v2);
+COPY tt_temp from '@abs_srcdir@/data/tt_int4.data';
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_int4) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_int4) as t(v)) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
@@ -247,12 +250,13 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NULL::int2) as v2 from (select v::text from tt_int2) as t(v)) as t(v1, v2) where not (v1 = v2);
+COPY tt_temp from '@abs_srcdir@/data/tt_int2.data';
+select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NULL::int2) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NULL::int2) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_int2) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NULL::int2) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_int2) as t(v)) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
@@ -262,12 +266,13 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from (select v::text from tt_float8) as t(v)) as t(v1, v2) where not (v1 = v2);
+COPY tt_temp from '@abs_srcdir@/data/tt_float8.data';
+select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_float8) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_float8) as t(v)) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
@@ -277,12 +282,13 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, NULL::float4) as v2 from (select v::text from tt_float4) as t(v)) as t(v1, v2) where not (v1 = v2);
+COPY tt_temp from '@abs_srcdir@/data/tt_float4.data';
+select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, NULL::float4) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, NULL::float4) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_float4) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, NULL::float4) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_float4) as t(v)) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
@@ -292,12 +298,13 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from (select v::text from tt_numeric) as t(v)) as t(v1, v2) where not (v1 = v2);
+COPY tt_temp from '@abs_srcdir@/data/tt_numeric.data';
+select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_numeric) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_numeric) as t(v)) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
@@ -307,12 +314,13 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::bool) as v1, try_convert_by_sql(v, NULL::bool) as v2 from (select v::text from tt_bool) as t(v)) as t(v1, v2) where not (v1 = v2);
+COPY tt_temp from '@abs_srcdir@/data/tt_bool.data';
+select * from (select try_convert(v, NULL::bool) as v1, try_convert_by_sql(v, NULL::bool) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::bool) as v1, try_convert_by_sql(v, NULL::bool) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_bool) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::bool) as v1, try_convert_by_sql(v, NULL::bool) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_bool) as t(v)) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
@@ -322,12 +330,13 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NULL::date) as v2 from (select v::text from tt_date) as t(v)) as t(v1, v2) where not (v1 = v2);
+COPY tt_temp from '@abs_srcdir@/data/tt_date.data';
+select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NULL::date) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NULL::date) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_date) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NULL::date) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_date) as t(v)) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
@@ -337,12 +346,13 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from (select v::text from tt_time) as t(v)) as t(v1, v2) where not (v1 = v2);
+COPY tt_temp from '@abs_srcdir@/data/tt_time.data';
+select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_time) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_time) as t(v)) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
@@ -352,12 +362,13 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, NULL::timetz) as v2 from (select v::text from tt_timetz) as t(v)) as t(v1, v2) where not (v1 = v2);
+COPY tt_temp from '@abs_srcdir@/data/tt_timetz.data';
+select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, NULL::timetz) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, NULL::timetz) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_timetz) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, NULL::timetz) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_timetz) as t(v)) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
@@ -367,12 +378,13 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from (select v::text from tt_timestamp) as t(v)) as t(v1, v2) where not (v1 = v2);
+COPY tt_temp from '@abs_srcdir@/data/tt_timestamp.data';
+select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_timestamp) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_timestamp) as t(v)) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
@@ -382,12 +394,13 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from (select v::text from tt_timestamptz) as t(v)) as t(v1, v2) where not (v1 = v2);
+COPY tt_temp from '@abs_srcdir@/data/tt_timestamptz.data';
+select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_timestamptz) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_timestamptz) as t(v)) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
@@ -397,12 +410,13 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from (select v::text from tt_interval) as t(v)) as t(v1, v2) where not (v1 = v2);
+COPY tt_temp from '@abs_srcdir@/data/tt_interval.data';
+select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_interval) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_interval) as t(v)) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
@@ -412,12 +426,13 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::cidr) as v1, try_convert_by_sql(v, NULL::cidr) as v2 from (select v::text from tt_cidr) as t(v)) as t(v1, v2) where not (v1 = v2);
+COPY tt_temp from '@abs_srcdir@/data/tt_cidr.data';
+select * from (select try_convert(v, NULL::cidr) as v1, try_convert_by_sql(v, NULL::cidr) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::cidr) as v1, try_convert_by_sql(v, NULL::cidr) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_cidr) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::cidr) as v1, try_convert_by_sql(v, NULL::cidr) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_cidr) as t(v)) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
@@ -427,12 +442,13 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::inet) as v1, try_convert_by_sql(v, NULL::inet) as v2 from (select v::text from tt_inet) as t(v)) as t(v1, v2) where not (v1 = v2);
+COPY tt_temp from '@abs_srcdir@/data/tt_inet.data';
+select * from (select try_convert(v, NULL::inet) as v1, try_convert_by_sql(v, NULL::inet) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::inet) as v1, try_convert_by_sql(v, NULL::inet) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_inet) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::inet) as v1, try_convert_by_sql(v, NULL::inet) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_inet) as t(v)) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
@@ -442,12 +458,13 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::macaddr) as v1, try_convert_by_sql(v, NULL::macaddr) as v2 from (select v::text from tt_macaddr) as t(v)) as t(v1, v2) where not (v1 = v2);
+COPY tt_temp from '@abs_srcdir@/data/tt_macaddr.data';
+select * from (select try_convert(v, NULL::macaddr) as v1, try_convert_by_sql(v, NULL::macaddr) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::macaddr) as v1, try_convert_by_sql(v, NULL::macaddr) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_macaddr) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::macaddr) as v1, try_convert_by_sql(v, NULL::macaddr) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_macaddr) as t(v)) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
@@ -457,12 +474,13 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from (select v::text from tt_text) as t(v)) as t(v1, v2) where not (v1 = v2);
+COPY tt_temp from '@abs_srcdir@/data/tt_text.data';
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
 
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from (select ('!@#%^&*' || v::text || '!@#%^&*') from tt_text) as t(v)) as t(v1, v2) where not (v1 = v2);
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text) as t(v)) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
 (0 rows)
