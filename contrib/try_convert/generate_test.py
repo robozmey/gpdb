@@ -26,8 +26,9 @@ supported_types = [
     'cidr',             # IP
     'inet',
     'macaddr',
-    # 'json',             # JSON
-    # 'jsonb',
+    'json',             # JSON
+    'jsonb',
+    'xml',
     # 'bytea',            # STRINGS
     # 'char',
     # 'varchar',
@@ -38,7 +39,11 @@ supported_types = [
     # # 'tsvector',
     # # 'txid_snapshot',
     # 'uuid',
-    # 'xml'
+]
+
+uncomparable_types = [
+    'json',
+    'xml',
 ]
 
 print('Supported types:', ' '.join(supported_types))
@@ -179,13 +184,15 @@ def get_data(type_name):
 
 def create_test(source_name, target_name, test_data):
 
+    test_filter = 'not (v1 = v2)' if target_name not in uncomparable_types else 'not (v1::text = v2::text)'
+
     query = \
         f'select * from (' \
             f'select ' \
                 f'try_convert(v, NULL::{target_name}) as v1, ' \
                 f'try_convert_by_sql(v, NULL::{target_name}) as v2' \
             f' from {test_data}' \
-    f') as t(v1, v2) where not (v1 = v2);'
+    f') as t(v1, v2) where {test_filter};'
     result = \
         ' v1 | v2 \n' \
         '----+----\n' \

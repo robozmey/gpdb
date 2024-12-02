@@ -1,6 +1,6 @@
 -- SCRIPT-GENERATED TEST for TRY_CONVERT
--- Tests 18 types of 91 from pg_types.h
--- Tests 60 cast of 206 from pg_cast.h
+-- Tests 21 types of 91 from pg_types.h
+-- Tests 64 cast of 206 from pg_cast.h
 create schema tryconvert;
 set search_path = tryconvert;
 -- start_ignore
@@ -166,6 +166,36 @@ $func$
         -- do nothing: _out already carries default
     END
 $func$;
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in json, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::%s', $1, source_type)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in jsonb, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::%s', $1, source_type)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in xml, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::%s', $1, source_type)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
 CREATE OR REPLACE FUNCTION try_convert_by_sql(_in text, INOUT _out ANYELEMENT)
   LANGUAGE plpgsql AS
 $func$
@@ -236,6 +266,15 @@ INSERT INTO tt_inet(id, v) SELECT row_number() OVER(), v::inet from tt_temp;
 CREATE TABLE tt_macaddr (id serial, v macaddr) DISTRIBUTED BY (id);
 DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_macaddr.data';
 INSERT INTO tt_macaddr(id, v) SELECT row_number() OVER(), v::macaddr from tt_temp;
+CREATE TABLE tt_json (id serial, v json) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_json.data';
+INSERT INTO tt_json(id, v) SELECT row_number() OVER(), v::json from tt_temp;
+CREATE TABLE tt_jsonb (id serial, v jsonb) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_jsonb.data';
+INSERT INTO tt_jsonb(id, v) SELECT row_number() OVER(), v::jsonb from tt_temp;
+CREATE TABLE tt_xml (id serial, v xml) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_xml.data';
+INSERT INTO tt_xml(id, v) SELECT row_number() OVER(), v::xml from tt_temp;
 CREATE TABLE tt_text (id serial, v text) DISTRIBUTED BY (id);
 DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_text.data';
 INSERT INTO tt_text(id, v) SELECT row_number() OVER(), v::text from tt_temp;
@@ -495,6 +534,54 @@ select * from (select try_convert(v, NULL::macaddr) as v1, try_convert_by_sql(v,
 (0 rows)
 
 select * from (select try_convert(v, NULL::macaddr) as v1, try_convert_by_sql(v, NULL::macaddr) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_macaddr) as t(v)) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_json) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_json.data';
+select * from (select try_convert(v, NULL::json) as v1, try_convert_by_sql(v, NULL::json) as v2 from tt_temp) as t(v1, v2) where not (v1::text = v2::text);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::json) as v1, try_convert_by_sql(v, NULL::json) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_json) as t(v)) as t(v1, v2) where not (v1::text = v2::text);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_jsonb) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_jsonb.data';
+select * from (select try_convert(v, NULL::jsonb) as v1, try_convert_by_sql(v, NULL::jsonb) as v2 from tt_temp) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::jsonb) as v1, try_convert_by_sql(v, NULL::jsonb) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_jsonb) as t(v)) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_xml) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_xml.data';
+select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql(v, NULL::xml) as v2 from tt_temp) as t(v1, v2) where not (v1::text = v2::text);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql(v, NULL::xml) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_xml) as t(v)) as t(v1, v2) where not (v1::text = v2::text);
  v1 | v2 
 ----+----
 (0 rows)
@@ -802,6 +889,16 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_xml) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql(v, NULL::xml) as v2 from tt_text) as t(v1, v2) where not (v1::text = v2::text);
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from tt_time) as t(v1, v2) where not (v1 = v2);
  v1 | v2 
 ----+----
@@ -828,6 +925,16 @@ select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, 
 (0 rows)
 
 select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from tt_numeric) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::jsonb) as v1, try_convert_by_sql(v, NULL::jsonb) as v2 from tt_json) as t(v1, v2) where not (v1 = v2);
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::json) as v1, try_convert_by_sql(v, NULL::json) as v2 from tt_jsonb) as t(v1, v2) where not (v1::text = v2::text);
  v1 | v2 
 ----+----
 (0 rows)

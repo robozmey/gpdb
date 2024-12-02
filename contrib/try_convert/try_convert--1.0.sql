@@ -52,3 +52,8 @@ select add_type_for_try_convert('money'::regtype);
 select add_type_for_try_convert('cidr'::regtype);
 select add_type_for_try_convert('inet'::regtype);
 select add_type_for_try_convert('macaddr'::regtype);
+
+-- OBJ
+select add_type_for_try_convert('json'::regtype);
+select add_type_for_try_convert('jsonb'::regtype);
+select add_type_for_try_convert('xml'::regtype);
