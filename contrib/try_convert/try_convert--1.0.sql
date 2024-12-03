@@ -33,6 +33,7 @@ select add_type_for_try_convert('int4'::regtype);
 select add_type_for_try_convert('int8'::regtype);
 select add_type_for_try_convert('float4'::regtype);
 select add_type_for_try_convert('float8'::regtype);
+select add_type_for_try_convert('numeric'::regtype);
 
 -- TIME
 select add_type_for_try_convert('date'::regtype);
