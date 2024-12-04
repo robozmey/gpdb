@@ -61,6 +61,7 @@ select add_type_for_try_convert('interval'::regtype);
 
 -- CHARACTER
 select add_type_for_try_convert('char'::regtype);
+select add_type_for_try_convert('bpchar'::regtype);
 select add_type_for_try_convert('varchar'::regtype);
 select add_type_for_try_convert('text'::regtype);
 

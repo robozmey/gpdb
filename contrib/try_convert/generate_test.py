@@ -29,8 +29,9 @@ supported_types = [
     'json',             # JSON
     'jsonb',
     'xml',
-    # 'bytea',            # STRINGS
-    'char',
+    # 'bytea',            
+    'char',             # STRINGS
+    # 'bpchar',
     'varchar',
     'text',
     'money',
@@ -43,15 +44,24 @@ supported_types = [
     'citext',
 ]
 
+string_types = [
+    'text',
+    'citext',
+    'char',
+    # 'bpchar',
+    'varchar',
+]
+
 typmod_types = [
     'bit',
     'varbit',
     'char',
     'varchar',
+    # 'bpchar',
 ]
 
 typmod_lens = [
-    None, 1, 5, 10
+    None, 1, 5, 10, 20
 ]
 
 def get_typemod_type(t, l):
@@ -59,6 +69,12 @@ def get_typemod_type(t, l):
         return t
     else:
         return f'{t}({l})'
+
+def get_typemod_table(t, l):
+    if l is None:
+        return f'tt_{t}'
+    else:
+        return f'tt_{t}_{l}'
 
 uncomparable_types = [
     'json',
@@ -181,10 +197,52 @@ test_footer = 'reset search_path;'
 
 test_funcs = ''
 
+func_text = \
+    f'CREATE FUNCTION try_convert_by_sql_text(_in text, INOUT _out ANYELEMENT, source_type text)\n' \
+    f'  LANGUAGE plpgsql AS\n' \
+    f'$func$\n' \
+    f'    BEGIN\n' \
+    f'        EXECUTE format(\'SELECT %L::%s::%s\', $1, source_type, pg_typeof(_out))\n' \
+    f'        INTO  _out;\n' \
+    f'        EXCEPTION WHEN others THEN\n' \
+    f'        -- do nothing: _out already carries default\n' \
+    f'    END\n' \
+    f'$func$;\n'
+
+test_funcs += func_text
+
+func_text = \
+    f'CREATE FUNCTION try_convert_by_sql_text_with_len_out(_in text, INOUT _out ANYELEMENT, source_type text, len_out int)\n' \
+    f'  LANGUAGE plpgsql AS\n' \
+    f'$func$\n' \
+    f'    BEGIN\n' \
+    f'        EXECUTE format(\'SELECT %L::%s::%s(%d)\', $1, source_type, pg_typeof(_out), len_out)\n' \
+    f'        INTO  _out;\n' \
+    f'        EXCEPTION WHEN others THEN\n' \
+    f'        -- do nothing: _out already carries default\n' \
+    f'    END\n' \
+    f'$func$;\n'
+
+test_funcs += func_text
+
 for type_name in supported_types:
 
     func_text = \
-        f'CREATE OR REPLACE FUNCTION try_convert_by_sql(_in {type_name}, INOUT _out ANYELEMENT)\n' \
+        f'CREATE FUNCTION try_convert_by_sql_with_len_out(_in {type_name}, INOUT _out ANYELEMENT, len_out int)\n' \
+        f'  LANGUAGE plpgsql AS\n' \
+        f'$func$\n' \
+        f'    BEGIN\n' \
+        f'        EXECUTE format(\'SELECT %L::{type_name}::%s(%s)\', $1, pg_typeof(_out), len_out::text)\n' \
+        f'        INTO  _out;\n' \
+        f'        EXCEPTION WHEN others THEN\n' \
+        f'        -- do nothing: _out already carries default\n' \
+        f'    END\n' \
+        f'$func$;\n'
+
+    test_funcs += func_text
+
+    func_text = \
+        f'CREATE FUNCTION try_convert_by_sql(_in {type_name}, INOUT _out ANYELEMENT)\n' \
         f'  LANGUAGE plpgsql AS\n' \
         f'$func$\n' \
         f'    BEGIN\n' \
@@ -215,22 +273,17 @@ numbers = {
 test_load_data = '-- LOAD DATA\n'
 
 test_load_data += f'CREATE TABLE tt_temp (v text) DISTRIBUTED BY (v);\n'
-test_load_data += f'CREATE TABLE tt_temp_citext (v citext) DISTRIBUTED BY (v);\n'
 
 def copy_data(table_name, filename, type_name):
-    return  f'DELETE FROM tt_temp;' \
+    return  f'DELETE FROM tt_temp;\n' \
             f'COPY tt_temp from \'@abs_srcdir@/{filename}\';\n' \
             f'INSERT INTO {table_name}(id, v) SELECT row_number() OVER(), v::{type_name} from tt_temp;'  
 
 type_tables = {}
 
 def create_table(type_name, varlen=None):
-    table_name = f'tt_{type_name}'
-    field_type = type_name
-
-    if varlen is not None:
-        table_name = f'tt_{type_name}_{varlen}'
-        field_type = f'{type_name}({varlen})'
+    table_name = get_typemod_table(type_name, varlen)
+    field_type = get_typemod_type(type_name, varlen)
 
     type_tables[type_name] = table_name
 
@@ -238,20 +291,49 @@ def create_table(type_name, varlen=None):
 
     filename = f'data/tt_{type_name}.data'
 
-    load_data += copy_data(table_name, filename, type_name) + '\n'
+    load_data += copy_data(table_name, filename, field_type) + '\n'
 
     # load_data += f'SELECT * FROM {table_name};'
 
     return load_data
 
+def get_string_table(type_name, string_type, type_varlen=None, string_varlen=None):
+
+    if type_varlen is not None and string_varlen is not None:
+        return f'tt_{string_type}_{string_varlen}_of_{type_name}_{type_varlen}'
+    elif type_varlen is not None:
+        return f'tt_{string_type}_of_{type_name}_{type_varlen}'
+    elif string_varlen is not None:
+        return f'tt_{string_type}_{string_varlen}_of_{type_name}'
+    
+    return f'tt_{string_type}_of_{type_name}'
+
 for type_name in supported_types:
 
-    if type_name in typmod_types:
-        for varlen in typmod_lens:
-            test_load_data += create_table(type_name, varlen)
+    for type_varlen in typmod_lens:
+        if type_varlen is not None and type_name not in typmod_types:
+            continue
 
-    else:
-        test_load_data += create_table(type_name)
+        test_load_data += create_table(type_name, type_varlen)
+        
+        for string_type in string_types:
+            for string_varlen in typmod_lens:
+                if string_varlen is not None and string_type not in typmod_types:
+                    continue
+
+                field_type = get_typemod_type(type_name, type_varlen)
+                string_field_type = get_typemod_type(string_type, string_varlen)
+
+                table_name = get_string_table(type_name, string_type, type_varlen, string_varlen)
+                
+                load_data =  f'CREATE TABLE {table_name} (id serial, v {string_field_type}) DISTRIBUTED BY (id);\n'
+
+                cut = f'::{field_type}' if type_varlen is not None else ''
+
+                load_data += f'INSERT INTO {table_name}(id, v) SELECT row_number() OVER(), v{cut}::{string_field_type} from tt_temp;\n' 
+
+                test_load_data += load_data
+            
 
 
 ## GET DATA
@@ -272,15 +354,31 @@ def get_from_data(type_name, i = None):
 
 ## TEST
 
-def create_test(source_name, target_name, test_data, default='NULL'):
+def create_test(source_name, target_name, test_data, default='NULL', source_varlen=None, target_varlen=None):
 
     test_filter = 'v1 is distinct from v2' if target_name not in uncomparable_types else 'v1::text is distinct from  v2::text'
+
+    try_convert_sql = f'try_convert_by_sql(v, {default}::{target_name})'
+
+    if target_varlen is not None:
+        try_convert_sql = f'try_convert_by_sql_with_len_out(v, {default}::{target_name}, {target_varlen})'
+
+    if source_varlen is not None or source_name in ['bpchar']:
+
+        source_name_1 = get_typemod_type(source_name, source_varlen)
+
+        try_convert_sql = f'try_convert_by_sql_text(v::text, {default}::{target_name}, \'{source_name_1}\'::text)'
+
+        if target_varlen is not None:
+            try_convert_sql = f'try_convert_by_sql_text_with_len_out(v::text, {default}::{target_name}, \'{source_name_1}\'::text, {target_varlen})'
+        
+    target_name_1 = get_typemod_type(target_name, target_varlen) 
 
     query = \
         f'select * from (' \
             f'select ' \
-                f'try_convert(v, {default}::{target_name}) as v1, ' \
-                f'try_convert_by_sql(v, {default}::{target_name}) as v2' \
+                f'try_convert(v, {default}::{target_name_1}) as v1, ' \
+                f'{try_convert_sql} as v2' \
             f' from {test_data}' \
     f') as t(v1, v2) where {test_filter};'
     result = \
@@ -299,24 +397,30 @@ def create_test(source_name, target_name, test_data, default='NULL'):
 text_tests_in = []
 text_tests_out = []
 
-# text_types = [('text', 'tt_temp'), ('citext', 'tt_temp_citext')]
+default_value = 'NULL'
 
-# for text_type, text_type_table in text_types:
+for string_type in string_types:
+    for string_varlen in typmod_lens:
+        if string_varlen is not None and type_name not in typmod_types:
+            continue
 
-#     for type_name in supported_types:
+        for type_name in supported_types:
+            for type_varlen in typmod_lens:
+                if type_varlen is not None and type_name not in typmod_types:
+                    continue
 
-#         test_type_data = get_data(type_name)
+                test_type_table = get_typemod_table(type_name, type_varlen)
 
-#         load_text_data_text = f'DELETE FROM {text_type_table}; COPY {text_type_table} from \'@abs_srcdir@/data/tt_{type_name}.data\';'
+                text_type_table = get_string_table(type_name, string_type, type_varlen, string_varlen)
 
-#         test_corrupted_text_data = f'(select (\'!@#%^&*\' || v || \'!@#%^&*\') from {text_type_table}) as t(v)'
+                test_corrupted_text_data = f'(select (\'!@#%^&*\' || v || \'!@#%^&*\') from {text_type_table}) as t(v)'
 
-#         to_text_in, to_text_out = create_test(type_name, text_type, test_type_data)
-#         from_text_in, from_text_out = create_test(text_type, type_name, text_type_table)
-#         from_corrupted_text_in, from_corrupted_text_out = create_test(text_type, type_name, test_corrupted_text_data)
+                to_text_in, to_text_out = create_test(type_name, string_type, test_type_table, default_value, type_varlen, string_varlen)
+                from_text_in, from_text_out = create_test(string_type, type_name, text_type_table, default_value, string_varlen, type_varlen)
+                from_corrupted_text_in, from_corrupted_text_out = create_test(string_type, type_name, test_corrupted_text_data, default_value, string_varlen, type_varlen)
 
-#         text_tests_in += [to_text_in, load_text_data_text, from_text_in, from_corrupted_text_in]
-#         text_tests_out += [to_text_out, load_text_data_text, from_text_out, from_corrupted_text_out]
+                text_tests_in += [to_text_in, from_text_in]
+                text_tests_out += [to_text_out, from_text_out]
 
 # print(text_tests_in[0])
 # print(text_tests_in[1])
@@ -331,24 +435,23 @@ type_casts = [(type_id_name[source_id], type_id_name[target_id]) for (source_id,
     + extension_casts
 
 for source_name, target_name in type_casts:
-
     if (source_name not in supported_types or target_name not in supported_types):
         continue
 
     d = f'\'{get_from_data(target_name, 0)}\''
-
     for default in ['NULL']:
 
-        test_data = get_data(source_name)
+        for source_varlen in typmod_lens:
+            if source_varlen is not None and source_name not in typmod_types:
+                continue
 
-        for varlen1 in typmod_lens:
-            for varlen2 in typmod_lens:
-                if varlen1 is not None and source_name not in typmod_types:
-                    continue
-                if varlen2 is not None and target_name not in typmod_types:
+            test_table = get_typemod_table(source_name, source_varlen)
+
+            for target_varlen in typmod_lens:
+                if target_varlen is not None and target_name not in typmod_types:
                     continue
             
-                test_in, test_out = create_test(get_typemod_type(source_name, varlen1), get_typemod_type(target_name, varlen2), test_data, default)
+                test_in, test_out = create_test(source_name, target_name, test_table, default, source_varlen, target_varlen)
 
                 function_tests_in += [test_in]
                 function_tests_out += [test_out]
