@@ -403,14 +403,15 @@ try_convert(PG_FUNCTION_ARGS)
 	int32 baseTypMod = targetTypMod;
 	Oid baseTypeId = getBaseTypeAndTypmod(targetTypeId, &baseTypMod);
 
-	baseTypMod = -1;
-
     Oid funcId;
 
     ConversionType conversion_type = find_conversion_way(targetTypeId, sourceTypeId, &funcId);
 
     Datum value = fcinfo->arg[0];
-    Datum res = 0;
+
+    Datum res = value;
+	Oid resTypeId = sourceTypeId;
+	int32 resTypMod = sourceTypMod;
 
     bool is_failed = false;
 
@@ -423,23 +424,26 @@ try_convert(PG_FUNCTION_ARGS)
 			res = fcinfo->arg[1];
 		}
 
-		if (targetTypeId != baseTypeId) {
+		resTypeId = baseTypeId;
+		resTypMod = -1;
 
-			res = convert_type_typmod(value, baseTypMod, targetTypeId, targetTypMod, &is_failed);
-
-			if (is_failed) {
-				fcinfo->isnull = fcinfo->argnull[1];
-				res = fcinfo->arg[1];
-			}
-		}
+		// if (targetTypeId != baseTypeId) {
+		// COERCE_DOMAIN();
+		// }
 	} else {
 
-		res = convert_type_typmod(value, sourceTypMod, targetTypeId, targetTypMod, &is_failed);
+		res = value;
 
-		if (is_failed) {
-			fcinfo->isnull = fcinfo->argnull[1];
-			res = fcinfo->arg[1];
-		}
+		// if (targetTypeId != baseTypeId) {
+		// COERCE_DOMAIN();
+		// }
+	}
+
+	res = convert_type_typmod(res, resTypMod, targetTypeId, targetTypMod, &is_failed);
+
+	if (is_failed) {
+		fcinfo->isnull = fcinfo->argnull[1];
+		res = fcinfo->arg[1];
 	}
     
     return res;

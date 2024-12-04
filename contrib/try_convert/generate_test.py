@@ -216,7 +216,7 @@ func_text = \
     f'  LANGUAGE plpgsql AS\n' \
     f'$func$\n' \
     f'    BEGIN\n' \
-    f'        EXECUTE format(\'SELECT %L::%s::%s(%d)\', $1, source_type, pg_typeof(_out), len_out)\n' \
+    f'        EXECUTE format(\'SELECT %L::%s::%s(%s)\', $1, source_type, pg_typeof(_out), len_out::text)\n' \
     f'        INTO  _out;\n' \
     f'        EXCEPTION WHEN others THEN\n' \
     f'        -- do nothing: _out already carries default\n' \
