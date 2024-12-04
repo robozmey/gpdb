@@ -14,6 +14,22 @@ RETURNS anyelement
 AS 'MODULE_PATHNAME', 'try_convert'
 LANGUAGE C;
 
+-- DEBUG
+CREATE FUNCTION get_targettypeid(anyelement)
+RETURNS int4
+AS 'MODULE_PATHNAME', 'get_targettypeid'
+LANGUAGE C;
+
+CREATE FUNCTION get_targetbasetypeid(anyelement)
+RETURNS int4
+AS 'MODULE_PATHNAME', 'get_targetbasetypeid'
+LANGUAGE C;
+
+CREATE FUNCTION get_targettypmod(anyelement)
+RETURNS int4
+AS 'MODULE_PATHNAME', 'get_targettypmod'
+LANGUAGE C;
+
 
 CREATE OR REPLACE FUNCTION add_type_for_try_convert(type regtype)
   RETURNS void 
@@ -43,7 +59,14 @@ select add_type_for_try_convert('timestamp'::regtype);
 select add_type_for_try_convert('timestamptz'::regtype);
 select add_type_for_try_convert('interval'::regtype);
 
+-- CHARACTER
+select add_type_for_try_convert('char'::regtype);
+select add_type_for_try_convert('varchar'::regtype);
 select add_type_for_try_convert('text'::regtype);
+
+-- BIT STRING
+select add_type_for_try_convert('bit'::regtype);
+select add_type_for_try_convert('varbit'::regtype);
 
 select add_type_for_try_convert('bool'::regtype);
 

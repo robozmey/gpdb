@@ -3,6 +3,7 @@
 #include "catalog/pg_cast.h"
 #include "utils/syscache.h"
 #include "utils/lsyscache.h"
+#include "nodes/nodeFuncs.h"
 
 #include "funcapi.h"
 
@@ -10,6 +11,11 @@
 PG_MODULE_MAGIC;
 
 PG_FUNCTION_INFO_V1(try_convert);
+
+// DEBUG
+PG_FUNCTION_INFO_V1(get_targettypeid);
+PG_FUNCTION_INFO_V1(get_targetbasetypeid);
+PG_FUNCTION_INFO_V1(get_targettypmod);
 
 
 typedef enum ConversionType
@@ -23,12 +29,12 @@ typedef enum ConversionType
 
 
 ConversionType
-find_conversion_way(Oid targetTypeId, Oid sourceTypeId, Oid *funcid)
+find_conversion_way(Oid targetTypeId, Oid sourceTypeId, Oid *funcId)
 {
 	ConversionType result = CONVERSION_TYPE_NONE;
 	HeapTuple	tuple;
 
-	*funcid = InvalidOid;
+	*funcId = InvalidOid;
 
 	/* Perhaps the types are domains; if so, look at their base types */
 	if (OidIsValid(sourceTypeId))
@@ -54,7 +60,7 @@ find_conversion_way(Oid targetTypeId, Oid sourceTypeId, Oid *funcid)
         switch (castForm->castmethod)
         {
             case COERCION_METHOD_FUNCTION:
-                *funcid = castForm->castfunc;
+                *funcId = castForm->castfunc;
                 result = CONVERSION_TYPE_FUNC;
                 break;
             case COERCION_METHOD_INOUT:
@@ -106,7 +112,7 @@ find_conversion_way(Oid targetTypeId, Oid sourceTypeId, Oid *funcid)
 				if (elempathtype != CONVERSION_TYPE_NONE &&
 					elempathtype != CONVERSION_TYPE_ARRAY)
 				{
-					*funcid = elemfuncid;
+					*funcId = elemfuncid;
 					if (elempathtype == CONVERSION_TYPE_VIA_IO)
 						result = CONVERSION_TYPE_VIA_IO;
 					else
@@ -137,15 +143,56 @@ find_conversion_way(Oid targetTypeId, Oid sourceTypeId, Oid *funcid)
 	return result;
 }
 
+ConversionType
+find_typmod_conversion_function(Oid typeId, Oid *funcId)
+{
+	ConversionType result;
+	// HeapTuple	targetType;
+	Form_pg_type typeForm;
+	HeapTuple	tuple;
+
+	*funcId = InvalidOid;
+	result = CONVERSION_TYPE_FUNC;
+
+	// targetType = SearchSysCache1(TYPEOID, ObjectIdGetDatum(typeId));
+	// typeForm = (Form_pg_type) GETSTRUCT(targetType);
+
+	// /* Check for a varlena array type */
+	// if (typeForm->typelem != InvalidOid && typeForm->typlen == -1)
+	// {
+	// 	/* Yes, switch our attention to the element type */
+	// 	typeId = typeForm->typelem;
+	// 	result = CONVERSION_TYPE_ARRAY;
+	// }
+	// ReleaseSysCache(targetType);
+
+	/* Look in pg_cast */
+	tuple = SearchSysCache2(CASTSOURCETARGET,
+							ObjectIdGetDatum(typeId),
+							ObjectIdGetDatum(typeId));
+
+	if (HeapTupleIsValid(tuple))
+	{
+		Form_pg_cast castForm = (Form_pg_cast) GETSTRUCT(tuple);
+
+		*funcId = castForm->castfunc;
+		ReleaseSysCache(tuple);
+	}
+
+	if (!OidIsValid(*funcId))
+		result = CONVERSION_TYPE_NONE;
+
+	return result;
+}
 
 Datum
-try_convert_from_function(Datum value, Oid funcId, bool *is_failed)
+try_convert_from_function(Datum value, int32 typmod, Oid funcId, bool *is_failed)
 {
     Datum res = 0;
 
     PG_TRY();
     {
-        res = OidFunctionCall1(funcId, value);
+        res = OidFunctionCall3(funcId, value, typmod, true);
     }
     PG_CATCH();
     {
@@ -160,7 +207,7 @@ try_convert_from_function(Datum value, Oid funcId, bool *is_failed)
 
 
 Datum
-try_convert_via_io(Datum value, Oid sourceTypeId, Oid targetTypeId, bool *is_failed)
+try_convert_via_io(Datum value, Oid sourceTypeId, Oid targetTypeId, int32 targetTypMod, bool *is_failed)
 {
     FmgrInfo *outfunc;
     FmgrInfo *infunc;
@@ -207,37 +254,108 @@ try_convert_via_io(Datum value, Oid sourceTypeId, Oid targetTypeId, bool *is_fai
 }
 
 
-Datum
-try_convert(PG_FUNCTION_ARGS)
+/*
+ * Get the actual typmod int32 of a specific function argument (counting from 0),
+ * but working from the calling expression tree instead of FmgrInfo
+ *
+ * Returns -1 if information is not available
+ */
+int32
+get_call_expr_argtypmod(Node *expr, int argnum)
 {
-    if (fcinfo->argnull[0]) {
-        PG_RETURN_NULL();
-    }
+	List	   *args;
+	int32		argtypmod;
 
-    Oid sourceTypeId = get_fn_expr_argtype(fcinfo->flinfo, 0);
-    Oid targetTypeId = get_fn_expr_argtype(fcinfo->flinfo, 1);
+	if (expr == NULL)
+		return -1;
 
-    Oid funcid;
+	if (IsA(expr, FuncExpr))
+		args = ((FuncExpr *) expr)->args;
+	else if (IsA(expr, OpExpr))
+		args = ((OpExpr *) expr)->args;
+	else if (IsA(expr, DistinctExpr))
+		args = ((DistinctExpr *) expr)->args;
+	else if (IsA(expr, ScalarArrayOpExpr))
+		args = ((ScalarArrayOpExpr *) expr)->args;
+	else if (IsA(expr, ArrayCoerceExpr))
+		args = list_make1(((ArrayCoerceExpr *) expr)->arg);
+	else if (IsA(expr, NullIfExpr))
+		args = ((NullIfExpr *) expr)->args;
+	else if (IsA(expr, WindowFunc))
+		args = ((WindowFunc *) expr)->args;
+	else
+		return -1;
 
-    ConversionType conversion_type = find_conversion_way(targetTypeId, sourceTypeId, &funcid);
+	if (argnum < 0 || argnum >= list_length(args))
+		return -1;
 
-    Datum value = fcinfo->arg[0];
-    Datum res = 0;
+	argtypmod = exprTypmod((Node *) list_nth(args, argnum));
 
-    bool is_failed = false;
+	// /*
+	//  * special hack for ScalarArrayOpExpr and ArrayCoerceExpr: what the
+	//  * underlying function will actually get passed is the element type of the
+	//  * array.
+	//  */
+	// if (IsA(expr, ScalarArrayOpExpr) &&
+	// 	argnum == 1)
+	// 	argtypmod = get_base_element_type(argtype);
+	// else if (IsA(expr, ArrayCoerceExpr) &&
+	// 		 argnum == 0)
+	// 	argtypmod = get_base_element_type(argtype);
 
-    switch (conversion_type)
+	return argtypmod;
+}
+
+/*
+ * Get the actual typemod of a specific function argument (counting from 0)
+ *
+ * Returns -1 if information is not available
+ */
+Oid
+get_fn_expr_argtypmod(FmgrInfo *flinfo, int argnum)
+{
+	/*
+	 * can't return anything useful if we have no FmgrInfo or if its fn_expr
+	 * node has not been initialized
+	 */
+	if (!flinfo || !flinfo->fn_expr)
+		return -1;
+
+	return get_call_expr_argtypmod(flinfo->fn_expr, argnum);
+}
+
+Datum
+get_targettypeid(PG_FUNCTION_ARGS)
+{
+	PG_RETURN_INT32(get_fn_expr_argtype(fcinfo->flinfo, 0));
+}
+
+Datum
+get_targetbasetypeid(PG_FUNCTION_ARGS)
+{
+	PG_RETURN_INT32(getBaseType(get_fn_expr_argtype(fcinfo->flinfo, 0)));
+}
+
+Datum
+get_targettypmod(PG_FUNCTION_ARGS)
+{
+	PG_RETURN_INT32(get_fn_expr_argtypmod(fcinfo->flinfo, 0));
+}
+
+
+Datum
+convert(Datum value, ConversionType conversion_type, Oid funcId, Oid sourceTypeId, Oid targetTypeId, int32 targetTypMod, bool *is_failed) {
+	
+	switch (conversion_type)
     {
     case CONVERSION_TYPE_RELABEL:
         return value;
 
     case CONVERSION_TYPE_FUNC:
-        res = try_convert_from_function(value, funcid, &is_failed);
-        break;
+        return try_convert_from_function(value, targetTypMod, funcId, is_failed);
 
     case CONVERSION_TYPE_VIA_IO:
-        res = try_convert_via_io(value, sourceTypeId, targetTypeId, &is_failed);
-        break;
+        return try_convert_via_io(value, sourceTypeId, targetTypeId, targetTypMod, is_failed);
 
     case CONVERSION_TYPE_ARRAY:
         elog(ERROR, "no sopport for ARRAY CONVERSION");
@@ -245,10 +363,8 @@ try_convert(PG_FUNCTION_ARGS)
         break;
 
     case CONVERSION_TYPE_NONE:
-        fcinfo->isnull = fcinfo->argnull[1];
-        res = fcinfo->arg[1];
-        
-        break;
+        is_failed = true;
+        return 0;
     
     default:
         /// TODO RAISE ERROR
@@ -257,10 +373,74 @@ try_convert(PG_FUNCTION_ARGS)
         break;
     }
 
-    if (is_failed) {
-        fcinfo->isnull = fcinfo->argnull[1];
-        res = fcinfo->arg[1];
+	return 0;
+}
+
+Datum convert_type_typmod(Datum value, int32 sourceTypMod, Oid targetTypeId, int32 targetTypMod, bool *is_failed) {
+	if (targetTypMod < 0 || targetTypMod == sourceTypMod)
+		return value;
+
+	Oid funcId = InvalidOid;
+	ConversionType conversion_type = find_typmod_conversion_function(targetTypeId, &funcId);
+	
+	return convert(value, conversion_type, funcId, InvalidOid, targetTypeId, targetTypMod, is_failed);
+}
+
+
+Datum
+try_convert(PG_FUNCTION_ARGS)
+{
+    if (fcinfo->argnull[0]) {
+        PG_RETURN_NULL();
     }
+
+    Oid sourceTypeId = get_fn_expr_argtype(fcinfo->flinfo, 0);
+	int32 sourceTypMod = get_fn_expr_argtypmod(fcinfo->flinfo, 0);
+
+    Oid targetTypeId = get_fn_expr_argtype(fcinfo->flinfo, 1);
+	int32 targetTypMod = get_fn_expr_argtypmod(fcinfo->flinfo, 1);
+
+	int32 baseTypMod = targetTypMod;
+	Oid baseTypeId = getBaseTypeAndTypmod(targetTypeId, &baseTypMod);
+
+	baseTypMod = -1;
+
+    Oid funcId;
+
+    ConversionType conversion_type = find_conversion_way(targetTypeId, sourceTypeId, &funcId);
+
+    Datum value = fcinfo->arg[0];
+    Datum res = 0;
+
+    bool is_failed = false;
+
+	if (conversion_type != CONVERSION_TYPE_RELABEL) {
+
+		res = convert(value, conversion_type, funcId, sourceTypeId, baseTypeId, baseTypMod, &is_failed);
+
+		if (is_failed) {
+			fcinfo->isnull = fcinfo->argnull[1];
+			res = fcinfo->arg[1];
+		}
+
+		if (targetTypeId != baseTypeId) {
+
+			res = convert_type_typmod(value, baseTypMod, targetTypeId, targetTypMod, &is_failed);
+
+			if (is_failed) {
+				fcinfo->isnull = fcinfo->argnull[1];
+				res = fcinfo->arg[1];
+			}
+		}
+	} else {
+
+		res = convert_type_typmod(value, sourceTypMod, targetTypeId, targetTypMod, &is_failed);
+
+		if (is_failed) {
+			fcinfo->isnull = fcinfo->argnull[1];
+			res = fcinfo->arg[1];
+		}
+	}
     
     return res;
 }

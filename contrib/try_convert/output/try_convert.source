@@ -1,8 +1,8 @@
 -- SCRIPT-GENERATED TEST for TRY_CONVERT
--- Tests 22 types of 91 from pg_types.h
--- Tests 64 cast of 206 from pg_cast.h
+-- Tests 26 types of 91 from pg_types.h
+-- Tests 86 cast of 206 from pg_cast.h
 -- Tests 1 types of 1 from extensions
--- Tests 3 casts of 8 from extensions
+-- Tests 5 casts of 8 from extensions
 create schema tryconvert;
 set search_path = tryconvert;
 -- start_ignore
@@ -76,6 +76,26 @@ CREATE OR REPLACE FUNCTION try_convert_by_sql(_in bool, INOUT _out ANYELEMENT)
 $func$
     BEGIN
         EXECUTE format('SELECT %L::bool::%s', $1, pg_typeof(_out))
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in bit, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::bit::%s', $1, pg_typeof(_out))
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in varbit, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::varbit::%s', $1, pg_typeof(_out))
         INTO  _out;
         EXCEPTION WHEN others THEN
         -- do nothing: _out already carries default
@@ -201,6 +221,26 @@ $func$
         -- do nothing: _out already carries default
     END
 $func$;
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in char, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::char::%s', $1, pg_typeof(_out))
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE OR REPLACE FUNCTION try_convert_by_sql(_in varchar, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::varchar::%s', $1, pg_typeof(_out))
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
 CREATE OR REPLACE FUNCTION try_convert_by_sql(_in text, INOUT _out ANYELEMENT)
   LANGUAGE plpgsql AS
 $func$
@@ -265,6 +305,30 @@ INSERT INTO tt_numeric(id, v) SELECT row_number() OVER(), v::numeric from tt_tem
 CREATE TABLE tt_bool (id serial, v bool) DISTRIBUTED BY (id);
 DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_bool.data';
 INSERT INTO tt_bool(id, v) SELECT row_number() OVER(), v::bool from tt_temp;
+CREATE TABLE tt_bit (id serial, v bit) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_bit.data';
+INSERT INTO tt_bit(id, v) SELECT row_number() OVER(), v::bit from tt_temp;
+CREATE TABLE tt_bit_1 (id serial, v bit(1)) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_bit.data';
+INSERT INTO tt_bit_1(id, v) SELECT row_number() OVER(), v::bit from tt_temp;
+CREATE TABLE tt_bit_5 (id serial, v bit(5)) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_bit.data';
+INSERT INTO tt_bit_5(id, v) SELECT row_number() OVER(), v::bit from tt_temp;
+CREATE TABLE tt_bit_10 (id serial, v bit(10)) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_bit.data';
+INSERT INTO tt_bit_10(id, v) SELECT row_number() OVER(), v::bit from tt_temp;
+CREATE TABLE tt_varbit (id serial, v varbit) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_varbit.data';
+INSERT INTO tt_varbit(id, v) SELECT row_number() OVER(), v::varbit from tt_temp;
+CREATE TABLE tt_varbit_1 (id serial, v varbit(1)) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_varbit.data';
+INSERT INTO tt_varbit_1(id, v) SELECT row_number() OVER(), v::varbit from tt_temp;
+CREATE TABLE tt_varbit_5 (id serial, v varbit(5)) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_varbit.data';
+INSERT INTO tt_varbit_5(id, v) SELECT row_number() OVER(), v::varbit from tt_temp;
+CREATE TABLE tt_varbit_10 (id serial, v varbit(10)) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_varbit.data';
+INSERT INTO tt_varbit_10(id, v) SELECT row_number() OVER(), v::varbit from tt_temp;
 CREATE TABLE tt_date (id serial, v date) DISTRIBUTED BY (id);
 DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_date.data';
 INSERT INTO tt_date(id, v) SELECT row_number() OVER(), v::date from tt_temp;
@@ -301,6 +365,30 @@ INSERT INTO tt_jsonb(id, v) SELECT row_number() OVER(), v::jsonb from tt_temp;
 CREATE TABLE tt_xml (id serial, v xml) DISTRIBUTED BY (id);
 DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_xml.data';
 INSERT INTO tt_xml(id, v) SELECT row_number() OVER(), v::xml from tt_temp;
+CREATE TABLE tt_char (id serial, v char) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_char.data';
+INSERT INTO tt_char(id, v) SELECT row_number() OVER(), v::char from tt_temp;
+CREATE TABLE tt_char_1 (id serial, v char(1)) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_char.data';
+INSERT INTO tt_char_1(id, v) SELECT row_number() OVER(), v::char from tt_temp;
+CREATE TABLE tt_char_5 (id serial, v char(5)) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_char.data';
+INSERT INTO tt_char_5(id, v) SELECT row_number() OVER(), v::char from tt_temp;
+CREATE TABLE tt_char_10 (id serial, v char(10)) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_char.data';
+INSERT INTO tt_char_10(id, v) SELECT row_number() OVER(), v::char from tt_temp;
+CREATE TABLE tt_varchar (id serial, v varchar) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_varchar.data';
+INSERT INTO tt_varchar(id, v) SELECT row_number() OVER(), v::varchar from tt_temp;
+CREATE TABLE tt_varchar_1 (id serial, v varchar(1)) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_varchar.data';
+INSERT INTO tt_varchar_1(id, v) SELECT row_number() OVER(), v::varchar from tt_temp;
+CREATE TABLE tt_varchar_5 (id serial, v varchar(5)) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_varchar.data';
+INSERT INTO tt_varchar_5(id, v) SELECT row_number() OVER(), v::varchar from tt_temp;
+CREATE TABLE tt_varchar_10 (id serial, v varchar(10)) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_varchar.data';
+INSERT INTO tt_varchar_10(id, v) SELECT row_number() OVER(), v::varchar from tt_temp;
 CREATE TABLE tt_text (id serial, v text) DISTRIBUTED BY (id);
 DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_text.data';
 INSERT INTO tt_text(id, v) SELECT row_number() OVER(), v::text from tt_temp;
@@ -314,741 +402,6 @@ CREATE TABLE tt_citext (id serial, v citext) DISTRIBUTED BY (id);
 DELETE FROM tt_temp;COPY tt_temp from '@abs_srcdir@/data/tt_citext.data';
 INSERT INTO tt_citext(id, v) SELECT row_number() OVER(), v::citext from tt_temp;
 -- TEXT TESTS
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_int8.data';
-select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from tt_temp) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_int4.data';
-select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_temp) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_int2) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_int2.data';
-select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NULL::int2) as v2 from tt_temp) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NULL::int2) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_float8) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_float8.data';
-select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from tt_temp) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_float4) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_float4.data';
-select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, NULL::float4) as v2 from tt_temp) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, NULL::float4) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_numeric) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_numeric.data';
-select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from tt_temp) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_bool.data';
-select * from (select try_convert(v, NULL::bool) as v1, try_convert_by_sql(v, NULL::bool) as v2 from tt_temp) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::bool) as v1, try_convert_by_sql(v, NULL::bool) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_date) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_date.data';
-select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NULL::date) as v2 from tt_temp) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NULL::date) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_time) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_time.data';
-select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from tt_temp) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_timetz) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_timetz.data';
-select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, NULL::timetz) as v2 from tt_temp) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, NULL::timetz) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_timestamp) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_timestamp.data';
-select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from tt_temp) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_timestamptz) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_timestamptz.data';
-select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from tt_temp) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_interval) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_interval.data';
-select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from tt_temp) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_cidr) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_cidr.data';
-select * from (select try_convert(v, NULL::cidr) as v1, try_convert_by_sql(v, NULL::cidr) as v2 from tt_temp) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::cidr) as v1, try_convert_by_sql(v, NULL::cidr) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_inet) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_inet.data';
-select * from (select try_convert(v, NULL::inet) as v1, try_convert_by_sql(v, NULL::inet) as v2 from tt_temp) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::inet) as v1, try_convert_by_sql(v, NULL::inet) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_macaddr) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_macaddr.data';
-select * from (select try_convert(v, NULL::macaddr) as v1, try_convert_by_sql(v, NULL::macaddr) as v2 from tt_temp) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::macaddr) as v1, try_convert_by_sql(v, NULL::macaddr) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_json) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_json.data';
-select * from (select try_convert(v, NULL::json) as v1, try_convert_by_sql(v, NULL::json) as v2 from tt_temp) as t(v1, v2) where v1::text is distinct from  v2::text;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::json) as v1, try_convert_by_sql(v, NULL::json) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp) as t(v)) as t(v1, v2) where v1::text is distinct from  v2::text;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_jsonb) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_jsonb.data';
-select * from (select try_convert(v, NULL::jsonb) as v1, try_convert_by_sql(v, NULL::jsonb) as v2 from tt_temp) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::jsonb) as v1, try_convert_by_sql(v, NULL::jsonb) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_xml) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_xml.data';
-select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql(v, NULL::xml) as v2 from tt_temp) as t(v1, v2) where v1::text is distinct from  v2::text;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql(v, NULL::xml) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp) as t(v)) as t(v1, v2) where v1::text is distinct from  v2::text;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_text.data';
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_temp) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_money) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_money.data';
-select * from (select try_convert(v, NULL::money) as v1, try_convert_by_sql(v, NULL::money) as v2 from tt_temp) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::money) as v1, try_convert_by_sql(v, NULL::money) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_uuid) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_uuid.data';
-select * from (select try_convert(v, NULL::uuid) as v1, try_convert_by_sql(v, NULL::uuid) as v2 from tt_temp) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::uuid) as v1, try_convert_by_sql(v, NULL::uuid) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_citext) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp; COPY tt_temp from '@abs_srcdir@/data/tt_citext.data';
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_temp) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp_citext; COPY tt_temp_citext from '@abs_srcdir@/data/tt_int8.data';
-select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from tt_temp_citext) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp_citext; COPY tt_temp_citext from '@abs_srcdir@/data/tt_int4.data';
-select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_temp_citext) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_int2) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp_citext; COPY tt_temp_citext from '@abs_srcdir@/data/tt_int2.data';
-select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NULL::int2) as v2 from tt_temp_citext) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NULL::int2) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_float8) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp_citext; COPY tt_temp_citext from '@abs_srcdir@/data/tt_float8.data';
-select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from tt_temp_citext) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_float4) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp_citext; COPY tt_temp_citext from '@abs_srcdir@/data/tt_float4.data';
-select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, NULL::float4) as v2 from tt_temp_citext) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, NULL::float4) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_numeric) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp_citext; COPY tt_temp_citext from '@abs_srcdir@/data/tt_numeric.data';
-select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from tt_temp_citext) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp_citext; COPY tt_temp_citext from '@abs_srcdir@/data/tt_bool.data';
-select * from (select try_convert(v, NULL::bool) as v1, try_convert_by_sql(v, NULL::bool) as v2 from tt_temp_citext) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::bool) as v1, try_convert_by_sql(v, NULL::bool) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_date) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp_citext; COPY tt_temp_citext from '@abs_srcdir@/data/tt_date.data';
-select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NULL::date) as v2 from tt_temp_citext) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NULL::date) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_time) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp_citext; COPY tt_temp_citext from '@abs_srcdir@/data/tt_time.data';
-select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from tt_temp_citext) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_timetz) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp_citext; COPY tt_temp_citext from '@abs_srcdir@/data/tt_timetz.data';
-select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, NULL::timetz) as v2 from tt_temp_citext) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, NULL::timetz) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_timestamp) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp_citext; COPY tt_temp_citext from '@abs_srcdir@/data/tt_timestamp.data';
-select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from tt_temp_citext) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_timestamptz) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp_citext; COPY tt_temp_citext from '@abs_srcdir@/data/tt_timestamptz.data';
-select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from tt_temp_citext) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_interval) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp_citext; COPY tt_temp_citext from '@abs_srcdir@/data/tt_interval.data';
-select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from tt_temp_citext) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_cidr) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp_citext; COPY tt_temp_citext from '@abs_srcdir@/data/tt_cidr.data';
-select * from (select try_convert(v, NULL::cidr) as v1, try_convert_by_sql(v, NULL::cidr) as v2 from tt_temp_citext) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::cidr) as v1, try_convert_by_sql(v, NULL::cidr) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_inet) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp_citext; COPY tt_temp_citext from '@abs_srcdir@/data/tt_inet.data';
-select * from (select try_convert(v, NULL::inet) as v1, try_convert_by_sql(v, NULL::inet) as v2 from tt_temp_citext) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::inet) as v1, try_convert_by_sql(v, NULL::inet) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_macaddr) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp_citext; COPY tt_temp_citext from '@abs_srcdir@/data/tt_macaddr.data';
-select * from (select try_convert(v, NULL::macaddr) as v1, try_convert_by_sql(v, NULL::macaddr) as v2 from tt_temp_citext) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::macaddr) as v1, try_convert_by_sql(v, NULL::macaddr) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_json) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp_citext; COPY tt_temp_citext from '@abs_srcdir@/data/tt_json.data';
-select * from (select try_convert(v, NULL::json) as v1, try_convert_by_sql(v, NULL::json) as v2 from tt_temp_citext) as t(v1, v2) where v1::text is distinct from  v2::text;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::json) as v1, try_convert_by_sql(v, NULL::json) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp_citext) as t(v)) as t(v1, v2) where v1::text is distinct from  v2::text;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_jsonb) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp_citext; COPY tt_temp_citext from '@abs_srcdir@/data/tt_jsonb.data';
-select * from (select try_convert(v, NULL::jsonb) as v1, try_convert_by_sql(v, NULL::jsonb) as v2 from tt_temp_citext) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::jsonb) as v1, try_convert_by_sql(v, NULL::jsonb) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_xml) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp_citext; COPY tt_temp_citext from '@abs_srcdir@/data/tt_xml.data';
-select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql(v, NULL::xml) as v2 from tt_temp_citext) as t(v1, v2) where v1::text is distinct from  v2::text;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql(v, NULL::xml) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp_citext) as t(v)) as t(v1, v2) where v1::text is distinct from  v2::text;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp_citext; COPY tt_temp_citext from '@abs_srcdir@/data/tt_text.data';
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_temp_citext) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_money) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp_citext; COPY tt_temp_citext from '@abs_srcdir@/data/tt_money.data';
-select * from (select try_convert(v, NULL::money) as v1, try_convert_by_sql(v, NULL::money) as v2 from tt_temp_citext) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::money) as v1, try_convert_by_sql(v, NULL::money) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_uuid) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp_citext; COPY tt_temp_citext from '@abs_srcdir@/data/tt_uuid.data';
-select * from (select try_convert(v, NULL::uuid) as v1, try_convert_by_sql(v, NULL::uuid) as v2 from tt_temp_citext) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::uuid) as v1, try_convert_by_sql(v, NULL::uuid) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_citext) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-DELETE FROM tt_temp_citext; COPY tt_temp_citext from '@abs_srcdir@/data/tt_citext.data';
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_temp_citext) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
-
-select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_temp_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
- v1 | v2 
-----+----
-(0 rows)
 
 -- FUNCTION TESTS
 select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NULL::int2) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
@@ -1231,6 +584,286 @@ select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(1)) as v1, try_convert_by_sql(v, NULL::varchar(1)) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(5)) as v1, try_convert_by_sql(v, NULL::varchar(5)) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(10)) as v1, try_convert_by_sql(v, NULL::varchar(10)) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(1)) as v1, try_convert_by_sql(v, NULL::varchar(1)) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(5)) as v1, try_convert_by_sql(v, NULL::varchar(5)) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(10)) as v1, try_convert_by_sql(v, NULL::varchar(10)) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(1)) as v1, try_convert_by_sql(v, NULL::varchar(1)) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(5)) as v1, try_convert_by_sql(v, NULL::varchar(5)) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(10)) as v1, try_convert_by_sql(v, NULL::varchar(10)) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(1)) as v1, try_convert_by_sql(v, NULL::varchar(1)) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(5)) as v1, try_convert_by_sql(v, NULL::varchar(5)) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(10)) as v1, try_convert_by_sql(v, NULL::varchar(10)) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(1)) as v1, try_convert_by_sql(v, NULL::varchar(1)) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(5)) as v1, try_convert_by_sql(v, NULL::varchar(5)) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(10)) as v1, try_convert_by_sql(v, NULL::varchar(10)) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(1)) as v1, try_convert_by_sql(v, NULL::char(1)) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(5)) as v1, try_convert_by_sql(v, NULL::char(5)) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(10)) as v1, try_convert_by_sql(v, NULL::char(10)) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(1)) as v1, try_convert_by_sql(v, NULL::char(1)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(5)) as v1, try_convert_by_sql(v, NULL::char(5)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(10)) as v1, try_convert_by_sql(v, NULL::char(10)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(1)) as v1, try_convert_by_sql(v, NULL::char(1)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(5)) as v1, try_convert_by_sql(v, NULL::char(5)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(10)) as v1, try_convert_by_sql(v, NULL::char(10)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(1)) as v1, try_convert_by_sql(v, NULL::char(1)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(5)) as v1, try_convert_by_sql(v, NULL::char(5)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(10)) as v1, try_convert_by_sql(v, NULL::char(10)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(1)) as v1, try_convert_by_sql(v, NULL::char(1)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(5)) as v1, try_convert_by_sql(v, NULL::char(5)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(10)) as v1, try_convert_by_sql(v, NULL::char(10)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(1)) as v1, try_convert_by_sql(v, NULL::char(1)) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(5)) as v1, try_convert_by_sql(v, NULL::char(5)) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(10)) as v1, try_convert_by_sql(v, NULL::char(10)) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from tt_date) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
@@ -1306,6 +939,246 @@ select * from (select try_convert(v, NULL::cidr) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varbit) as v1, try_convert_by_sql(v, NULL::varbit) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(1)) as v1, try_convert_by_sql(v, NULL::varbit(1)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(5)) as v1, try_convert_by_sql(v, NULL::varbit(5)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(10)) as v1, try_convert_by_sql(v, NULL::varbit(10)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit) as v1, try_convert_by_sql(v, NULL::varbit) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(1)) as v1, try_convert_by_sql(v, NULL::varbit(1)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(5)) as v1, try_convert_by_sql(v, NULL::varbit(5)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(10)) as v1, try_convert_by_sql(v, NULL::varbit(10)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit) as v1, try_convert_by_sql(v, NULL::varbit) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(1)) as v1, try_convert_by_sql(v, NULL::varbit(1)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(5)) as v1, try_convert_by_sql(v, NULL::varbit(5)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(10)) as v1, try_convert_by_sql(v, NULL::varbit(10)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit) as v1, try_convert_by_sql(v, NULL::varbit) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(1)) as v1, try_convert_by_sql(v, NULL::varbit(1)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(5)) as v1, try_convert_by_sql(v, NULL::varbit(5)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(10)) as v1, try_convert_by_sql(v, NULL::varbit(10)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit) as v1, try_convert_by_sql(v, NULL::bit) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(1)) as v1, try_convert_by_sql(v, NULL::bit(1)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(5)) as v1, try_convert_by_sql(v, NULL::bit(5)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(10)) as v1, try_convert_by_sql(v, NULL::bit(10)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit) as v1, try_convert_by_sql(v, NULL::bit) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(1)) as v1, try_convert_by_sql(v, NULL::bit(1)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(5)) as v1, try_convert_by_sql(v, NULL::bit(5)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(10)) as v1, try_convert_by_sql(v, NULL::bit(10)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit) as v1, try_convert_by_sql(v, NULL::bit) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(1)) as v1, try_convert_by_sql(v, NULL::bit(1)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(5)) as v1, try_convert_by_sql(v, NULL::bit(5)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(10)) as v1, try_convert_by_sql(v, NULL::bit(10)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit) as v1, try_convert_by_sql(v, NULL::bit) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(1)) as v1, try_convert_by_sql(v, NULL::bit(1)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(5)) as v1, try_convert_by_sql(v, NULL::bit(5)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(10)) as v1, try_convert_by_sql(v, NULL::bit(10)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit) as v1, try_convert_by_sql(v, NULL::bit) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(1)) as v1, try_convert_by_sql(v, NULL::bit(1)) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(5)) as v1, try_convert_by_sql(v, NULL::bit(5)) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(10)) as v1, try_convert_by_sql(v, NULL::bit(10)) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit) as v1, try_convert_by_sql(v, NULL::bit) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(1)) as v1, try_convert_by_sql(v, NULL::bit(1)) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(5)) as v1, try_convert_by_sql(v, NULL::bit(5)) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(10)) as v1, try_convert_by_sql(v, NULL::bit(10)) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_cidr) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
@@ -1327,6 +1200,186 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 (0 rows)
 
 select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql(v, NULL::xml) as v2 from tt_text) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_cidr) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(1)) as v1, try_convert_by_sql(v, NULL::varchar(1)) as v2 from tt_cidr) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(5)) as v1, try_convert_by_sql(v, NULL::varchar(5)) as v2 from tt_cidr) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(10)) as v1, try_convert_by_sql(v, NULL::varchar(10)) as v2 from tt_cidr) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_inet) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(1)) as v1, try_convert_by_sql(v, NULL::varchar(1)) as v2 from tt_inet) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(5)) as v1, try_convert_by_sql(v, NULL::varchar(5)) as v2 from tt_inet) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(10)) as v1, try_convert_by_sql(v, NULL::varchar(10)) as v2 from tt_inet) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(1)) as v1, try_convert_by_sql(v, NULL::varchar(1)) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(5)) as v1, try_convert_by_sql(v, NULL::varchar(5)) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(10)) as v1, try_convert_by_sql(v, NULL::varchar(10)) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_xml) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(1)) as v1, try_convert_by_sql(v, NULL::varchar(1)) as v2 from tt_xml) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(5)) as v1, try_convert_by_sql(v, NULL::varchar(5)) as v2 from tt_xml) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(10)) as v1, try_convert_by_sql(v, NULL::varchar(10)) as v2 from tt_xml) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql(v, NULL::xml) as v2 from tt_varchar_10) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql(v, NULL::xml) as v2 from tt_varchar_10) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql(v, NULL::xml) as v2 from tt_varchar_10) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql(v, NULL::xml) as v2 from tt_varchar_10) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(1)) as v1, try_convert_by_sql(v, NULL::varchar(1)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(5)) as v1, try_convert_by_sql(v, NULL::varchar(5)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(10)) as v1, try_convert_by_sql(v, NULL::varchar(10)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(1)) as v1, try_convert_by_sql(v, NULL::varchar(1)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(5)) as v1, try_convert_by_sql(v, NULL::varchar(5)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(10)) as v1, try_convert_by_sql(v, NULL::varchar(10)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(1)) as v1, try_convert_by_sql(v, NULL::varchar(1)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(5)) as v1, try_convert_by_sql(v, NULL::varchar(5)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(10)) as v1, try_convert_by_sql(v, NULL::varchar(10)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(1)) as v1, try_convert_by_sql(v, NULL::varchar(1)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(5)) as v1, try_convert_by_sql(v, NULL::varchar(5)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(10)) as v1, try_convert_by_sql(v, NULL::varchar(10)) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -1356,6 +1409,166 @@ select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, 
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::bit) as v1, try_convert_by_sql(v, NULL::bit) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(1)) as v1, try_convert_by_sql(v, NULL::bit(1)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(5)) as v1, try_convert_by_sql(v, NULL::bit(5)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(10)) as v1, try_convert_by_sql(v, NULL::bit(10)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit) as v1, try_convert_by_sql(v, NULL::bit) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(1)) as v1, try_convert_by_sql(v, NULL::bit(1)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(5)) as v1, try_convert_by_sql(v, NULL::bit(5)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(10)) as v1, try_convert_by_sql(v, NULL::bit(10)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit) as v1, try_convert_by_sql(v, NULL::bit) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(1)) as v1, try_convert_by_sql(v, NULL::bit(1)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(5)) as v1, try_convert_by_sql(v, NULL::bit(5)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(10)) as v1, try_convert_by_sql(v, NULL::bit(10)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit) as v1, try_convert_by_sql(v, NULL::bit) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(1)) as v1, try_convert_by_sql(v, NULL::bit(1)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(5)) as v1, try_convert_by_sql(v, NULL::bit(5)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(10)) as v1, try_convert_by_sql(v, NULL::bit(10)) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit) as v1, try_convert_by_sql(v, NULL::varbit) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(1)) as v1, try_convert_by_sql(v, NULL::varbit(1)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(5)) as v1, try_convert_by_sql(v, NULL::varbit(5)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(10)) as v1, try_convert_by_sql(v, NULL::varbit(10)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit) as v1, try_convert_by_sql(v, NULL::varbit) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(1)) as v1, try_convert_by_sql(v, NULL::varbit(1)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(5)) as v1, try_convert_by_sql(v, NULL::varbit(5)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(10)) as v1, try_convert_by_sql(v, NULL::varbit(10)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit) as v1, try_convert_by_sql(v, NULL::varbit) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(1)) as v1, try_convert_by_sql(v, NULL::varbit(1)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(5)) as v1, try_convert_by_sql(v, NULL::varbit(5)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(10)) as v1, try_convert_by_sql(v, NULL::varbit(10)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit) as v1, try_convert_by_sql(v, NULL::varbit) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(1)) as v1, try_convert_by_sql(v, NULL::varbit(1)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(5)) as v1, try_convert_by_sql(v, NULL::varbit(5)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(10)) as v1, try_convert_by_sql(v, NULL::varbit(10)) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from tt_numeric) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
@@ -1376,7 +1589,47 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_citext) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(1)) as v1, try_convert_by_sql(v, NULL::varchar(1)) as v2 from tt_citext) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(5)) as v1, try_convert_by_sql(v, NULL::varchar(5)) as v2 from tt_citext) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(10)) as v1, try_convert_by_sql(v, NULL::varchar(10)) as v2 from tt_citext) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)

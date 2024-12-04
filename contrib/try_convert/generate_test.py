@@ -7,9 +7,9 @@ supported_types = [
     'float8',
     'float4',
     'numeric',
-    # 'bit',
     'bool',
-    # 'varbit',
+    'bit',              # BITSTRING
+    'varbit',
     'date',             # TIME
     'time',
     'timetz',
@@ -30,8 +30,8 @@ supported_types = [
     'jsonb',
     'xml',
     # 'bytea',            # STRINGS
-    # 'char',
-    # 'varchar',
+    'char',
+    'varchar',
     'text',
     'money',
     # # 'pg_lsn',
@@ -42,6 +42,23 @@ supported_types = [
 
     'citext',
 ]
+
+typmod_types = [
+    'bit',
+    'varbit',
+    'char',
+    'varchar',
+]
+
+typmod_lens = [
+    None, 1, 5, 10
+]
+
+def get_typemod_type(t, l):
+    if l is None:
+        return t
+    else:
+        return f'{t}({l})'
 
 uncomparable_types = [
     'json',
@@ -205,21 +222,42 @@ def copy_data(table_name, filename, type_name):
             f'COPY tt_temp from \'@abs_srcdir@/{filename}\';\n' \
             f'INSERT INTO {table_name}(id, v) SELECT row_number() OVER(), v::{type_name} from tt_temp;'  
 
+type_tables = {}
+
+def create_table(type_name, varlen=None):
+    table_name = f'tt_{type_name}'
+    field_type = type_name
+
+    if varlen is not None:
+        table_name = f'tt_{type_name}_{varlen}'
+        field_type = f'{type_name}({varlen})'
+
+    type_tables[type_name] = table_name
+
+    load_data = f'CREATE TABLE {table_name} (id serial, v {field_type}) DISTRIBUTED BY (id);\n'
+
+    filename = f'data/tt_{type_name}.data'
+
+    load_data += copy_data(table_name, filename, type_name) + '\n'
+
+    # load_data += f'SELECT * FROM {table_name};'
+
+    return load_data
+
 for type_name in supported_types:
 
-    table_name = f'tt_{type_name}'
+    if type_name in typmod_types:
+        for varlen in typmod_lens:
+            test_load_data += create_table(type_name, varlen)
 
-    test_load_data += f'CREATE TABLE {table_name} (id serial, v {type_name}) DISTRIBUTED BY (id);\n'
-
-    filename = f'data/{table_name}.data'
-
-    test_load_data += copy_data(table_name, filename, type_name) + '\n'
+    else:
+        test_load_data += create_table(type_name)
 
 
 ## GET DATA
 
 def get_data(type_name):
-    return f'tt_{type_name}'
+    return type_tables[type_name]
 
 def get_len_from_data(type_name):
     f = open(f'data/tt_{type_name}')
@@ -261,24 +299,24 @@ def create_test(source_name, target_name, test_data, default='NULL'):
 text_tests_in = []
 text_tests_out = []
 
-text_types = [('text', 'tt_temp'), ('citext', 'tt_temp_citext')]
+# text_types = [('text', 'tt_temp'), ('citext', 'tt_temp_citext')]
 
-for text_type, text_type_table in text_types:
+# for text_type, text_type_table in text_types:
 
-    for type_name in supported_types:
+#     for type_name in supported_types:
 
-        test_type_data = get_data(type_name)
+#         test_type_data = get_data(type_name)
 
-        load_text_data_text = f'DELETE FROM {text_type_table}; COPY {text_type_table} from \'@abs_srcdir@/data/tt_{type_name}.data\';'
+#         load_text_data_text = f'DELETE FROM {text_type_table}; COPY {text_type_table} from \'@abs_srcdir@/data/tt_{type_name}.data\';'
 
-        test_corrupted_text_data = f'(select (\'!@#%^&*\' || v || \'!@#%^&*\') from {text_type_table}) as t(v)'
+#         test_corrupted_text_data = f'(select (\'!@#%^&*\' || v || \'!@#%^&*\') from {text_type_table}) as t(v)'
 
-        to_text_in, to_text_out = create_test(type_name, text_type, test_type_data)
-        from_text_in, from_text_out = create_test(text_type, type_name, text_type_table)
-        from_corrupted_text_in, from_corrupted_text_out = create_test(text_type, type_name, test_corrupted_text_data)
+#         to_text_in, to_text_out = create_test(type_name, text_type, test_type_data)
+#         from_text_in, from_text_out = create_test(text_type, type_name, text_type_table)
+#         from_corrupted_text_in, from_corrupted_text_out = create_test(text_type, type_name, test_corrupted_text_data)
 
-        text_tests_in += [to_text_in, load_text_data_text, from_text_in, from_corrupted_text_in]
-        text_tests_out += [to_text_out, load_text_data_text, from_text_out, from_corrupted_text_out]
+#         text_tests_in += [to_text_in, load_text_data_text, from_text_in, from_corrupted_text_in]
+#         text_tests_out += [to_text_out, load_text_data_text, from_text_out, from_corrupted_text_out]
 
 # print(text_tests_in[0])
 # print(text_tests_in[1])
@@ -303,10 +341,18 @@ for source_name, target_name in type_casts:
 
         test_data = get_data(source_name)
 
-        test_in, test_out = create_test(source_name, target_name, test_data, default)
+        for varlen1 in typmod_lens:
+            for varlen2 in typmod_lens:
+                if varlen1 is not None and source_name not in typmod_types:
+                    continue
+                if varlen2 is not None and target_name not in typmod_types:
+                    continue
+            
+                test_in, test_out = create_test(get_typemod_type(source_name, varlen1), get_typemod_type(target_name, varlen2), test_data, default)
 
-        function_tests_in += [test_in]
-        function_tests_out += [test_out]
+                function_tests_in += [test_in]
+                function_tests_out += [test_out]
+        
 
 # print(function_tests_in[0])
 
