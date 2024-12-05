@@ -147,6 +147,7 @@ for (id, name) in re.findall(type_pattern, content):
         type_name_id[name] = id
 
         if name in supported_types:
+            # print(f'|{name}|✅|')
             supported_types_count += 1
 
 supported_extension_types_count = 0
@@ -436,7 +437,7 @@ for string_type in string_types:
 
                 to_text_in, to_text_out = create_test(type_name, string_type, test_type_table, default_value, type_varlen, string_varlen)
                 from_text_in, from_text_out = create_test(string_type, type_name, text_type_table, default_value, string_varlen, type_varlen)
-                from_corrupted_text_in, from_corrupted_text_out = create_test(string_type, type_name, test_corrupted_text_data, default_value, string_varlen, type_varlen)
+                # from_corrupted_text_in, from_corrupted_text_out = create_test(string_type, type_name, test_corrupted_text_data, default_value, string_varlen, type_varlen)
 
                 text_tests_in += [to_text_in, from_text_in]
                 text_tests_out += [to_text_out, from_text_out]
@@ -457,8 +458,10 @@ for source_name, target_name in type_casts:
     if (source_name not in supported_types or target_name not in supported_types):
         continue
 
-    d = f'\'{get_from_data(target_name, 0)}\''
-    for default in ['NULL']:
+    dd = get_from_data(target_name, 0).translate(str.maketrans('', '', '\''))
+    d = f'\'{dd}\''
+    
+    for default in ['NULL', d]:
 
         for source_varlen in typmod_lens:
             if source_varlen is not None and source_name not in typmod_types:

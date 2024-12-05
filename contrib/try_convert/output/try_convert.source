@@ -3944,7 +3944,17 @@ select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '6'::int2) as v1, try_convert_by_sql(v, '6'::int2) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '9'::int4) as v1, try_convert_by_sql(v, '9'::int4) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3954,7 +3964,17 @@ select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, 
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '5.09526'::float4) as v1, try_convert_by_sql(v, '5.09526'::float4) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '2.6338905075109076'::float8) as v1, try_convert_by_sql(v, '2.6338905075109076'::float8) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3964,7 +3984,17 @@ select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '5.49803593494943'::numeric) as v1, try_convert_by_sql(v, '5.49803593494943'::numeric) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from tt_int2) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '2'::int8) as v1, try_convert_by_sql(v, '2'::int8) as v2 from tt_int2) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3974,7 +4004,17 @@ select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '9'::int4) as v1, try_convert_by_sql(v, '9'::int4) as v2 from tt_int2) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, NULL::float4) as v2 from tt_int2) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '5.09526'::float4) as v1, try_convert_by_sql(v, '5.09526'::float4) as v2 from tt_int2) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3984,7 +4024,17 @@ select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, 
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '2.6338905075109076'::float8) as v1, try_convert_by_sql(v, '2.6338905075109076'::float8) as v2 from tt_int2) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from tt_int2) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '5.49803593494943'::numeric) as v1, try_convert_by_sql(v, '5.49803593494943'::numeric) as v2 from tt_int2) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3994,7 +4044,17 @@ select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '2'::int8) as v1, try_convert_by_sql(v, '2'::int8) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NULL::int2) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '6'::int2) as v1, try_convert_by_sql(v, '6'::int2) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4004,7 +4064,17 @@ select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, 
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '5.09526'::float4) as v1, try_convert_by_sql(v, '5.09526'::float4) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '2.6338905075109076'::float8) as v1, try_convert_by_sql(v, '2.6338905075109076'::float8) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4014,7 +4084,17 @@ select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '5.49803593494943'::numeric) as v1, try_convert_by_sql(v, '5.49803593494943'::numeric) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from tt_float4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '2'::int8) as v1, try_convert_by_sql(v, '2'::int8) as v2 from tt_float4) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4024,7 +4104,17 @@ select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '6'::int2) as v1, try_convert_by_sql(v, '6'::int2) as v2 from tt_float4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_float4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '9'::int4) as v1, try_convert_by_sql(v, '9'::int4) as v2 from tt_float4) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4034,7 +4124,17 @@ select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, 
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '2.6338905075109076'::float8) as v1, try_convert_by_sql(v, '2.6338905075109076'::float8) as v2 from tt_float4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from tt_float4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '5.49803593494943'::numeric) as v1, try_convert_by_sql(v, '5.49803593494943'::numeric) as v2 from tt_float4) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4044,7 +4144,17 @@ select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '2'::int8) as v1, try_convert_by_sql(v, '2'::int8) as v2 from tt_float8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NULL::int2) as v2 from tt_float8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '6'::int2) as v1, try_convert_by_sql(v, '6'::int2) as v2 from tt_float8) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4054,7 +4164,17 @@ select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '9'::int4) as v1, try_convert_by_sql(v, '9'::int4) as v2 from tt_float8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, NULL::float4) as v2 from tt_float8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '5.09526'::float4) as v1, try_convert_by_sql(v, '5.09526'::float4) as v2 from tt_float8) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4064,7 +4184,17 @@ select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '5.49803593494943'::numeric) as v1, try_convert_by_sql(v, '5.49803593494943'::numeric) as v2 from tt_float8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from tt_numeric) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '2'::int8) as v1, try_convert_by_sql(v, '2'::int8) as v2 from tt_numeric) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4074,7 +4204,17 @@ select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '6'::int2) as v1, try_convert_by_sql(v, '6'::int2) as v2 from tt_numeric) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_numeric) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '9'::int4) as v1, try_convert_by_sql(v, '9'::int4) as v2 from tt_numeric) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4084,7 +4224,17 @@ select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, 
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '5.09526'::float4) as v1, try_convert_by_sql(v, '5.09526'::float4) as v2 from tt_numeric) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from tt_numeric) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '2.6338905075109076'::float8) as v1, try_convert_by_sql(v, '2.6338905075109076'::float8) as v2 from tt_numeric) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4094,7 +4244,17 @@ select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '5.49803593494943'::numeric) as v1, try_convert_by_sql(v, '5.49803593494943'::numeric) as v2 from tt_money) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::money) as v1, try_convert_by_sql(v, NULL::money) as v2 from tt_numeric) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '10'::money) as v1, try_convert_by_sql(v, '10'::money) as v2 from tt_numeric) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4104,7 +4264,17 @@ select * from (select try_convert(v, NULL::money) as v1, try_convert_by_sql(v, N
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '10'::money) as v1, try_convert_by_sql(v, '10'::money) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::money) as v1, try_convert_by_sql(v, NULL::money) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '10'::money) as v1, try_convert_by_sql(v, '10'::money) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4114,7 +4284,17 @@ select * from (select try_convert(v, NULL::bool) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, 'f'::bool) as v1, try_convert_by_sql(v, 'f'::bool) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '9'::int4) as v1, try_convert_by_sql(v, '9'::int4) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4124,7 +4304,17 @@ select * from (select try_convert(v, NULL::regtype) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, 'bool'::regtype) as v1, try_convert_by_sql(v, 'bool'::regtype) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::regtype) as v1, try_convert_by_sql(v, NULL::regtype) as v2 from tt_int2) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'bool'::regtype) as v1, try_convert_by_sql(v, 'bool'::regtype) as v2 from tt_int2) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4134,12 +4324,27 @@ select * from (select try_convert(v, NULL::regtype) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, 'bool'::regtype) as v1, try_convert_by_sql(v, 'bool'::regtype) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from tt_regtype) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '2'::int8) as v1, try_convert_by_sql(v, '2'::int8) as v2 from tt_regtype) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_regtype) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '9'::int4) as v1, try_convert_by_sql(v, '9'::int4) as v2 from tt_regtype) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4169,6 +4374,31 @@ select * from (select try_convert(v, NULL::varchar(20)) as v1, try_convert_by_sq
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar) as v1, try_convert_by_sql(v, 'All the worlds a stage,'::varchar) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(1)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 1) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(5)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 5) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(10)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 10) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(20)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 20) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_varchar) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
@@ -4194,6 +4424,31 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql_text(
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, 'All the worlds a stage,'::text) as v1, try_convert_by_sql(v, 'All the worlds a stage,'::text) as v2 from tt_varchar) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::text) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::text, 'varchar(1)'::text) as v2 from tt_varchar_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::text) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::text, 'varchar(5)'::text) as v2 from tt_varchar_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::text) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::text, 'varchar(10)'::text) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::text) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::text, 'varchar(20)'::text) as v2 from tt_varchar_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_char) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
@@ -4215,6 +4470,31 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql_text(
 (0 rows)
 
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql_text(v::text, NULL::text, 'char(20)'::text) as v2 from tt_char_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::text) as v1, try_convert_by_sql(v, 'All the worlds a stage,'::text) as v2 from tt_char) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::text) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::text, 'char(1)'::text) as v2 from tt_char_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::text) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::text, 'char(5)'::text) as v2 from tt_char_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::text) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::text, 'char(10)'::text) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::text) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::text, 'char(20)'::text) as v2 from tt_char_20) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4344,6 +4624,131 @@ select * from (select try_convert(v, NULL::varchar(20)) as v1, try_convert_by_sq
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar) as v1, try_convert_by_sql(v, 'All the worlds a stage,'::varchar) as v2 from tt_char) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(1)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 1) as v2 from tt_char) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(5)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 5) as v2 from tt_char) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(10)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 10) as v2 from tt_char) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(20)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 20) as v2 from tt_char) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::varchar, 'char(1)'::text) as v2 from tt_char_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'char(1)'::text, 1) as v2 from tt_char_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'char(1)'::text, 5) as v2 from tt_char_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'char(1)'::text, 10) as v2 from tt_char_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'char(1)'::text, 20) as v2 from tt_char_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::varchar, 'char(5)'::text) as v2 from tt_char_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'char(5)'::text, 1) as v2 from tt_char_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'char(5)'::text, 5) as v2 from tt_char_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'char(5)'::text, 10) as v2 from tt_char_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'char(5)'::text, 20) as v2 from tt_char_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::varchar, 'char(10)'::text) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'char(10)'::text, 1) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'char(10)'::text, 5) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'char(10)'::text, 10) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'char(10)'::text, 20) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::varchar, 'char(20)'::text) as v2 from tt_char_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'char(20)'::text, 1) as v2 from tt_char_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'char(20)'::text, 5) as v2 from tt_char_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'char(20)'::text, 10) as v2 from tt_char_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'char(20)'::text, 20) as v2 from tt_char_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
@@ -4365,6 +4770,31 @@ select * from (select try_convert(v, NULL::char(10)) as v1, try_convert_by_sql_w
 (0 rows)
 
 select * from (select try_convert(v, NULL::char(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 20) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char) as v1, try_convert_by_sql(v, 'All the worlds a stage,'::char) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(1)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::char, 1) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(5)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::char, 5) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(10)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::char, 10) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(20)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::char, 20) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4494,6 +4924,131 @@ select * from (select try_convert(v, NULL::char(20)) as v1, try_convert_by_sql_t
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, 'All the worlds a stage,'::char) as v1, try_convert_by_sql(v, 'All the worlds a stage,'::char) as v2 from tt_varchar) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(1)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::char, 1) as v2 from tt_varchar) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(5)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::char, 5) as v2 from tt_varchar) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(10)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::char, 10) as v2 from tt_varchar) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(20)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::char, 20) as v2 from tt_varchar) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::char, 'varchar(1)'::text) as v2 from tt_varchar_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::char, 'varchar(1)'::text, 1) as v2 from tt_varchar_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::char, 'varchar(1)'::text, 5) as v2 from tt_varchar_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::char, 'varchar(1)'::text, 10) as v2 from tt_varchar_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::char, 'varchar(1)'::text, 20) as v2 from tt_varchar_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::char, 'varchar(5)'::text) as v2 from tt_varchar_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::char, 'varchar(5)'::text, 1) as v2 from tt_varchar_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::char, 'varchar(5)'::text, 5) as v2 from tt_varchar_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::char, 'varchar(5)'::text, 10) as v2 from tt_varchar_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::char, 'varchar(5)'::text, 20) as v2 from tt_varchar_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::char, 'varchar(10)'::text) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::char, 'varchar(10)'::text, 1) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::char, 'varchar(10)'::text, 5) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::char, 'varchar(10)'::text, 10) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::char, 'varchar(10)'::text, 20) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::char, 'varchar(20)'::text) as v2 from tt_varchar_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::char, 'varchar(20)'::text, 1) as v2 from tt_varchar_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::char, 'varchar(20)'::text, 5) as v2 from tt_varchar_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::char, 'varchar(20)'::text, 10) as v2 from tt_varchar_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::char, 'varchar(20)'::text, 20) as v2 from tt_varchar_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_char) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
@@ -4515,6 +5070,31 @@ select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql_text(
 (0 rows)
 
 select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql_text(v::text, NULL::int4, 'char(20)'::text) as v2 from tt_char_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '9'::int4) as v1, try_convert_by_sql(v, '9'::int4) as v2 from tt_char) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '9'::int4) as v1, try_convert_by_sql_text(v::text, '9'::int4, 'char(1)'::text) as v2 from tt_char_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '9'::int4) as v1, try_convert_by_sql_text(v::text, '9'::int4, 'char(5)'::text) as v2 from tt_char_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '9'::int4) as v1, try_convert_by_sql_text(v::text, '9'::int4, 'char(10)'::text) as v2 from tt_char_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '9'::int4) as v1, try_convert_by_sql_text(v::text, '9'::int4, 'char(20)'::text) as v2 from tt_char_20) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4544,7 +5124,37 @@ select * from (select try_convert(v, NULL::char(20)) as v1, try_convert_by_sql_w
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, 'All the worlds a stage,'::char) as v1, try_convert_by_sql(v, 'All the worlds a stage,'::char) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(1)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::char, 1) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(5)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::char, 5) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(10)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::char, 10) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::char(20)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::char, 20) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NULL::date) as v2 from tt_abstime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '2015-10-28'::date) as v1, try_convert_by_sql(v, '2015-10-28'::date) as v2 from tt_abstime) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4554,7 +5164,17 @@ select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '13:35:45'::time) as v1, try_convert_by_sql(v, '13:35:45'::time) as v2 from tt_abstime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from tt_abstime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '2015-10-28 16:35:45'::timestamp) as v1, try_convert_by_sql(v, '2015-10-28 16:35:45'::timestamp) as v2 from tt_abstime) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4564,7 +5184,17 @@ select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sq
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '2015-10-28 13:35:45+00:00'::timestamptz) as v1, try_convert_by_sql(v, '2015-10-28 13:35:45+00:00'::timestamptz) as v2 from tt_abstime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from tt_reltime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '16736 days, 13:35:45'::interval) as v1, try_convert_by_sql(v, '16736 days, 13:35:45'::interval) as v2 from tt_reltime) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4574,7 +5204,17 @@ select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '2015-10-28 16:35:45'::timestamp) as v1, try_convert_by_sql(v, '2015-10-28 16:35:45'::timestamp) as v2 from tt_date) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from tt_date) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '2015-10-28 13:35:45+00:00'::timestamptz) as v1, try_convert_by_sql(v, '2015-10-28 13:35:45+00:00'::timestamptz) as v2 from tt_date) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4584,7 +5224,17 @@ select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '16736 days, 13:35:45'::interval) as v1, try_convert_by_sql(v, '16736 days, 13:35:45'::interval) as v2 from tt_time) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, NULL::timetz) as v2 from tt_time) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '13:35:45 UTC'::timetz) as v1, try_convert_by_sql(v, '13:35:45 UTC'::timetz) as v2 from tt_time) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4594,7 +5244,17 @@ select * from (select try_convert(v, NULL::abstime) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '2015-10-28 16:35:45'::abstime) as v1, try_convert_by_sql(v, '2015-10-28 16:35:45'::abstime) as v2 from tt_timestamp) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NULL::date) as v2 from tt_timestamp) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '2015-10-28'::date) as v1, try_convert_by_sql(v, '2015-10-28'::date) as v2 from tt_timestamp) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4604,7 +5264,17 @@ select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '13:35:45'::time) as v1, try_convert_by_sql(v, '13:35:45'::time) as v2 from tt_timestamp) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from tt_timestamp) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '2015-10-28 13:35:45+00:00'::timestamptz) as v1, try_convert_by_sql(v, '2015-10-28 13:35:45+00:00'::timestamptz) as v2 from tt_timestamp) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4614,7 +5284,17 @@ select * from (select try_convert(v, NULL::abstime) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '2015-10-28 16:35:45'::abstime) as v1, try_convert_by_sql(v, '2015-10-28 16:35:45'::abstime) as v2 from tt_timestamptz) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NULL::date) as v2 from tt_timestamptz) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '2015-10-28'::date) as v1, try_convert_by_sql(v, '2015-10-28'::date) as v2 from tt_timestamptz) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4624,7 +5304,17 @@ select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '13:35:45'::time) as v1, try_convert_by_sql(v, '13:35:45'::time) as v2 from tt_timestamptz) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from tt_timestamptz) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '2015-10-28 16:35:45'::timestamp) as v1, try_convert_by_sql(v, '2015-10-28 16:35:45'::timestamp) as v2 from tt_timestamptz) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4634,7 +5324,17 @@ select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, 
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '13:35:45 UTC'::timetz) as v1, try_convert_by_sql(v, '13:35:45 UTC'::timetz) as v2 from tt_timestamptz) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::reltime) as v1, try_convert_by_sql(v, NULL::reltime) as v2 from tt_interval) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '16736 days, 13:35:45'::reltime) as v1, try_convert_by_sql(v, '16736 days, 13:35:45'::reltime) as v2 from tt_interval) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4644,7 +5344,17 @@ select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '13:35:45'::time) as v1, try_convert_by_sql(v, '13:35:45'::time) as v2 from tt_interval) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from tt_timetz) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '13:35:45'::time) as v1, try_convert_by_sql(v, '13:35:45'::time) as v2 from tt_timetz) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4654,7 +5364,17 @@ select * from (select try_convert(v, NULL::abstime) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '2015-10-28 16:35:45'::abstime) as v1, try_convert_by_sql(v, '2015-10-28 16:35:45'::abstime) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_abstime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '9'::int4) as v1, try_convert_by_sql(v, '9'::int4) as v2 from tt_abstime) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4664,7 +5384,17 @@ select * from (select try_convert(v, NULL::reltime) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '16736 days, 13:35:45'::reltime) as v1, try_convert_by_sql(v, '16736 days, 13:35:45'::reltime) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_reltime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '9'::int4) as v1, try_convert_by_sql(v, '9'::int4) as v2 from tt_reltime) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4674,7 +5404,17 @@ select * from (select try_convert(v, NULL::inet) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '192.168.100.128/25'::inet) as v1, try_convert_by_sql(v, '192.168.100.128/25'::inet) as v2 from tt_cidr) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::cidr) as v1, try_convert_by_sql(v, NULL::cidr) as v2 from tt_inet) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '192.168.100.128/25'::cidr) as v1, try_convert_by_sql(v, '192.168.100.128/25'::cidr) as v2 from tt_inet) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4804,6 +5544,131 @@ select * from (select try_convert(v, NULL::varbit(20)) as v1, try_convert_by_sql
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '1'::varbit) as v1, try_convert_by_sql(v, '1'::varbit) as v2 from tt_bit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(1)) as v1, try_convert_by_sql_with_len_out(v, '1'::varbit, 1) as v2 from tt_bit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(5)) as v1, try_convert_by_sql_with_len_out(v, '1'::varbit, 5) as v2 from tt_bit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(10)) as v1, try_convert_by_sql_with_len_out(v, '1'::varbit, 10) as v2 from tt_bit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(20)) as v1, try_convert_by_sql_with_len_out(v, '1'::varbit, 20) as v2 from tt_bit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit) as v1, try_convert_by_sql_text(v::text, '1'::varbit, 'bit(1)'::text) as v2 from tt_bit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'bit(1)'::text, 1) as v2 from tt_bit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'bit(1)'::text, 5) as v2 from tt_bit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'bit(1)'::text, 10) as v2 from tt_bit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'bit(1)'::text, 20) as v2 from tt_bit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit) as v1, try_convert_by_sql_text(v::text, '1'::varbit, 'bit(5)'::text) as v2 from tt_bit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'bit(5)'::text, 1) as v2 from tt_bit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'bit(5)'::text, 5) as v2 from tt_bit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'bit(5)'::text, 10) as v2 from tt_bit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'bit(5)'::text, 20) as v2 from tt_bit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit) as v1, try_convert_by_sql_text(v::text, '1'::varbit, 'bit(10)'::text) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'bit(10)'::text, 1) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'bit(10)'::text, 5) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'bit(10)'::text, 10) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'bit(10)'::text, 20) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit) as v1, try_convert_by_sql_text(v::text, '1'::varbit, 'bit(20)'::text) as v2 from tt_bit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'bit(20)'::text, 1) as v2 from tt_bit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'bit(20)'::text, 5) as v2 from tt_bit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'bit(20)'::text, 10) as v2 from tt_bit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'bit(20)'::text, 20) as v2 from tt_bit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::bit) as v1, try_convert_by_sql(v, NULL::bit) as v2 from tt_varbit) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
@@ -4929,6 +5794,131 @@ select * from (select try_convert(v, NULL::bit(20)) as v1, try_convert_by_sql_te
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '1'::bit) as v1, try_convert_by_sql(v, '1'::bit) as v2 from tt_varbit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(1)) as v1, try_convert_by_sql_with_len_out(v, '1'::bit, 1) as v2 from tt_varbit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(5)) as v1, try_convert_by_sql_with_len_out(v, '1'::bit, 5) as v2 from tt_varbit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(10)) as v1, try_convert_by_sql_with_len_out(v, '1'::bit, 10) as v2 from tt_varbit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(20)) as v1, try_convert_by_sql_with_len_out(v, '1'::bit, 20) as v2 from tt_varbit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit) as v1, try_convert_by_sql_text(v::text, '1'::bit, 'varbit(1)'::text) as v2 from tt_varbit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'varbit(1)'::text, 1) as v2 from tt_varbit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'varbit(1)'::text, 5) as v2 from tt_varbit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'varbit(1)'::text, 10) as v2 from tt_varbit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'varbit(1)'::text, 20) as v2 from tt_varbit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit) as v1, try_convert_by_sql_text(v::text, '1'::bit, 'varbit(5)'::text) as v2 from tt_varbit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'varbit(5)'::text, 1) as v2 from tt_varbit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'varbit(5)'::text, 5) as v2 from tt_varbit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'varbit(5)'::text, 10) as v2 from tt_varbit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'varbit(5)'::text, 20) as v2 from tt_varbit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit) as v1, try_convert_by_sql_text(v::text, '1'::bit, 'varbit(10)'::text) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'varbit(10)'::text, 1) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'varbit(10)'::text, 5) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'varbit(10)'::text, 10) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'varbit(10)'::text, 20) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit) as v1, try_convert_by_sql_text(v::text, '1'::bit, 'varbit(20)'::text) as v2 from tt_varbit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'varbit(20)'::text, 1) as v2 from tt_varbit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'varbit(20)'::text, 5) as v2 from tt_varbit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'varbit(20)'::text, 10) as v2 from tt_varbit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'varbit(20)'::text, 20) as v2 from tt_varbit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::bit) as v1, try_convert_by_sql(v, NULL::bit) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
@@ -4950,6 +5940,31 @@ select * from (select try_convert(v, NULL::bit(10)) as v1, try_convert_by_sql_wi
 (0 rows)
 
 select * from (select try_convert(v, NULL::bit(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 20) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit) as v1, try_convert_by_sql(v, '1'::bit) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(1)) as v1, try_convert_by_sql_with_len_out(v, '1'::bit, 1) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(5)) as v1, try_convert_by_sql_with_len_out(v, '1'::bit, 5) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(10)) as v1, try_convert_by_sql_with_len_out(v, '1'::bit, 10) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(20)) as v1, try_convert_by_sql_with_len_out(v, '1'::bit, 20) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4979,6 +5994,31 @@ select * from (select try_convert(v, NULL::bit(20)) as v1, try_convert_by_sql_wi
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '1'::bit) as v1, try_convert_by_sql(v, '1'::bit) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(1)) as v1, try_convert_by_sql_with_len_out(v, '1'::bit, 1) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(5)) as v1, try_convert_by_sql_with_len_out(v, '1'::bit, 5) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(10)) as v1, try_convert_by_sql_with_len_out(v, '1'::bit, 10) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(20)) as v1, try_convert_by_sql_with_len_out(v, '1'::bit, 20) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from tt_bit) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
@@ -5000,6 +6040,31 @@ select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql_text(
 (0 rows)
 
 select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql_text(v::text, NULL::int8, 'bit(20)'::text) as v2 from tt_bit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '2'::int8) as v1, try_convert_by_sql(v, '2'::int8) as v2 from tt_bit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '2'::int8) as v1, try_convert_by_sql_text(v::text, '2'::int8, 'bit(1)'::text) as v2 from tt_bit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '2'::int8) as v1, try_convert_by_sql_text(v::text, '2'::int8, 'bit(5)'::text) as v2 from tt_bit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '2'::int8) as v1, try_convert_by_sql_text(v::text, '2'::int8, 'bit(10)'::text) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '2'::int8) as v1, try_convert_by_sql_text(v::text, '2'::int8, 'bit(20)'::text) as v2 from tt_bit_20) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -5029,7 +6094,37 @@ select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql_text(
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '9'::int4) as v1, try_convert_by_sql(v, '9'::int4) as v2 from tt_bit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '9'::int4) as v1, try_convert_by_sql_text(v::text, '9'::int4, 'bit(1)'::text) as v2 from tt_bit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '9'::int4) as v1, try_convert_by_sql_text(v::text, '9'::int4, 'bit(5)'::text) as v2 from tt_bit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '9'::int4) as v1, try_convert_by_sql_text(v::text, '9'::int4, 'bit(10)'::text) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '9'::int4) as v1, try_convert_by_sql_text(v::text, '9'::int4, 'bit(20)'::text) as v2 from tt_bit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_cidr) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::text) as v1, try_convert_by_sql(v, 'All the worlds a stage,'::text) as v2 from tt_cidr) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -5039,7 +6134,17 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, 'All the worlds a stage,'::text) as v1, try_convert_by_sql(v, 'All the worlds a stage,'::text) as v2 from tt_inet) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::text) as v1, try_convert_by_sql(v, 'All the worlds a stage,'::text) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -5049,7 +6154,17 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, 'All the worlds a stage,'::text) as v1, try_convert_by_sql(v, 'All the worlds a stage,'::text) as v2 from tt_xml) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql(v, NULL::xml) as v2 from tt_text) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '<menu id="file" value="File"> <popup> <menuitem value="New" onclick="CreateNewDoc()" /> <menuitem value="Open" onclick="OpenDoc()" /> <menuitem value="Close" onclick="CloseDoc()" /> </popup> </menu>'::xml) as v1, try_convert_by_sql(v, '<menu id="file" value="File"> <popup> <menuitem value="New" onclick="CreateNewDoc()" /> <menuitem value="Open" onclick="OpenDoc()" /> <menuitem value="Close" onclick="CloseDoc()" /> </popup> </menu>'::xml) as v2 from tt_text) as t(v1, v2) where v1::text is distinct from  v2::text;
  v1 | v2 
 ----+----
 (0 rows)
@@ -5079,6 +6194,31 @@ select * from (select try_convert(v, NULL::varchar(20)) as v1, try_convert_by_sq
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar) as v1, try_convert_by_sql(v, 'All the worlds a stage,'::varchar) as v2 from tt_cidr) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(1)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 1) as v2 from tt_cidr) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(5)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 5) as v2 from tt_cidr) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(10)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 10) as v2 from tt_cidr) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(20)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 20) as v2 from tt_cidr) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_inet) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
@@ -5100,6 +6240,31 @@ select * from (select try_convert(v, NULL::varchar(10)) as v1, try_convert_by_sq
 (0 rows)
 
 select * from (select try_convert(v, NULL::varchar(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 20) as v2 from tt_inet) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar) as v1, try_convert_by_sql(v, 'All the worlds a stage,'::varchar) as v2 from tt_inet) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(1)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 1) as v2 from tt_inet) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(5)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 5) as v2 from tt_inet) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(10)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 10) as v2 from tt_inet) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(20)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 20) as v2 from tt_inet) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -5129,6 +6294,31 @@ select * from (select try_convert(v, NULL::varchar(20)) as v1, try_convert_by_sq
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar) as v1, try_convert_by_sql(v, 'All the worlds a stage,'::varchar) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(1)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 1) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(5)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 5) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(10)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 10) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(20)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 20) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_xml) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
@@ -5154,6 +6344,31 @@ select * from (select try_convert(v, NULL::varchar(20)) as v1, try_convert_by_sq
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar) as v1, try_convert_by_sql(v, 'All the worlds a stage,'::varchar) as v2 from tt_xml) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(1)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 1) as v2 from tt_xml) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(5)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 5) as v2 from tt_xml) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(10)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 10) as v2 from tt_xml) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(20)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 20) as v2 from tt_xml) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql(v, NULL::xml) as v2 from tt_varchar) as t(v1, v2) where v1::text is distinct from  v2::text;
  v1 | v2 
 ----+----
@@ -5175,6 +6390,31 @@ select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql_text(v
 (0 rows)
 
 select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql_text(v::text, NULL::xml, 'varchar(20)'::text) as v2 from tt_varchar_20) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '<menu id="file" value="File"> <popup> <menuitem value="New" onclick="CreateNewDoc()" /> <menuitem value="Open" onclick="OpenDoc()" /> <menuitem value="Close" onclick="CloseDoc()" /> </popup> </menu>'::xml) as v1, try_convert_by_sql(v, '<menu id="file" value="File"> <popup> <menuitem value="New" onclick="CreateNewDoc()" /> <menuitem value="Open" onclick="OpenDoc()" /> <menuitem value="Close" onclick="CloseDoc()" /> </popup> </menu>'::xml) as v2 from tt_varchar) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '<menu id="file" value="File"> <popup> <menuitem value="New" onclick="CreateNewDoc()" /> <menuitem value="Open" onclick="OpenDoc()" /> <menuitem value="Close" onclick="CloseDoc()" /> </popup> </menu>'::xml) as v1, try_convert_by_sql_text(v::text, '<menu id="file" value="File"> <popup> <menuitem value="New" onclick="CreateNewDoc()" /> <menuitem value="Open" onclick="OpenDoc()" /> <menuitem value="Close" onclick="CloseDoc()" /> </popup> </menu>'::xml, 'varchar(1)'::text) as v2 from tt_varchar_1) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '<menu id="file" value="File"> <popup> <menuitem value="New" onclick="CreateNewDoc()" /> <menuitem value="Open" onclick="OpenDoc()" /> <menuitem value="Close" onclick="CloseDoc()" /> </popup> </menu>'::xml) as v1, try_convert_by_sql_text(v::text, '<menu id="file" value="File"> <popup> <menuitem value="New" onclick="CreateNewDoc()" /> <menuitem value="Open" onclick="OpenDoc()" /> <menuitem value="Close" onclick="CloseDoc()" /> </popup> </menu>'::xml, 'varchar(5)'::text) as v2 from tt_varchar_5) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '<menu id="file" value="File"> <popup> <menuitem value="New" onclick="CreateNewDoc()" /> <menuitem value="Open" onclick="OpenDoc()" /> <menuitem value="Close" onclick="CloseDoc()" /> </popup> </menu>'::xml) as v1, try_convert_by_sql_text(v::text, '<menu id="file" value="File"> <popup> <menuitem value="New" onclick="CreateNewDoc()" /> <menuitem value="Open" onclick="OpenDoc()" /> <menuitem value="Close" onclick="CloseDoc()" /> </popup> </menu>'::xml, 'varchar(10)'::text) as v2 from tt_varchar_10) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '<menu id="file" value="File"> <popup> <menuitem value="New" onclick="CreateNewDoc()" /> <menuitem value="Open" onclick="OpenDoc()" /> <menuitem value="Close" onclick="CloseDoc()" /> </popup> </menu>'::xml) as v1, try_convert_by_sql_text(v::text, '<menu id="file" value="File"> <popup> <menuitem value="New" onclick="CreateNewDoc()" /> <menuitem value="Open" onclick="OpenDoc()" /> <menuitem value="Close" onclick="CloseDoc()" /> </popup> </menu>'::xml, 'varchar(20)'::text) as v2 from tt_varchar_20) as t(v1, v2) where v1::text is distinct from  v2::text;
  v1 | v2 
 ----+----
 (0 rows)
@@ -5304,7 +6544,137 @@ select * from (select try_convert(v, NULL::varchar(20)) as v1, try_convert_by_sq
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar) as v1, try_convert_by_sql(v, 'All the worlds a stage,'::varchar) as v2 from tt_varchar) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(1)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 1) as v2 from tt_varchar) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(5)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 5) as v2 from tt_varchar) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(10)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 10) as v2 from tt_varchar) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(20)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 20) as v2 from tt_varchar) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::varchar, 'varchar(1)'::text) as v2 from tt_varchar_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'varchar(1)'::text, 1) as v2 from tt_varchar_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'varchar(1)'::text, 5) as v2 from tt_varchar_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'varchar(1)'::text, 10) as v2 from tt_varchar_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'varchar(1)'::text, 20) as v2 from tt_varchar_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::varchar, 'varchar(5)'::text) as v2 from tt_varchar_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'varchar(5)'::text, 1) as v2 from tt_varchar_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'varchar(5)'::text, 5) as v2 from tt_varchar_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'varchar(5)'::text, 10) as v2 from tt_varchar_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'varchar(5)'::text, 20) as v2 from tt_varchar_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::varchar, 'varchar(10)'::text) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'varchar(10)'::text, 1) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'varchar(10)'::text, 5) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'varchar(10)'::text, 10) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'varchar(10)'::text, 20) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::varchar, 'varchar(20)'::text) as v2 from tt_varchar_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'varchar(20)'::text, 1) as v2 from tt_varchar_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'varchar(20)'::text, 5) as v2 from tt_varchar_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'varchar(20)'::text, 10) as v2 from tt_varchar_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, 'All the worlds a stage,'::varchar, 'varchar(20)'::text, 20) as v2 from tt_varchar_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from tt_time) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '13:35:45'::time) as v1, try_convert_by_sql(v, '13:35:45'::time) as v2 from tt_time) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -5314,7 +6684,17 @@ select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '2015-10-28 16:35:45'::timestamp) as v1, try_convert_by_sql(v, '2015-10-28 16:35:45'::timestamp) as v2 from tt_timestamp) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from tt_timestamptz) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '2015-10-28 13:35:45+00:00'::timestamptz) as v1, try_convert_by_sql(v, '2015-10-28 13:35:45+00:00'::timestamptz) as v2 from tt_timestamptz) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -5324,7 +6704,17 @@ select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '16736 days, 13:35:45'::interval) as v1, try_convert_by_sql(v, '16736 days, 13:35:45'::interval) as v2 from tt_interval) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, NULL::timetz) as v2 from tt_timetz) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '13:35:45 UTC'::timetz) as v1, try_convert_by_sql(v, '13:35:45 UTC'::timetz) as v2 from tt_timetz) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -5454,6 +6844,131 @@ select * from (select try_convert(v, NULL::bit(20)) as v1, try_convert_by_sql_te
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '1'::bit) as v1, try_convert_by_sql(v, '1'::bit) as v2 from tt_bit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(1)) as v1, try_convert_by_sql_with_len_out(v, '1'::bit, 1) as v2 from tt_bit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(5)) as v1, try_convert_by_sql_with_len_out(v, '1'::bit, 5) as v2 from tt_bit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(10)) as v1, try_convert_by_sql_with_len_out(v, '1'::bit, 10) as v2 from tt_bit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(20)) as v1, try_convert_by_sql_with_len_out(v, '1'::bit, 20) as v2 from tt_bit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit) as v1, try_convert_by_sql_text(v::text, '1'::bit, 'bit(1)'::text) as v2 from tt_bit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'bit(1)'::text, 1) as v2 from tt_bit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'bit(1)'::text, 5) as v2 from tt_bit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'bit(1)'::text, 10) as v2 from tt_bit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'bit(1)'::text, 20) as v2 from tt_bit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit) as v1, try_convert_by_sql_text(v::text, '1'::bit, 'bit(5)'::text) as v2 from tt_bit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'bit(5)'::text, 1) as v2 from tt_bit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'bit(5)'::text, 5) as v2 from tt_bit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'bit(5)'::text, 10) as v2 from tt_bit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'bit(5)'::text, 20) as v2 from tt_bit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit) as v1, try_convert_by_sql_text(v::text, '1'::bit, 'bit(10)'::text) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'bit(10)'::text, 1) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'bit(10)'::text, 5) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'bit(10)'::text, 10) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'bit(10)'::text, 20) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit) as v1, try_convert_by_sql_text(v::text, '1'::bit, 'bit(20)'::text) as v2 from tt_bit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'bit(20)'::text, 1) as v2 from tt_bit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'bit(20)'::text, 5) as v2 from tt_bit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'bit(20)'::text, 10) as v2 from tt_bit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::bit(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::bit, 'bit(20)'::text, 20) as v2 from tt_bit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varbit) as v1, try_convert_by_sql(v, NULL::varbit) as v2 from tt_varbit) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
@@ -5579,7 +7094,137 @@ select * from (select try_convert(v, NULL::varbit(20)) as v1, try_convert_by_sql
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '1'::varbit) as v1, try_convert_by_sql(v, '1'::varbit) as v2 from tt_varbit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(1)) as v1, try_convert_by_sql_with_len_out(v, '1'::varbit, 1) as v2 from tt_varbit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(5)) as v1, try_convert_by_sql_with_len_out(v, '1'::varbit, 5) as v2 from tt_varbit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(10)) as v1, try_convert_by_sql_with_len_out(v, '1'::varbit, 10) as v2 from tt_varbit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(20)) as v1, try_convert_by_sql_with_len_out(v, '1'::varbit, 20) as v2 from tt_varbit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit) as v1, try_convert_by_sql_text(v::text, '1'::varbit, 'varbit(1)'::text) as v2 from tt_varbit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'varbit(1)'::text, 1) as v2 from tt_varbit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'varbit(1)'::text, 5) as v2 from tt_varbit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'varbit(1)'::text, 10) as v2 from tt_varbit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'varbit(1)'::text, 20) as v2 from tt_varbit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit) as v1, try_convert_by_sql_text(v::text, '1'::varbit, 'varbit(5)'::text) as v2 from tt_varbit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'varbit(5)'::text, 1) as v2 from tt_varbit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'varbit(5)'::text, 5) as v2 from tt_varbit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'varbit(5)'::text, 10) as v2 from tt_varbit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'varbit(5)'::text, 20) as v2 from tt_varbit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit) as v1, try_convert_by_sql_text(v::text, '1'::varbit, 'varbit(10)'::text) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'varbit(10)'::text, 1) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'varbit(10)'::text, 5) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'varbit(10)'::text, 10) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'varbit(10)'::text, 20) as v2 from tt_varbit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit) as v1, try_convert_by_sql_text(v::text, '1'::varbit, 'varbit(20)'::text) as v2 from tt_varbit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(1)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'varbit(20)'::text, 1) as v2 from tt_varbit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(5)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'varbit(20)'::text, 5) as v2 from tt_varbit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(10)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'varbit(20)'::text, 10) as v2 from tt_varbit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1'::varbit(20)) as v1, try_convert_by_sql_text_with_len_out(v::text, '1'::varbit, 'varbit(20)'::text, 20) as v2 from tt_varbit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from tt_numeric) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '5.49803593494943'::numeric) as v1, try_convert_by_sql(v, '5.49803593494943'::numeric) as v2 from tt_numeric) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -5589,7 +7234,17 @@ select * from (select try_convert(v, NULL::jsonb) as v1, try_convert_by_sql(v, N
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '{"glossary": {"title": "example glossary","GlossDiv": {"title": "S","GlossList": {"GlossEntry": {"ID": "SGML","SortAs": "SGML","GlossTerm": "Standard Generalized Markup Language","Acronym": "SGML","Abbrev": "ISO 8879:1986","GlossDef": {"para": "A meta-markup language, used to create markup languages such as DocBook.","GlossSeeAlso": ["GML", "XML"]},"GlossSee": "markup"}}}}}'::jsonb) as v1, try_convert_by_sql(v, '{"glossary": {"title": "example glossary","GlossDiv": {"title": "S","GlossList": {"GlossEntry": {"ID": "SGML","SortAs": "SGML","GlossTerm": "Standard Generalized Markup Language","Acronym": "SGML","Abbrev": "ISO 8879:1986","GlossDef": {"para": "A meta-markup language, used to create markup languages such as DocBook.","GlossSeeAlso": ["GML", "XML"]},"GlossSee": "markup"}}}}}'::jsonb) as v2 from tt_json) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::json) as v1, try_convert_by_sql(v, NULL::json) as v2 from tt_jsonb) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '{"glossary": {"title": "example glossary","GlossDiv": {"title": "S","GlossList": {"GlossEntry": {"ID": "SGML","SortAs": "SGML","GlossTerm": "Standard Generalized Markup Language","Acronym": "SGML","Abbrev": "ISO 8879:1986","GlossDef": {"para": "A meta-markup language, used to create markup languages such as DocBook.","GlossSeeAlso": ["GML", "XML"]},"GlossSee": "markup"}}}}}'::json) as v1, try_convert_by_sql(v, '{"glossary": {"title": "example glossary","GlossDiv": {"title": "S","GlossList": {"GlossEntry": {"ID": "SGML","SortAs": "SGML","GlossTerm": "Standard Generalized Markup Language","Acronym": "SGML","Abbrev": "ISO 8879:1986","GlossDef": {"para": "A meta-markup language, used to create markup languages such as DocBook.","GlossSeeAlso": ["GML", "XML"]},"GlossSee": "markup"}}}}}'::json) as v2 from tt_jsonb) as t(v1, v2) where v1::text is distinct from  v2::text;
  v1 | v2 
 ----+----
 (0 rows)
@@ -5599,7 +7254,17 @@ select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '1.1 + 1.0i'::complex) as v1, try_convert_by_sql(v, '1.1 + 1.0i'::complex) as v2 from tt_float8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v, NULL::complex) as v2 from tt_float4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1.1 + 1.0i'::complex) as v1, try_convert_by_sql(v, '1.1 + 1.0i'::complex) as v2 from tt_float4) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -5609,7 +7274,17 @@ select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '1.1 + 1.0i'::complex) as v1, try_convert_by_sql(v, '1.1 + 1.0i'::complex) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v, NULL::complex) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1.1 + 1.0i'::complex) as v1, try_convert_by_sql(v, '1.1 + 1.0i'::complex) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -5619,7 +7294,17 @@ select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '1.1 + 1.0i'::complex) as v1, try_convert_by_sql(v, '1.1 + 1.0i'::complex) as v2 from tt_int2) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v, NULL::complex) as v2 from tt_point) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, '1.1 + 1.0i'::complex) as v1, try_convert_by_sql(v, '1.1 + 1.0i'::complex) as v2 from tt_point) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -5629,12 +7314,27 @@ select * from (select try_convert(v, NULL::point) as v1, try_convert_by_sql(v, N
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '(1, 2)'::point) as v1, try_convert_by_sql(v, '(1, 2)'::point) as v2 from tt_complex) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v, NULL::complex) as v2 from tt_numeric) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, '1.1 + 1.0i'::complex) as v1, try_convert_by_sql(v, '1.1 + 1.0i'::complex) as v2 from tt_numeric) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_citext) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::text) as v1, try_convert_by_sql(v, 'All the worlds a stage,'::text) as v2 from tt_citext) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -5664,7 +7364,37 @@ select * from (select try_convert(v, NULL::varchar(20)) as v1, try_convert_by_sq
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar) as v1, try_convert_by_sql(v, 'All the worlds a stage,'::varchar) as v2 from tt_citext) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(1)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 1) as v2 from tt_citext) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(5)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 5) as v2 from tt_citext) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(10)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 10) as v2 from tt_citext) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::varchar(20)) as v1, try_convert_by_sql_with_len_out(v, 'All the worlds a stage,'::varchar, 20) as v2 from tt_citext) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::citext) as v1, try_convert_by_sql(v, 'All the worlds a stage,'::citext) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -5694,7 +7424,37 @@ select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql_tex
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, 'All the worlds a stage,'::citext) as v1, try_convert_by_sql(v, 'All the worlds a stage,'::citext) as v2 from tt_varchar) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::citext) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::citext, 'varchar(1)'::text) as v2 from tt_varchar_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::citext) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::citext, 'varchar(5)'::text) as v2 from tt_varchar_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::citext) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::citext, 'varchar(10)'::text) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::citext) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::citext, 'varchar(20)'::text) as v2 from tt_varchar_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_inet) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, 'All the worlds a stage,'::citext) as v1, try_convert_by_sql(v, 'All the worlds a stage,'::citext) as v2 from tt_inet) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
