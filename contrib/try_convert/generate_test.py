@@ -7,33 +7,45 @@ supported_types = [
     'float8',
     'float4',
     'numeric',
+    'complex',
+
     'bool',
+
     'bit',              # BITSTRING
     'varbit',
+
     'date',             # TIME
     'time',
     'timetz',
     'timestamp',
     'timestamptz',
     'interval',
-    # 'box',              # GEOMENTY
+    'abstime',
+    'reltime',
+
+    'point',            # GEOMENTY
     # 'circle',
     # 'line',
     # 'lseg',
     # 'path',
-    # 'point',
+    # 'box',
     # 'polygon',
+
     'cidr',             # IP
     'inet',
     'macaddr',
-    'json',             # JSON
+
+    'json',             # OBJ
     'jsonb',
     'xml',
-    # 'bytea',            
+
+    # 'bytea',   
+
     'char',             # STRINGS
     # 'bpchar',
     'varchar',
     'text',
+
     'money',
     # # 'pg_lsn',
     # # 'tsquery',
@@ -79,6 +91,7 @@ def get_typemod_table(t, l):
 uncomparable_types = [
     'json',
     'xml',
+    'point',
 ]
 
 extensions = [

@@ -1,6 +1,6 @@
 -- SCRIPT-GENERATED TEST for TRY_CONVERT
--- Tests 26 types of 91 from pg_types.h
--- Tests 86 cast of 206 from pg_cast.h
+-- Tests 30 types of 91 from pg_types.h
+-- Tests 106 cast of 206 from pg_cast.h
 -- Tests 1 types of 1 from extensions
 -- Tests 5 casts of 8 from extensions
 create schema tryconvert;
@@ -146,6 +146,26 @@ CREATE FUNCTION try_convert_by_sql(_in numeric, INOUT _out ANYELEMENT)
 $func$
     BEGIN
         EXECUTE format('SELECT %L::numeric::%s', $1, pg_typeof(_out))
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE FUNCTION try_convert_by_sql_with_len_out(_in complex, INOUT _out ANYELEMENT, len_out int)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::complex::%s(%s)', $1, pg_typeof(_out), len_out::text)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE FUNCTION try_convert_by_sql(_in complex, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::complex::%s', $1, pg_typeof(_out))
         INTO  _out;
         EXCEPTION WHEN others THEN
         -- do nothing: _out already carries default
@@ -326,6 +346,66 @@ CREATE FUNCTION try_convert_by_sql(_in interval, INOUT _out ANYELEMENT)
 $func$
     BEGIN
         EXECUTE format('SELECT %L::interval::%s', $1, pg_typeof(_out))
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE FUNCTION try_convert_by_sql_with_len_out(_in abstime, INOUT _out ANYELEMENT, len_out int)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::abstime::%s(%s)', $1, pg_typeof(_out), len_out::text)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE FUNCTION try_convert_by_sql(_in abstime, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::abstime::%s', $1, pg_typeof(_out))
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE FUNCTION try_convert_by_sql_with_len_out(_in reltime, INOUT _out ANYELEMENT, len_out int)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::reltime::%s(%s)', $1, pg_typeof(_out), len_out::text)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE FUNCTION try_convert_by_sql(_in reltime, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::reltime::%s', $1, pg_typeof(_out))
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE FUNCTION try_convert_by_sql_with_len_out(_in point, INOUT _out ANYELEMENT, len_out int)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::point::%s(%s)', $1, pg_typeof(_out), len_out::text)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE FUNCTION try_convert_by_sql(_in point, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::point::%s', $1, pg_typeof(_out))
         INTO  _out;
         EXCEPTION WHEN others THEN
         -- do nothing: _out already carries default
@@ -741,6 +821,34 @@ CREATE TABLE tt_varchar_10_of_numeric (id serial, v varchar(10)) DISTRIBUTED BY 
 INSERT INTO tt_varchar_10_of_numeric(id, v) SELECT row_number() OVER(), v::varchar(10) from tt_temp;
 CREATE TABLE tt_varchar_20_of_numeric (id serial, v varchar(20)) DISTRIBUTED BY (id);
 INSERT INTO tt_varchar_20_of_numeric(id, v) SELECT row_number() OVER(), v::varchar(20) from tt_temp;
+CREATE TABLE tt_complex (id serial, v complex) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;
+COPY tt_temp from '@abs_srcdir@/data/tt_complex.data';
+INSERT INTO tt_complex(id, v) SELECT row_number() OVER(), v::complex from tt_temp;
+CREATE TABLE tt_text_of_complex (id serial, v text) DISTRIBUTED BY (id);
+INSERT INTO tt_text_of_complex(id, v) SELECT row_number() OVER(), v::text from tt_temp;
+CREATE TABLE tt_citext_of_complex (id serial, v citext) DISTRIBUTED BY (id);
+INSERT INTO tt_citext_of_complex(id, v) SELECT row_number() OVER(), v::citext from tt_temp;
+CREATE TABLE tt_char_of_complex (id serial, v char) DISTRIBUTED BY (id);
+INSERT INTO tt_char_of_complex(id, v) SELECT row_number() OVER(), v::char from tt_temp;
+CREATE TABLE tt_char_1_of_complex (id serial, v char(1)) DISTRIBUTED BY (id);
+INSERT INTO tt_char_1_of_complex(id, v) SELECT row_number() OVER(), v::char(1) from tt_temp;
+CREATE TABLE tt_char_5_of_complex (id serial, v char(5)) DISTRIBUTED BY (id);
+INSERT INTO tt_char_5_of_complex(id, v) SELECT row_number() OVER(), v::char(5) from tt_temp;
+CREATE TABLE tt_char_10_of_complex (id serial, v char(10)) DISTRIBUTED BY (id);
+INSERT INTO tt_char_10_of_complex(id, v) SELECT row_number() OVER(), v::char(10) from tt_temp;
+CREATE TABLE tt_char_20_of_complex (id serial, v char(20)) DISTRIBUTED BY (id);
+INSERT INTO tt_char_20_of_complex(id, v) SELECT row_number() OVER(), v::char(20) from tt_temp;
+CREATE TABLE tt_varchar_of_complex (id serial, v varchar) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_of_complex(id, v) SELECT row_number() OVER(), v::varchar from tt_temp;
+CREATE TABLE tt_varchar_1_of_complex (id serial, v varchar(1)) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_1_of_complex(id, v) SELECT row_number() OVER(), v::varchar(1) from tt_temp;
+CREATE TABLE tt_varchar_5_of_complex (id serial, v varchar(5)) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_5_of_complex(id, v) SELECT row_number() OVER(), v::varchar(5) from tt_temp;
+CREATE TABLE tt_varchar_10_of_complex (id serial, v varchar(10)) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_10_of_complex(id, v) SELECT row_number() OVER(), v::varchar(10) from tt_temp;
+CREATE TABLE tt_varchar_20_of_complex (id serial, v varchar(20)) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_20_of_complex(id, v) SELECT row_number() OVER(), v::varchar(20) from tt_temp;
 CREATE TABLE tt_bool (id serial, v bool) DISTRIBUTED BY (id);
 DELETE FROM tt_temp;
 COPY tt_temp from '@abs_srcdir@/data/tt_bool.data';
@@ -1217,6 +1325,90 @@ CREATE TABLE tt_varchar_10_of_interval (id serial, v varchar(10)) DISTRIBUTED BY
 INSERT INTO tt_varchar_10_of_interval(id, v) SELECT row_number() OVER(), v::varchar(10) from tt_temp;
 CREATE TABLE tt_varchar_20_of_interval (id serial, v varchar(20)) DISTRIBUTED BY (id);
 INSERT INTO tt_varchar_20_of_interval(id, v) SELECT row_number() OVER(), v::varchar(20) from tt_temp;
+CREATE TABLE tt_abstime (id serial, v abstime) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;
+COPY tt_temp from '@abs_srcdir@/data/tt_abstime.data';
+INSERT INTO tt_abstime(id, v) SELECT row_number() OVER(), v::abstime from tt_temp;
+CREATE TABLE tt_text_of_abstime (id serial, v text) DISTRIBUTED BY (id);
+INSERT INTO tt_text_of_abstime(id, v) SELECT row_number() OVER(), v::text from tt_temp;
+CREATE TABLE tt_citext_of_abstime (id serial, v citext) DISTRIBUTED BY (id);
+INSERT INTO tt_citext_of_abstime(id, v) SELECT row_number() OVER(), v::citext from tt_temp;
+CREATE TABLE tt_char_of_abstime (id serial, v char) DISTRIBUTED BY (id);
+INSERT INTO tt_char_of_abstime(id, v) SELECT row_number() OVER(), v::char from tt_temp;
+CREATE TABLE tt_char_1_of_abstime (id serial, v char(1)) DISTRIBUTED BY (id);
+INSERT INTO tt_char_1_of_abstime(id, v) SELECT row_number() OVER(), v::char(1) from tt_temp;
+CREATE TABLE tt_char_5_of_abstime (id serial, v char(5)) DISTRIBUTED BY (id);
+INSERT INTO tt_char_5_of_abstime(id, v) SELECT row_number() OVER(), v::char(5) from tt_temp;
+CREATE TABLE tt_char_10_of_abstime (id serial, v char(10)) DISTRIBUTED BY (id);
+INSERT INTO tt_char_10_of_abstime(id, v) SELECT row_number() OVER(), v::char(10) from tt_temp;
+CREATE TABLE tt_char_20_of_abstime (id serial, v char(20)) DISTRIBUTED BY (id);
+INSERT INTO tt_char_20_of_abstime(id, v) SELECT row_number() OVER(), v::char(20) from tt_temp;
+CREATE TABLE tt_varchar_of_abstime (id serial, v varchar) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_of_abstime(id, v) SELECT row_number() OVER(), v::varchar from tt_temp;
+CREATE TABLE tt_varchar_1_of_abstime (id serial, v varchar(1)) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_1_of_abstime(id, v) SELECT row_number() OVER(), v::varchar(1) from tt_temp;
+CREATE TABLE tt_varchar_5_of_abstime (id serial, v varchar(5)) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_5_of_abstime(id, v) SELECT row_number() OVER(), v::varchar(5) from tt_temp;
+CREATE TABLE tt_varchar_10_of_abstime (id serial, v varchar(10)) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_10_of_abstime(id, v) SELECT row_number() OVER(), v::varchar(10) from tt_temp;
+CREATE TABLE tt_varchar_20_of_abstime (id serial, v varchar(20)) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_20_of_abstime(id, v) SELECT row_number() OVER(), v::varchar(20) from tt_temp;
+CREATE TABLE tt_reltime (id serial, v reltime) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;
+COPY tt_temp from '@abs_srcdir@/data/tt_reltime.data';
+INSERT INTO tt_reltime(id, v) SELECT row_number() OVER(), v::reltime from tt_temp;
+CREATE TABLE tt_text_of_reltime (id serial, v text) DISTRIBUTED BY (id);
+INSERT INTO tt_text_of_reltime(id, v) SELECT row_number() OVER(), v::text from tt_temp;
+CREATE TABLE tt_citext_of_reltime (id serial, v citext) DISTRIBUTED BY (id);
+INSERT INTO tt_citext_of_reltime(id, v) SELECT row_number() OVER(), v::citext from tt_temp;
+CREATE TABLE tt_char_of_reltime (id serial, v char) DISTRIBUTED BY (id);
+INSERT INTO tt_char_of_reltime(id, v) SELECT row_number() OVER(), v::char from tt_temp;
+CREATE TABLE tt_char_1_of_reltime (id serial, v char(1)) DISTRIBUTED BY (id);
+INSERT INTO tt_char_1_of_reltime(id, v) SELECT row_number() OVER(), v::char(1) from tt_temp;
+CREATE TABLE tt_char_5_of_reltime (id serial, v char(5)) DISTRIBUTED BY (id);
+INSERT INTO tt_char_5_of_reltime(id, v) SELECT row_number() OVER(), v::char(5) from tt_temp;
+CREATE TABLE tt_char_10_of_reltime (id serial, v char(10)) DISTRIBUTED BY (id);
+INSERT INTO tt_char_10_of_reltime(id, v) SELECT row_number() OVER(), v::char(10) from tt_temp;
+CREATE TABLE tt_char_20_of_reltime (id serial, v char(20)) DISTRIBUTED BY (id);
+INSERT INTO tt_char_20_of_reltime(id, v) SELECT row_number() OVER(), v::char(20) from tt_temp;
+CREATE TABLE tt_varchar_of_reltime (id serial, v varchar) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_of_reltime(id, v) SELECT row_number() OVER(), v::varchar from tt_temp;
+CREATE TABLE tt_varchar_1_of_reltime (id serial, v varchar(1)) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_1_of_reltime(id, v) SELECT row_number() OVER(), v::varchar(1) from tt_temp;
+CREATE TABLE tt_varchar_5_of_reltime (id serial, v varchar(5)) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_5_of_reltime(id, v) SELECT row_number() OVER(), v::varchar(5) from tt_temp;
+CREATE TABLE tt_varchar_10_of_reltime (id serial, v varchar(10)) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_10_of_reltime(id, v) SELECT row_number() OVER(), v::varchar(10) from tt_temp;
+CREATE TABLE tt_varchar_20_of_reltime (id serial, v varchar(20)) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_20_of_reltime(id, v) SELECT row_number() OVER(), v::varchar(20) from tt_temp;
+CREATE TABLE tt_point (id serial, v point) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;
+COPY tt_temp from '@abs_srcdir@/data/tt_point.data';
+INSERT INTO tt_point(id, v) SELECT row_number() OVER(), v::point from tt_temp;
+CREATE TABLE tt_text_of_point (id serial, v text) DISTRIBUTED BY (id);
+INSERT INTO tt_text_of_point(id, v) SELECT row_number() OVER(), v::text from tt_temp;
+CREATE TABLE tt_citext_of_point (id serial, v citext) DISTRIBUTED BY (id);
+INSERT INTO tt_citext_of_point(id, v) SELECT row_number() OVER(), v::citext from tt_temp;
+CREATE TABLE tt_char_of_point (id serial, v char) DISTRIBUTED BY (id);
+INSERT INTO tt_char_of_point(id, v) SELECT row_number() OVER(), v::char from tt_temp;
+CREATE TABLE tt_char_1_of_point (id serial, v char(1)) DISTRIBUTED BY (id);
+INSERT INTO tt_char_1_of_point(id, v) SELECT row_number() OVER(), v::char(1) from tt_temp;
+CREATE TABLE tt_char_5_of_point (id serial, v char(5)) DISTRIBUTED BY (id);
+INSERT INTO tt_char_5_of_point(id, v) SELECT row_number() OVER(), v::char(5) from tt_temp;
+CREATE TABLE tt_char_10_of_point (id serial, v char(10)) DISTRIBUTED BY (id);
+INSERT INTO tt_char_10_of_point(id, v) SELECT row_number() OVER(), v::char(10) from tt_temp;
+CREATE TABLE tt_char_20_of_point (id serial, v char(20)) DISTRIBUTED BY (id);
+INSERT INTO tt_char_20_of_point(id, v) SELECT row_number() OVER(), v::char(20) from tt_temp;
+CREATE TABLE tt_varchar_of_point (id serial, v varchar) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_of_point(id, v) SELECT row_number() OVER(), v::varchar from tt_temp;
+CREATE TABLE tt_varchar_1_of_point (id serial, v varchar(1)) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_1_of_point(id, v) SELECT row_number() OVER(), v::varchar(1) from tt_temp;
+CREATE TABLE tt_varchar_5_of_point (id serial, v varchar(5)) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_5_of_point(id, v) SELECT row_number() OVER(), v::varchar(5) from tt_temp;
+CREATE TABLE tt_varchar_10_of_point (id serial, v varchar(10)) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_10_of_point(id, v) SELECT row_number() OVER(), v::varchar(10) from tt_temp;
+CREATE TABLE tt_varchar_20_of_point (id serial, v varchar(20)) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_20_of_point(id, v) SELECT row_number() OVER(), v::varchar(20) from tt_temp;
 CREATE TABLE tt_cidr (id serial, v cidr) DISTRIBUTED BY (id);
 DELETE FROM tt_temp;
 COPY tt_temp from '@abs_srcdir@/data/tt_cidr.data';
@@ -1838,6 +2030,16 @@ select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_complex) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v, NULL::complex) as v2 from tt_text_of_complex) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
@@ -2004,6 +2206,36 @@ select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NU
 (0 rows)
 
 select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from tt_text_of_interval) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_abstime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::abstime) as v1, try_convert_by_sql(v, NULL::abstime) as v2 from tt_text_of_abstime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_reltime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::reltime) as v1, try_convert_by_sql(v, NULL::reltime) as v2 from tt_text_of_reltime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_point) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::point) as v1, try_convert_by_sql(v, NULL::point) as v2 from tt_text_of_point) as t(v1, v2) where v1::text is distinct from  v2::text;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2268,6 +2500,16 @@ select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_complex) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v, NULL::complex) as v2 from tt_citext_of_complex) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
@@ -2434,6 +2676,36 @@ select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, 
 (0 rows)
 
 select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from tt_citext_of_interval) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_abstime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::abstime) as v1, try_convert_by_sql(v, NULL::abstime) as v2 from tt_citext_of_abstime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_reltime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::reltime) as v1, try_convert_by_sql(v, NULL::reltime) as v2 from tt_citext_of_reltime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_point) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::point) as v1, try_convert_by_sql(v, NULL::point) as v2 from tt_citext_of_point) as t(v1, v2) where v1::text is distinct from  v2::text;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2698,6 +2970,16 @@ select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_complex) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v, NULL::complex) as v2 from tt_char_of_complex) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
@@ -2864,6 +3146,36 @@ select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NU
 (0 rows)
 
 select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from tt_char_of_interval) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_abstime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::abstime) as v1, try_convert_by_sql(v, NULL::abstime) as v2 from tt_char_of_abstime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_reltime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::reltime) as v1, try_convert_by_sql(v, NULL::reltime) as v2 from tt_char_of_reltime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_point) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::point) as v1, try_convert_by_sql(v, NULL::point) as v2 from tt_char_of_point) as t(v1, v2) where v1::text is distinct from  v2::text;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3128,6 +3440,16 @@ select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_complex) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v, NULL::complex) as v2 from tt_varchar_of_complex) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
@@ -3294,6 +3616,36 @@ select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v,
 (0 rows)
 
 select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from tt_varchar_of_interval) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_abstime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::abstime) as v1, try_convert_by_sql(v, NULL::abstime) as v2 from tt_varchar_of_abstime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_reltime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::reltime) as v1, try_convert_by_sql(v, NULL::reltime) as v2 from tt_varchar_of_reltime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_point) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::point) as v1, try_convert_by_sql(v, NULL::point) as v2 from tt_varchar_of_point) as t(v1, v2) where v1::text is distinct from  v2::text;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4079,6 +4431,31 @@ select * from (select try_convert(v, NULL::char(20)) as v1, try_convert_by_sql_w
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NULL::date) as v2 from tt_abstime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from tt_abstime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from tt_abstime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from tt_abstime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from tt_reltime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from tt_date) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
@@ -4099,6 +4476,11 @@ select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, 
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::abstime) as v1, try_convert_by_sql(v, NULL::abstime) as v2 from tt_timestamp) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NULL::date) as v2 from tt_timestamp) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
@@ -4110,6 +4492,11 @@ select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NU
 (0 rows)
 
 select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from tt_timestamp) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::abstime) as v1, try_convert_by_sql(v, NULL::abstime) as v2 from tt_timestamptz) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -4134,12 +4521,37 @@ select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, 
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::reltime) as v1, try_convert_by_sql(v, NULL::reltime) as v2 from tt_interval) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from tt_interval) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from tt_timetz) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::abstime) as v1, try_convert_by_sql(v, NULL::abstime) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_abstime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::reltime) as v1, try_convert_by_sql(v, NULL::reltime) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_reltime) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -5065,6 +5477,46 @@ select * from (select try_convert(v, NULL::jsonb) as v1, try_convert_by_sql(v, N
 (0 rows)
 
 select * from (select try_convert(v, NULL::json) as v1, try_convert_by_sql(v, NULL::json) as v2 from tt_jsonb) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v, NULL::complex) as v2 from tt_float8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v, NULL::complex) as v2 from tt_float4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v, NULL::complex) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v, NULL::complex) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v, NULL::complex) as v2 from tt_int2) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v, NULL::complex) as v2 from tt_point) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::point) as v1, try_convert_by_sql(v, NULL::point) as v2 from tt_complex) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v, NULL::complex) as v2 from tt_numeric) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)

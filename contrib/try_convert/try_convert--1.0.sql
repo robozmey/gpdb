@@ -50,6 +50,7 @@ select add_type_for_try_convert('int8'::regtype);
 select add_type_for_try_convert('float4'::regtype);
 select add_type_for_try_convert('float8'::regtype);
 select add_type_for_try_convert('numeric'::regtype);
+select add_type_for_try_convert('complex'::regtype);
 
 -- TIME
 select add_type_for_try_convert('date'::regtype);
@@ -58,6 +59,8 @@ select add_type_for_try_convert('timetz'::regtype);
 select add_type_for_try_convert('timestamp'::regtype);
 select add_type_for_try_convert('timestamptz'::regtype);
 select add_type_for_try_convert('interval'::regtype);
+select add_type_for_try_convert('abstime'::regtype);
+select add_type_for_try_convert('reltime'::regtype);
 
 -- CHARACTER
 select add_type_for_try_convert('char'::regtype);
@@ -74,6 +77,9 @@ select add_type_for_try_convert('bool'::regtype);
 select add_type_for_try_convert('money'::regtype);
 
 select add_type_for_try_convert('uuid'::regtype);
+
+-- GEOMETRY
+select add_type_for_try_convert('point'::regtype);
 
 -- IP/MAC
 select add_type_for_try_convert('cidr'::regtype);
