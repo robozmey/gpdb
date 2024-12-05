@@ -516,7 +516,23 @@ test_million_out = test_million_data + \
 
 ### NESTED CASTS
 
-# TODO
+value = '42::int4'
+
+for level in range(100):
+    value = f'try_convert(try_convert({value}, NULL::text), NULL::int4)'
+
+
+test_nested_query = f'select {value} as v;\n'
+
+test_nested_result = \
+    ' v  \n' \
+    '----\n' \
+    ' 42\n' \
+    '(1 row)\n' \
+
+test_nested_in = test_nested_query
+test_nested_out = test_nested_query + test_nested_result
+
 
 ### CONSTRUCT TEST
 
@@ -532,6 +548,8 @@ test_str = '\n'.join([
     '\n'.join(function_tests_in), \
     '-- MILLION TESTS', \
     test_million_in,
+    '-- NESTED TESTS', \
+    test_nested_in,
     test_footer
     ]) + '\n'
 
@@ -551,6 +569,8 @@ test_str = '\n'.join([
     '\n'.join(function_tests_out), \
     '-- MILLION TESTS', \
     test_million_out,
+    '-- NESTED TESTS', \
+    test_nested_out,
     remove_empty_lines(test_footer)
     ]) + '\n'
 
