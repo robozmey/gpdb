@@ -53,6 +53,8 @@ supported_types = [
     # # 'txid_snapshot',
     'uuid',
 
+    'regtype',          # SYSTEM
+
     'citext',
 ]
 
@@ -196,6 +198,10 @@ test_header = \
     f'CREATE EXTENSION IF NOT EXISTS try_convert;\n' \
     f'-- end_ignore\n' \
     f'\n' \
+
+for type_name in supported_types:
+    test_header += \
+        f'select add_type_for_try_convert(\'{type_name}\'::regtype);'
 
 for extension in extensions:
     test_header += \

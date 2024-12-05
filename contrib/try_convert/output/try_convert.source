@@ -1,6 +1,6 @@
 -- SCRIPT-GENERATED TEST for TRY_CONVERT
--- Tests 30 types of 91 from pg_types.h
--- Tests 106 cast of 206 from pg_cast.h
+-- Tests 31 types of 91 from pg_types.h
+-- Tests 111 cast of 206 from pg_cast.h
 -- Tests 1 types of 1 from extensions
 -- Tests 5 casts of 8 from extensions
 create schema tryconvert;
@@ -8,7 +8,7 @@ set search_path = tryconvert;
 -- start_ignore
 CREATE EXTENSION IF NOT EXISTS try_convert;
 -- end_ignore
--- start_ignore
+select add_type_for_try_convert('int8'::regtype);select add_type_for_try_convert('int4'::regtype);select add_type_for_try_convert('int2'::regtype);select add_type_for_try_convert('float8'::regtype);select add_type_for_try_convert('float4'::regtype);select add_type_for_try_convert('numeric'::regtype);select add_type_for_try_convert('complex'::regtype);select add_type_for_try_convert('bool'::regtype);select add_type_for_try_convert('bit'::regtype);select add_type_for_try_convert('varbit'::regtype);select add_type_for_try_convert('date'::regtype);select add_type_for_try_convert('time'::regtype);select add_type_for_try_convert('timetz'::regtype);select add_type_for_try_convert('timestamp'::regtype);select add_type_for_try_convert('timestamptz'::regtype);select add_type_for_try_convert('interval'::regtype);select add_type_for_try_convert('abstime'::regtype);select add_type_for_try_convert('reltime'::regtype);select add_type_for_try_convert('point'::regtype);select add_type_for_try_convert('cidr'::regtype);select add_type_for_try_convert('inet'::regtype);select add_type_for_try_convert('macaddr'::regtype);select add_type_for_try_convert('json'::regtype);select add_type_for_try_convert('jsonb'::regtype);select add_type_for_try_convert('xml'::regtype);select add_type_for_try_convert('char'::regtype);select add_type_for_try_convert('varchar'::regtype);select add_type_for_try_convert('text'::regtype);select add_type_for_try_convert('money'::regtype);select add_type_for_try_convert('uuid'::regtype);select add_type_for_try_convert('regtype'::regtype);select add_type_for_try_convert('citext'::regtype);-- start_ignore
 CREATE EXTENSION IF NOT EXISTS citext;
 -- end_ignore
 CREATE FUNCTION try_convert_by_sql_text(_in text, INOUT _out ANYELEMENT, source_type text)
@@ -626,6 +626,26 @@ CREATE FUNCTION try_convert_by_sql(_in uuid, INOUT _out ANYELEMENT)
 $func$
     BEGIN
         EXECUTE format('SELECT %L::uuid::%s', $1, pg_typeof(_out))
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE FUNCTION try_convert_by_sql_with_len_out(_in regtype, INOUT _out ANYELEMENT, len_out int)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::regtype::%s(%s)', $1, pg_typeof(_out), len_out::text)
+        INTO  _out;
+        EXCEPTION WHEN others THEN
+        -- do nothing: _out already carries default
+    END
+$func$;
+CREATE FUNCTION try_convert_by_sql(_in regtype, INOUT _out ANYELEMENT)
+  LANGUAGE plpgsql AS
+$func$
+    BEGIN
+        EXECUTE format('SELECT %L::regtype::%s', $1, pg_typeof(_out))
         INTO  _out;
         EXCEPTION WHEN others THEN
         -- do nothing: _out already carries default
@@ -1941,6 +1961,34 @@ CREATE TABLE tt_varchar_10_of_uuid (id serial, v varchar(10)) DISTRIBUTED BY (id
 INSERT INTO tt_varchar_10_of_uuid(id, v) SELECT row_number() OVER(), v::varchar(10) from tt_temp;
 CREATE TABLE tt_varchar_20_of_uuid (id serial, v varchar(20)) DISTRIBUTED BY (id);
 INSERT INTO tt_varchar_20_of_uuid(id, v) SELECT row_number() OVER(), v::varchar(20) from tt_temp;
+CREATE TABLE tt_regtype (id serial, v regtype) DISTRIBUTED BY (id);
+DELETE FROM tt_temp;
+COPY tt_temp from '@abs_srcdir@/data/tt_regtype.data';
+INSERT INTO tt_regtype(id, v) SELECT row_number() OVER(), v::regtype from tt_temp;
+CREATE TABLE tt_text_of_regtype (id serial, v text) DISTRIBUTED BY (id);
+INSERT INTO tt_text_of_regtype(id, v) SELECT row_number() OVER(), v::text from tt_temp;
+CREATE TABLE tt_citext_of_regtype (id serial, v citext) DISTRIBUTED BY (id);
+INSERT INTO tt_citext_of_regtype(id, v) SELECT row_number() OVER(), v::citext from tt_temp;
+CREATE TABLE tt_char_of_regtype (id serial, v char) DISTRIBUTED BY (id);
+INSERT INTO tt_char_of_regtype(id, v) SELECT row_number() OVER(), v::char from tt_temp;
+CREATE TABLE tt_char_1_of_regtype (id serial, v char(1)) DISTRIBUTED BY (id);
+INSERT INTO tt_char_1_of_regtype(id, v) SELECT row_number() OVER(), v::char(1) from tt_temp;
+CREATE TABLE tt_char_5_of_regtype (id serial, v char(5)) DISTRIBUTED BY (id);
+INSERT INTO tt_char_5_of_regtype(id, v) SELECT row_number() OVER(), v::char(5) from tt_temp;
+CREATE TABLE tt_char_10_of_regtype (id serial, v char(10)) DISTRIBUTED BY (id);
+INSERT INTO tt_char_10_of_regtype(id, v) SELECT row_number() OVER(), v::char(10) from tt_temp;
+CREATE TABLE tt_char_20_of_regtype (id serial, v char(20)) DISTRIBUTED BY (id);
+INSERT INTO tt_char_20_of_regtype(id, v) SELECT row_number() OVER(), v::char(20) from tt_temp;
+CREATE TABLE tt_varchar_of_regtype (id serial, v varchar) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_of_regtype(id, v) SELECT row_number() OVER(), v::varchar from tt_temp;
+CREATE TABLE tt_varchar_1_of_regtype (id serial, v varchar(1)) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_1_of_regtype(id, v) SELECT row_number() OVER(), v::varchar(1) from tt_temp;
+CREATE TABLE tt_varchar_5_of_regtype (id serial, v varchar(5)) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_5_of_regtype(id, v) SELECT row_number() OVER(), v::varchar(5) from tt_temp;
+CREATE TABLE tt_varchar_10_of_regtype (id serial, v varchar(10)) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_10_of_regtype(id, v) SELECT row_number() OVER(), v::varchar(10) from tt_temp;
+CREATE TABLE tt_varchar_20_of_regtype (id serial, v varchar(20)) DISTRIBUTED BY (id);
+INSERT INTO tt_varchar_20_of_regtype(id, v) SELECT row_number() OVER(), v::varchar(20) from tt_temp;
 CREATE TABLE tt_citext (id serial, v citext) DISTRIBUTED BY (id);
 DELETE FROM tt_temp;
 COPY tt_temp from '@abs_srcdir@/data/tt_citext.data';
@@ -2430,6 +2478,16 @@ select * from (select try_convert(v, NULL::uuid) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_regtype) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::regtype) as v1, try_convert_by_sql(v, NULL::regtype) as v2 from tt_text_of_regtype) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_citext) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
@@ -2896,6 +2954,16 @@ select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, 
 (0 rows)
 
 select * from (select try_convert(v, NULL::uuid) as v1, try_convert_by_sql(v, NULL::uuid) as v2 from tt_citext_of_uuid) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_regtype) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::regtype) as v1, try_convert_by_sql(v, NULL::regtype) as v2 from tt_citext_of_regtype) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3370,6 +3438,16 @@ select * from (select try_convert(v, NULL::uuid) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_regtype) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::regtype) as v1, try_convert_by_sql(v, NULL::regtype) as v2 from tt_char_of_regtype) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_citext) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
@@ -3840,6 +3918,16 @@ select * from (select try_convert(v, NULL::uuid) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_regtype) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::regtype) as v1, try_convert_by_sql(v, NULL::regtype) as v2 from tt_varchar_of_regtype) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_citext) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
@@ -4027,6 +4115,31 @@ select * from (select try_convert(v, NULL::bool) as v1, try_convert_by_sql(v, NU
 (0 rows)
 
 select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::regtype) as v1, try_convert_by_sql(v, NULL::regtype) as v2 from tt_int8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::regtype) as v1, try_convert_by_sql(v, NULL::regtype) as v2 from tt_int2) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::regtype) as v1, try_convert_by_sql(v, NULL::regtype) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from tt_regtype) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_regtype) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
