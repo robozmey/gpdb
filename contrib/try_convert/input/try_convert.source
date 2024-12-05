@@ -3113,4 +3113,12 @@ select * from (select try_convert(v, 'All the worlds a stage,'::citext) as v1, t
 select * from (select try_convert(v, 'All the worlds a stage,'::citext) as v1, try_convert_by_sql_text(v::text, 'All the worlds a stage,'::citext, 'varchar(20)'::text) as v2 from tt_varchar_20) as t(v1, v2) where v1 is distinct from v2;
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_inet) as t(v1, v2) where v1 is distinct from v2;
 select * from (select try_convert(v, 'All the worlds a stage,'::citext) as v1, try_convert_by_sql(v, 'All the worlds a stage,'::citext) as v2 from tt_inet) as t(v1, v2) where v1 is distinct from v2;
+-- MILLION TESTS
+DROP TABLE IF EXISTS text_ints; CREATE TABLE text_ints (v text) DISTRIBUTED BY (v);
+INSERT INTO text_ints(v) SELECT (random()*1000)::int4::text FROM generate_series(1,1000000);
+DROP TABLE IF EXISTS text_error_ints; CREATE TABLE text_error_ints (v text) DISTRIBUTED BY (v);
+INSERT INTO text_error_ints(v) SELECT (random()*1000000 + 1000000)::int8::text FROM generate_series(1,1000000);
+SELECT count(*) FROM (SELECT try_convert(v, NULL::int2) as v FROM text_ints) as t(v) WHERE v IS NOT NULL;
+SELECT count(*) FROM (SELECT try_convert(v, NULL::int2) as v FROM text_error_ints) as t(v) WHERE v IS NULL;
+
 reset search_path;

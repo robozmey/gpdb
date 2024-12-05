@@ -490,7 +490,29 @@ for source_name, target_name in type_casts:
 
 ### ONE MILLION ERRORS
 
-# TODO
+test_million = ''
+
+test_million_data = \
+    'DROP TABLE IF EXISTS text_ints; CREATE TABLE text_ints (v text) DISTRIBUTED BY (v);\n' \
+    'INSERT INTO text_ints(v) SELECT (random()*1000)::int4::text FROM generate_series(1,1000000);\n' \
+    'DROP TABLE IF EXISTS text_error_ints; CREATE TABLE text_error_ints (v text) DISTRIBUTED BY (v);\n' \
+    'INSERT INTO text_error_ints(v) SELECT (random()*1000000 + 1000000)::int8::text FROM generate_series(1,1000000);\n' \
+
+test_million_query1 = \
+    'SELECT count(*) FROM (SELECT try_convert(v, NULL::int2) as v FROM text_ints) as t(v) WHERE v IS NOT NULL;\n'
+test_million_query2 = \
+    'SELECT count(*) FROM (SELECT try_convert(v, NULL::int2) as v FROM text_error_ints) as t(v) WHERE v IS NULL;\n'
+
+test_million_result = \
+    '  count  \n' \
+    '---------\n' \
+    ' 1000000\n' \
+    '(1 row)\n' \
+
+test_million_in = test_million_data + test_million_query1 + test_million_query2
+test_million_out = test_million_data + \
+    test_million_query1 + test_million_result + '\n' + \
+    test_million_query2 + test_million_result
 
 ### NESTED CASTS
 
@@ -508,6 +530,8 @@ test_str = '\n'.join([
     '\n'.join(text_tests_in), \
     '-- FUNCTION TESTS', \
     '\n'.join(function_tests_in), \
+    '-- MILLION TESTS', \
+    test_million_in,
     test_footer
     ]) + '\n'
 
@@ -525,6 +549,8 @@ test_str = '\n'.join([
     '\n'.join(text_tests_out), \
     '-- FUNCTION TESTS', \
     '\n'.join(function_tests_out), \
+    '-- MILLION TESTS', \
+    test_million_out,
     remove_empty_lines(test_footer)
     ]) + '\n'
 
