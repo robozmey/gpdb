@@ -79,6 +79,7 @@
 #include "libpq/pqformat.h"
 #include "libpq/pqsignal.h"
 #include "mb/pg_wchar.h"
+#include "nodes/miscnodes.h"
 #include "miscadmin.h"
 #include "postmaster/postmaster.h"
 #include "postmaster/syslogger.h"
@@ -828,6 +829,30 @@ errfinish_and_return(int dummy __attribute__((unused)),...)
 	errno = saved_errno;                /*CDB*/
 
 	return edata_copy;
+}
+
+/*
+ *	errsave_start
+ */
+bool
+errsave_start(struct Node *context, 
+				const char *filename, int lineno,
+		 		const char *funcname, const char *domain)
+{
+	ErrorSaveContext *escontext;
+
+	/*
+	 * Do we have a context for soft error reporting?  If not, just punt to
+	 * errstart().
+	 */
+	if (context == NULL || !IsA(context, ErrorSaveContext))
+		return errstart(ERROR, filename, lineno, funcname, domain);
+
+	/* Report that a soft error was detected */
+	escontext = (ErrorSaveContext *) context;
+	escontext->error_occurred = true;
+
+	return false;
 }
 
 

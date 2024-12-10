@@ -20,6 +20,9 @@
 #include <sys/time.h>
 #include <setjmp.h>
 
+/* We cannot include nodes.h yet, so forward-declare struct Node */
+struct Node;
+
 /* Error level codes */
 #define DEBUG5		10			/* Debugging messages, in categories of
 								 * decreasing detail. */
@@ -201,6 +204,8 @@ void elog_internalerror(const char *filename, int lineno, const char *funcname)
 	} while (0)
 
 extern bool errstart(int elevel, const char *filename, int lineno,
+		 const char *funcname, const char *domain);
+extern bool errsave_start(struct Node* context, const char *filename, int lineno,
 		 const char *funcname, const char *domain);
 extern void errfinish(int dummy,...);
 

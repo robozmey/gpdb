@@ -4,6 +4,7 @@
 #include "utils/syscache.h"
 #include "utils/lsyscache.h"
 #include "nodes/nodeFuncs.h"
+#include "nodes/miscnodes.h"
 
 #include "funcapi.h"
 
@@ -237,10 +238,10 @@ try_convert_via_io(Datum value, Oid sourceTypeId, Oid targetTypeId, int32 target
         // value cannot be null
         string = OutputFunctionCall(&outfunc, value);
 
-        res = InputFunctionCall(&infunc,
+        res = InputFunctionCallSafe(&infunc,
                                 string,
                                 intypioparam,
-                                -1);
+                                -1, NULL);
     }
 	PG_CATCH();
 	{
