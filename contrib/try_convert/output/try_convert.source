@@ -7464,6 +7464,10 @@ DROP TABLE IF EXISTS text_ints; CREATE TABLE text_ints (v text) DISTRIBUTED BY (
 INSERT INTO text_ints(v) SELECT (random()*1000)::int4::text FROM generate_series(1,1000000);
 DROP TABLE IF EXISTS text_error_ints; CREATE TABLE text_error_ints (v text) DISTRIBUTED BY (v);
 INSERT INTO text_error_ints(v) SELECT (random()*1000000 + 1000000)::int8::text FROM generate_series(1,1000000);
+DROP TABLE IF EXISTS int4_ints; CREATE TABLE int4_ints (v int4) DISTRIBUTED BY (v);
+INSERT INTO int4_ints(v) SELECT (random()*1000)::int4 FROM generate_series(1,1000000);
+DROP TABLE IF EXISTS int4_error_ints; CREATE TABLE int4_error_ints (v int4) DISTRIBUTED BY (v);
+INSERT INTO int4_error_ints(v) SELECT (random()*1000000 + 1000000)::int4 FROM generate_series(1,1000000);
 SELECT count(*) FROM (SELECT try_convert(v, NULL::int2) as v FROM text_ints) as t(v) WHERE v IS NOT NULL;
   count  
 ---------
@@ -7471,6 +7475,18 @@ SELECT count(*) FROM (SELECT try_convert(v, NULL::int2) as v FROM text_ints) as 
 (1 row)
 
 SELECT count(*) FROM (SELECT try_convert(v, NULL::int2) as v FROM text_error_ints) as t(v) WHERE v IS NULL;
+  count  
+---------
+ 1000000
+(1 row)
+
+SELECT count(*) FROM (SELECT try_convert(v, NULL::int2) as v FROM int4_ints) as t(v) WHERE v IS NOT NULL;
+  count  
+---------
+ 1000000
+(1 row)
+
+SELECT count(*) FROM (SELECT try_convert(v, NULL::int2) as v FROM int4_error_ints) as t(v) WHERE v IS NULL;
   count  
 ---------
  1000000

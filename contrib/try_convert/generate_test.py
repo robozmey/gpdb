@@ -516,11 +516,20 @@ test_million_data = \
     'INSERT INTO text_ints(v) SELECT (random()*1000)::int4::text FROM generate_series(1,1000000);\n' \
     'DROP TABLE IF EXISTS text_error_ints; CREATE TABLE text_error_ints (v text) DISTRIBUTED BY (v);\n' \
     'INSERT INTO text_error_ints(v) SELECT (random()*1000000 + 1000000)::int8::text FROM generate_series(1,1000000);\n' \
+    'DROP TABLE IF EXISTS int4_ints; CREATE TABLE int4_ints (v int4) DISTRIBUTED BY (v);\n' \
+    'INSERT INTO int4_ints(v) SELECT (random()*1000)::int4 FROM generate_series(1,1000000);\n' \
+    'DROP TABLE IF EXISTS int4_error_ints; CREATE TABLE int4_error_ints (v int4) DISTRIBUTED BY (v);\n' \
+    'INSERT INTO int4_error_ints(v) SELECT (random()*1000000 + 1000000)::int4 FROM generate_series(1,1000000);\n'
 
 test_million_query1 = \
     'SELECT count(*) FROM (SELECT try_convert(v, NULL::int2) as v FROM text_ints) as t(v) WHERE v IS NOT NULL;\n'
 test_million_query2 = \
     'SELECT count(*) FROM (SELECT try_convert(v, NULL::int2) as v FROM text_error_ints) as t(v) WHERE v IS NULL;\n'
+
+test_million_query3 = \
+    'SELECT count(*) FROM (SELECT try_convert(v, NULL::int2) as v FROM int4_ints) as t(v) WHERE v IS NOT NULL;\n'
+test_million_query4 = \
+    'SELECT count(*) FROM (SELECT try_convert(v, NULL::int2) as v FROM int4_error_ints) as t(v) WHERE v IS NULL;\n'
 
 test_million_result = \
     '  count  \n' \
@@ -528,10 +537,12 @@ test_million_result = \
     ' 1000000\n' \
     '(1 row)\n' \
 
-test_million_in = test_million_data + test_million_query1 + test_million_query2
+test_million_in = test_million_data + test_million_query1 + test_million_query2 + test_million_query3 + test_million_query4
 test_million_out = test_million_data + \
     test_million_query1 + test_million_result + '\n' + \
-    test_million_query2 + test_million_result
+    test_million_query2 + test_million_result + '\n' + \
+    test_million_query3 + test_million_result + '\n' + \
+    test_million_query4 + test_million_result
 
 ### NESTED CASTS
 
