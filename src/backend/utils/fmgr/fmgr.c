@@ -23,6 +23,7 @@
 #include "lib/stringinfo.h"
 #include "miscadmin.h"
 #include "nodes/nodeFuncs.h"
+#include "nodes/miscnodes.h"
 #include "pgstat.h"
 #include "utils/acl.h"
 #include "utils/builtins.h"
@@ -1887,6 +1888,55 @@ OidFunctionCall9Coll(Oid functionId, Oid collation, Datum arg1, Datum arg2,
 	return result;
 }
 
+/*
+ * Call a previously-looked-up OidFunctionCallNColl function, with non-exception
+ * handling of "soft" errors.
+ * 
+ * This is basically like OidFunctionCallNColl, but the converted Datum is
+ * returned into *result while the function result is true for success or
+ * false for failure.  Also, the caller may pass an ErrorSaveContext node.
+ * (We declare that as "fmNodePtr" to avoid including nodes.h in fmgr.h.)
+ * 
+ * If escontext points to an ErrorSaveContext, any "soft" errors detected by
+ * the input function will be reported by filling the escontext struct and
+ * returning (Datum) 0.
+ * 
+ * If escontext does not point to an ErrorSaveContext, errors are reported
+ * via ereport(ERROR), so that there is no functional difference from
+ * OidFunctionCall3CollSafe; the result will always be true if control returns.
+ */
+Datum
+OidFunctionCall3CollSafe(Oid functionId, Oid collation, Datum arg1, Datum arg2,
+					 Datum arg3, fmNodePtr escontext)
+{
+	FmgrInfo	flinfo;
+	FunctionCallInfoData fcinfo;
+	Datum		result;
+
+	fmgr_info(functionId, &flinfo);
+
+	InitFunctionCallInfoData(fcinfo, &flinfo, 3, collation, escontext, NULL);
+
+	fcinfo.arg[0] = arg1;
+	fcinfo.arg[1] = arg2;
+	fcinfo.arg[2] = arg3;
+	fcinfo.argnull[0] = false;
+	fcinfo.argnull[1] = false;
+	fcinfo.argnull[2] = false;
+
+	result = FunctionCallInvoke(&fcinfo);
+
+	/* Result value is garbage, and could be null, if an error was reported */
+	if (SOFT_ERROR_OCCURRED(escontext))
+		return (Datum) 0;
+
+	/* Check for null result, since caller is clearly not expecting one */
+	if (fcinfo.isnull)
+		elog(ERROR, "function %u returned NULL", flinfo.fn_oid);
+
+	return result;
+}
+
 
 /*
  * Special cases for convenient invocation of datatype I/O functions.
@@ -1928,6 +1978,69 @@ InputFunctionCall(FmgrInfo *flinfo, char *str, Oid typioparam, int32 typmod)
 	fcinfo.argnull[2] = false;
 
 	result = FunctionCallInvoke(&fcinfo);
+
+	/* Should get null result if and only if str is NULL */
+	if (str == NULL)
+	{
+		if (!fcinfo.isnull)
+			elog(ERROR, "input function %u returned non-NULL",
+				 fcinfo.flinfo->fn_oid);
+	}
+	else
+	{
+		if (fcinfo.isnull)
+			elog(ERROR, "input function %u returned NULL",
+				 fcinfo.flinfo->fn_oid);
+	}
+
+	SPI_pop_conditional(pushed);
+
+	return result;
+}
+
+/*
+ * Call a previously-looked-up datatype input function, with non-exception
+ * handling of "soft" errors.
+ * 
+ * This is basically like InputFunctionCall, but the converted Datum is
+ * returned into *result while the function result is true for success or
+ * false for failure.  Also, the caller may pass an ErrorSaveContext node.
+ * (We declare that as "fmNodePtr" to avoid including nodes.h in fmgr.h.)
+ * 
+ * If escontext points to an ErrorSaveContext, any "soft" errors detected by
+ * the input function will be reported by filling the escontext struct and
+ * returning (Datum) 0.
+ * 
+ * If escontext does not point to an ErrorSaveContext, errors are reported
+ * via ereport(ERROR), so that there is no functional difference from
+ * InputFunctionCall; the result will always be true if control returns.
+ */
+Datum
+InputFunctionCallSafe(FmgrInfo *flinfo, char *str, Oid typioparam, int32 typmod, fmNodePtr escontext)
+{
+	FunctionCallInfoData fcinfo;
+	Datum		result;
+	bool		pushed;
+
+	if (str == NULL && flinfo->fn_strict)
+		return (Datum) 0;		/* just return null result */
+
+	pushed = SPI_push_conditional();
+
+	InitFunctionCallInfoData(fcinfo, flinfo, 3, InvalidOid, escontext, NULL);
+
+	fcinfo.arg[0] = CStringGetDatum(str);
+	fcinfo.arg[1] = ObjectIdGetDatum(typioparam);
+	fcinfo.arg[2] = Int32GetDatum(typmod);
+	fcinfo.argnull[0] = (str == NULL);
+	fcinfo.argnull[1] = false;
+	fcinfo.argnull[2] = false;
+
+	result = FunctionCallInvoke(&fcinfo);
+
+	/* Result value is garbage, and could be null, if an error was reported */
+	if (SOFT_ERROR_OCCURRED(escontext))
+		return (Datum) 0;
 
 	/* Should get null result if and only if str is NULL */
 	if (str == NULL)
