@@ -52,7 +52,15 @@ typedef struct
  * If errorOK is true, just return "false" for bad input.
  */
 bool
-scanint8(const char *str, bool errorOK, int64 *result)
+scanint8(const char *str, bool errorOK, int64 *result) {
+	return scanint8_safe(str, errorOK, result, NULL);
+}
+
+/*
+ * Same as scanint8() but if escontext is ErrorSaveContext then saves error in context and exits
+ */
+bool
+scanint8_safe(const char *str, bool errorOK, int64 *result, Node* escontext)
 {
 	const char *ptr = str;
 	int64		tmp = 0;
@@ -93,7 +101,7 @@ scanint8(const char *str, bool errorOK, int64 *result)
 		if (errorOK)
 			return false;
 		else
-			ereport(ERROR,
+			ereturn(escontext, 0,
 					(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 					 errmsg("invalid input syntax for integer: \"%s\"",
 							str)));
@@ -109,7 +117,7 @@ scanint8(const char *str, bool errorOK, int64 *result)
 			if (errorOK)
 				return false;
 			else
-				ereport(ERROR,
+				ereturn(escontext, 0,
 						(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 					   errmsg("value \"%s\" is out of range for type bigint",
 							  str)));
@@ -128,7 +136,7 @@ gotdigits:
 		if (errorOK)
 			return false;
 		else
-			ereport(ERROR,
+			ereturn(escontext, 0,
 					(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 					 errmsg("invalid input syntax for integer: \"%s\"",
 							str)));
@@ -147,7 +155,7 @@ int8in(PG_FUNCTION_ARGS)
 	char	   *str = PG_GETARG_CSTRING(0);
 	int64		result;
 
-	(void) scanint8(str, false, &result);
+	(void) scanint8_safe(str, false, &result, fcinfo->context);
 	PG_RETURN_INT64(result);
 }
 
