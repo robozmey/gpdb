@@ -424,6 +424,7 @@ static Numeric make_result(NumericVar *var);
 static void apply_typmod(NumericVar *var, int32 typmod);
 
 static int32 numericvar_to_int32(NumericVar *var);
+static int32 numericvar_to_int32_safe(NumericVar *var, Node* escontext);
 static bool numericvar_to_int64(NumericVar *var, int64 *result);
 static void int64_to_numericvar(int64 val, NumericVar *var);
 #ifdef HAVE_INT128
@@ -519,7 +520,7 @@ numeric_in(PG_FUNCTION_ARGS)
 		while (*cp)
 		{
 			if (!isspace((unsigned char) *cp))
-				ereport(ERROR,
+				ereturn(fcinfo->context, 0,
 						(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 					  errmsg("invalid input syntax for type numeric: \"%s\"",
 							 str)));
@@ -545,7 +546,7 @@ numeric_in(PG_FUNCTION_ARGS)
 		while (*cp)
 		{
 			if (!isspace((unsigned char) *cp))
-				ereport(ERROR,
+				ereturn(fcinfo->context, 0,
 						(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 					  errmsg("invalid input syntax for type numeric: \"%s\"",
 							 str)));
@@ -970,12 +971,12 @@ numerictypmodin(PG_FUNCTION_ARGS)
 	if (n == 2)
 	{
 		if (tl[0] < 1 || tl[0] > NUMERIC_MAX_PRECISION)
-			ereport(ERROR,
+			ereturn(fcinfo->context, 0,
 					(errcode(ERRCODE_INVALID_PARAMETER_VALUE),
 					 errmsg("NUMERIC precision %d must be between 1 and %d",
 							tl[0], NUMERIC_MAX_PRECISION)));
 		if (tl[1] < 0 || tl[1] > tl[0])
-			ereport(ERROR,
+			ereturn(fcinfo->context, 0,
 					(errcode(ERRCODE_INVALID_PARAMETER_VALUE),
 				errmsg("NUMERIC scale %d must be between 0 and precision %d",
 					   tl[1], tl[0])));
@@ -984,7 +985,7 @@ numerictypmodin(PG_FUNCTION_ARGS)
 	else if (n == 1)
 	{
 		if (tl[0] < 1 || tl[0] > NUMERIC_MAX_PRECISION)
-			ereport(ERROR,
+			ereturn(fcinfo->context, 0,
 					(errcode(ERRCODE_INVALID_PARAMETER_VALUE),
 					 errmsg("NUMERIC precision %d must be between 1 and %d",
 							tl[0], NUMERIC_MAX_PRECISION)));
@@ -993,7 +994,7 @@ numerictypmodin(PG_FUNCTION_ARGS)
 	}
 	else
 	{
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_INVALID_PARAMETER_VALUE),
 				 errmsg("invalid NUMERIC type modifier")));
 		typmod = 0;				/* keep compiler quiet */
@@ -2596,13 +2597,13 @@ numeric_int4(PG_FUNCTION_ARGS)
 
 	/* XXX would it be better to return NULL? */
 	if (NUMERIC_IS_NAN(num))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
 				 errmsg("cannot convert NaN to integer")));
 
 	/* Convert to variable format, then convert to int4 */
 	init_var_from_num(num, &x);
-	result = numericvar_to_int32(&x);
+	result = numericvar_to_int32_safe(&x, fcinfo->context);
 	PG_RETURN_INT32(result);
 }
 
@@ -2611,14 +2612,21 @@ numeric_int4(PG_FUNCTION_ARGS)
  * exceeds the range of an int32, raise the appropriate error via
  * ereport(). The input NumericVar is *not* free'd.
  */
+
 static int32
 numericvar_to_int32(NumericVar *var)
+{
+	return numericvar_to_int32_safe(var, NULL);
+}
+
+static int32
+numericvar_to_int32_safe(NumericVar *var, Node* escontext)
 {
 	int32		result;
 	int64		val = 0;
 
 	if (!numericvar_to_int64(var, &val))
-		ereport(ERROR,
+		ereturn(escontext, 0,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("integer out of range")));
 
@@ -2627,7 +2635,7 @@ numericvar_to_int32(NumericVar *var)
 
 	/* Test for overflow by reverse-conversion. */
 	if ((int64) result != val)
-		ereport(ERROR,
+		ereturn(escontext, 0,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("integer out of range")));
 
@@ -2660,7 +2668,7 @@ numeric_int8(PG_FUNCTION_ARGS)
 
 	/* XXX would it be better to return NULL? */
 	if (NUMERIC_IS_NAN(num))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
 				 errmsg("cannot convert NaN to bigint")));
 
@@ -2668,7 +2676,7 @@ numeric_int8(PG_FUNCTION_ARGS)
 	init_var_from_num(num, &x);
 
 	if (!numericvar_to_int64(&x, &result))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("bigint out of range")));
 
@@ -2703,7 +2711,7 @@ numeric_int2(PG_FUNCTION_ARGS)
 
 	/* XXX would it be better to return NULL? */
 	if (NUMERIC_IS_NAN(num))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
 				 errmsg("cannot convert NaN to smallint")));
 
@@ -2711,7 +2719,7 @@ numeric_int2(PG_FUNCTION_ARGS)
 	init_var_from_num(num, &x);
 
 	if (!numericvar_to_int64(&x, &val))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("smallint out of range")));
 
@@ -2720,7 +2728,7 @@ numeric_int2(PG_FUNCTION_ARGS)
 
 	/* Test for overflow by reverse-conversion. */
 	if ((int64) result != val)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("smallint out of range")));
 
@@ -2740,7 +2748,7 @@ float8_numeric(PG_FUNCTION_ARGS)
 		PG_RETURN_NUMERIC(make_result(&const_nan));
 
 	if (isinf(val))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
 				 errmsg("cannot convert infinity to numeric")));
 
@@ -2803,7 +2811,7 @@ float4_numeric(PG_FUNCTION_ARGS)
 		PG_RETURN_NUMERIC(make_result(&const_nan));
 
 	if (isinf(val))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
 				 errmsg("cannot convert infinity to numeric")));
 

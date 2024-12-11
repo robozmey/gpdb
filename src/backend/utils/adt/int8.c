@@ -495,7 +495,7 @@ int8um(PG_FUNCTION_ARGS)
 	result = -arg;
 	/* overflow check (needed for INT64_MIN) */
 	if (arg != 0 && SAMESIGN(result, arg))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("bigint out of range")));
 	PG_RETURN_INT64(result);
@@ -1293,7 +1293,7 @@ int84(PG_FUNCTION_ARGS)
 
 	/* Test for overflow by reverse-conversion. */
 	if ((int64) result != arg)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("integer out of range")));
 
@@ -1318,7 +1318,7 @@ int82(PG_FUNCTION_ARGS)
 
 	/* Test for overflow by reverse-conversion. */
 	if ((int64) result != arg)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("smallint out of range")));
 
@@ -1353,7 +1353,7 @@ dtoi8(PG_FUNCTION_ARGS)
 
 	/* Range check */
 	if (isnan(num) || !FLOAT8_FITS_IN_INT64(num))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("bigint out of range")));
 
@@ -1388,7 +1388,7 @@ ftoi8(PG_FUNCTION_ARGS)
 
 	/* Range check */
 	if (isnan(num) || !FLOAT4_FITS_IN_INT64(num))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("bigint out of range")));
 
@@ -1405,7 +1405,7 @@ i8tooid(PG_FUNCTION_ARGS)
 
 	/* Test for overflow by reverse-conversion. */
 	if ((int64) result != arg)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("OID out of range")));
 
