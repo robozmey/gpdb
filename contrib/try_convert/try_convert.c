@@ -193,19 +193,11 @@ try_convert_from_function(Datum value, int32 typmod, Oid funcId, bool *is_failed
 
 	ErrorSaveContext escontext = {T_ErrorSaveContext, false};;
 
-    PG_TRY();
-    {
-        res = OidFunctionCall3Safe(funcId, value, typmod, true, &escontext);
+	res = OidFunctionCall3Safe(funcId, value, typmod, true, &escontext);
 
-		if (escontext.error_occurred) {
-			*is_failed = true;
-		}
-    }
-    PG_CATCH();
-    {
-		res = 0;
-    }
-    PG_END_TRY();
+	if (escontext.error_occurred) {
+		*is_failed = true;
+	}
 
 
     return res;
