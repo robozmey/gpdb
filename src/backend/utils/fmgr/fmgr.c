@@ -1974,7 +1974,7 @@ InputFunctionCallSafe(FmgrInfo *flinfo, char *str, Oid typioparam, int32 typmod,
 
 	/* Result value is garbage, and could be null, if an error was reported */
 	if (SOFT_ERROR_OCCURRED(escontext))
-		return false;
+		return (Datum) 0;
 
 	/* Should get null result if and only if str is NULL */
 	if (str == NULL)

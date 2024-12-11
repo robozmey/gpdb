@@ -282,7 +282,7 @@ int4in(PG_FUNCTION_ARGS)
 {
 	char	   *num = PG_GETARG_CSTRING(0);
 
-	PG_RETURN_INT32(pg_atoi(num, sizeof(int32), '\0'));
+	PG_RETURN_INT32(pg_atoi_safe(num, sizeof(int32), '\0', fcinfo->context));
 }
 
 /*

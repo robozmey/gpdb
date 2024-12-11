@@ -233,6 +233,8 @@ try_convert_via_io(Datum value, Oid sourceTypeId, Oid targetTypeId, int32 target
     Datum res = 0;
     char *string;
 
+	ErrorSaveContext escontext = {T_ErrorSaveContext, false};;
+
 	PG_TRY();
 	{
         // value cannot be null
@@ -241,14 +243,13 @@ try_convert_via_io(Datum value, Oid sourceTypeId, Oid targetTypeId, int32 target
         res = InputFunctionCallSafe(&infunc,
                                 string,
                                 intypioparam,
-                                -1, NULL);
-    }
-	PG_CATCH();
-	{
-        *is_failed = true;
+                                -1,
+								&escontext);
 
-        FlushErrorState(); /// TODO replace
-	}
+		if (escontext.error_occurred) {
+			*is_failed = true;
+		}
+    }
 	PG_END_TRY();
 
     return res;

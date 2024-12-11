@@ -205,9 +205,27 @@ void elog_internalerror(const char *filename, int lineno, const char *funcname)
 
 extern bool errstart(int elevel, const char *filename, int lineno,
 		 const char *funcname, const char *domain);
+extern void errfinish(int dummy,...);
+
+#define errsave_domain(context, domain, rest)	\
+	do { \
+		struct Node *context_ = (context); \
+		if (errsave_start(context_, __FILE__, __LINE__, __func__, domain)) \
+			errfinish rest; \
+	} while(0)
+#define errsave(context, rest)	\
+	errsave_domain(context, TEXTDOMAIN, rest)
+
+#define ereturn_domain(context, dummy_value, domain, rest)	\
+	do { \
+		errsave_domain(context, domain, rest); \
+		return dummy_value; \
+	} while(0)
+#define ereturn(context, dummy_value, rest)	\
+	ereturn_domain(context, dummy_value, TEXTDOMAIN, rest)
+
 extern bool errsave_start(struct Node* context, const char *filename, int lineno,
 		 const char *funcname, const char *domain);
-extern void errfinish(int dummy,...);
 
 extern int	errcode(int sqlerrcode);
 
