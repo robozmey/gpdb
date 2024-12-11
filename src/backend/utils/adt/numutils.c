@@ -31,10 +31,16 @@
  * integer (plus whitespace).  If 0, the string must end after the integer.
  *
  * Unlike plain atoi(), this will throw ereport() upon bad input format or
- * overflow.
+ * overflow; while pg_atoi_safe() instead returns such complaints in *escontext,
+ * if it's an ErrorSaveContext.
  */
 int32
 pg_atoi(char *s, int size, int c)
+{
+	return pg_atoi_safe(s, size, c, NULL);
+}
+int32
+pg_atoi_safe(char *s, int size, int c, Node* escontext)
 {
 	long		l;
 	char	   *badp;
@@ -46,7 +52,7 @@ pg_atoi(char *s, int size, int c)
 	if (s == NULL)
 		elog(ERROR, "NULL pointer");
 	if (*s == 0)
-		ereport(ERROR,
+		ereturn(escontext, 0,
 				(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 				 errmsg("invalid input syntax for integer: \"%s\"",
 						s)));
@@ -56,7 +62,7 @@ pg_atoi(char *s, int size, int c)
 
 	/* We made no progress parsing the string, so bail out */
 	if (s == badp)
-		ereport(ERROR,
+		ereturn(escontext, 0,
 				(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 				 errmsg("invalid input syntax for integer: \"%s\"",
 						s)));
@@ -70,19 +76,19 @@ pg_atoi(char *s, int size, int c)
 				|| l < INT_MIN || l > INT_MAX
 #endif
 				)
-				ereport(ERROR,
+				ereturn(escontext, 0,
 						(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				errmsg("value \"%s\" is out of range for type integer", s)));
 			break;
 		case sizeof(int16):
 			if (errno == ERANGE || l < SHRT_MIN || l > SHRT_MAX)
-				ereport(ERROR,
+				ereturn(escontext, 0,
 						(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				errmsg("value \"%s\" is out of range for type smallint", s)));
 			break;
 		case sizeof(int8):
 			if (errno == ERANGE || l < SCHAR_MIN || l > SCHAR_MAX)
-				ereport(ERROR,
+				ereturn(escontext, 0,
 						(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				errmsg("value \"%s\" is out of range for 8-bit integer", s)));
 			break;
@@ -98,7 +104,7 @@ pg_atoi(char *s, int size, int c)
 		badp++;
 
 	if (*badp && *badp != c)
-		ereport(ERROR,
+		ereturn(escontext, 0,
 				(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 				 errmsg("invalid input syntax for integer: \"%s\"",
 						s)));
