@@ -405,6 +405,7 @@ static void alloc_var(NumericVar *var, int ndigits);
 static void zero_var(NumericVar *var);
 
 static const char *init_var_from_str(const char *str, const char *cp, NumericVar *dest);
+static const char *init_var_from_str_safe(const char *str, const char *cp, NumericVar *dest, Node* escontext);
 static void set_var_from_var(NumericVar *value, NumericVar *dest);
 static void init_var_from_var(NumericVar *value, NumericVar *dest);
 static void init_ro_var_from_var(NumericVar *value, NumericVar *dest);
@@ -535,7 +536,9 @@ numeric_in(PG_FUNCTION_ARGS)
 		 */
 		NumericVar	value;
 
-		cp = init_var_from_str(str, cp, &value);
+		cp = init_var_from_str_safe(str, cp, &value, fcinfo->context);
+		if (cp == NULL)
+			return 0;
 
 		/*
 		 * We duplicate a few lines of code here because we would like to
@@ -5147,6 +5150,15 @@ zero_var(NumericVar *var)
 static const char *
 init_var_from_str(const char *str, const char *cp, NumericVar *dest)
 {
+	return init_var_from_str_safe(str, cp, dest, NULL);
+}
+
+/*
+ * Same as init_var_from_str() but if escontext is ErrorSaveContext then saves error in context and exits
+ */
+static const char *
+init_var_from_str_safe(const char *str, const char *cp, NumericVar *dest, Node* escontext)
+{
 	bool		have_dp = FALSE;
 	int			i;
 	unsigned char *decdigits;
@@ -5183,7 +5195,7 @@ init_var_from_str(const char *str, const char *cp, NumericVar *dest)
 	}
 
 	if (!isdigit((unsigned char) *cp))
-		ereport(ERROR,
+		ereturn(escontext, NULL,
 				(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 			  errmsg("invalid input syntax for type numeric: \"%s\"", str)));
 
@@ -5209,7 +5221,7 @@ init_var_from_str(const char *str, const char *cp, NumericVar *dest)
 		else if (*cp == '.')
 		{
 			if (have_dp)
-				ereport(ERROR,
+				ereturn(escontext, NULL,
 						(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 					  errmsg("invalid input syntax for type numeric: \"%s\"",
 							 str)));
@@ -5233,7 +5245,7 @@ init_var_from_str(const char *str, const char *cp, NumericVar *dest)
 		cp++;
 		exponent = strtol(cp, &endptr, 10);
 		if (endptr == cp)
-			ereport(ERROR,
+			ereturn(escontext, NULL,
 					(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 					 errmsg("invalid input syntax for type numeric: \"%s\"",
 							str)));
@@ -5248,7 +5260,7 @@ init_var_from_str(const char *str, const char *cp, NumericVar *dest)
 		 * for consistency use the same ereport errcode/text as make_result().
 		 */
 		if (exponent >= INT_MAX / 2 || exponent <= -(INT_MAX / 2))
-			ereport(ERROR,
+			ereturn(escontext, NULL,
 					(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 					 errmsg("value overflows numeric format")));
 		dweight += (int) exponent;
