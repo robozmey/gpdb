@@ -282,7 +282,7 @@ int4in(PG_FUNCTION_ARGS)
 {
 	char	   *num = PG_GETARG_CSTRING(0);
 
-	PG_RETURN_INT32(pg_atoi(num, sizeof(int32), '\0'));
+	PG_RETURN_INT32(pg_atoi_safe(num, sizeof(int32), '\0', fcinfo->context));
 }
 
 /*
@@ -344,7 +344,7 @@ i4toi2(PG_FUNCTION_ARGS)
 	int32		arg1 = PG_GETARG_INT32(0);
 
 	if (arg1 < SHRT_MIN || arg1 > SHRT_MAX)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("smallint out of range")));
 
