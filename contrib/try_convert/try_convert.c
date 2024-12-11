@@ -191,14 +191,19 @@ try_convert_from_function(Datum value, int32 typmod, Oid funcId, bool *is_failed
 {
     Datum res = 0;
 
+	ErrorSaveContext escontext = {T_ErrorSaveContext, false};;
+
     PG_TRY();
     {
-        res = OidFunctionCall3(funcId, value, typmod, true);
+        res = OidFunctionCall3Safe(funcId, value, typmod, true, &escontext);
+
+		if (escontext.error_occurred) {
+			*is_failed = true;
+		}
     }
     PG_CATCH();
     {
-        *is_failed = true;
-        FlushErrorState();  /// TODO replace
+		res = 0;
     }
     PG_END_TRY();
 
@@ -233,7 +238,7 @@ try_convert_via_io(Datum value, Oid sourceTypeId, Oid targetTypeId, int32 target
     Datum res = 0;
     char *string;
 
-	ErrorSaveContext escontext = {T_ErrorSaveContext, false};;
+	ErrorSaveContext escontext = {T_ErrorSaveContext, false};
 
 	PG_TRY();
 	{
@@ -249,6 +254,10 @@ try_convert_via_io(Datum value, Oid sourceTypeId, Oid targetTypeId, int32 target
 		if (escontext.error_occurred) {
 			*is_failed = true;
 		}
+    }
+	PG_CATCH();
+    {
+		res = 0;
     }
 	PG_END_TRY();
 

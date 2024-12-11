@@ -1888,6 +1888,41 @@ OidFunctionCall9Coll(Oid functionId, Oid collation, Datum arg1, Datum arg2,
 	return result;
 }
 
+/*
+
+ */
+Datum
+OidFunctionCall3CollSafe(Oid functionId, Oid collation, Datum arg1, Datum arg2,
+					 Datum arg3, fmNodePtr escontext)
+{
+	FmgrInfo	flinfo;
+	FunctionCallInfoData fcinfo;
+	Datum		result;
+
+	fmgr_info(functionId, &flinfo);
+
+	InitFunctionCallInfoData(fcinfo, &flinfo, 3, collation, escontext, NULL);
+
+	fcinfo.arg[0] = arg1;
+	fcinfo.arg[1] = arg2;
+	fcinfo.arg[2] = arg3;
+	fcinfo.argnull[0] = false;
+	fcinfo.argnull[1] = false;
+	fcinfo.argnull[2] = false;
+
+	result = FunctionCallInvoke(&fcinfo);
+
+	/* Result value is garbage, and could be null, if an error was reported */
+	if (SOFT_ERROR_OCCURRED(escontext))
+		return (Datum) 0;
+
+	/* Check for null result, since caller is clearly not expecting one */
+	if (fcinfo.isnull)
+		elog(ERROR, "function %u returned NULL", flinfo.fn_oid);
+
+	return result;
+}
+
 
 /*
  * Special cases for convenient invocation of datatype I/O functions.
