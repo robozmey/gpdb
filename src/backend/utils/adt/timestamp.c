@@ -170,8 +170,10 @@ timestamp_in(PG_FUNCTION_ARGS)
 						  field, ftype, MAXDATEFIELDS, &nf);
 	if (dterr == 0)
 		dterr = DecodeDateTime(field, ftype, nf, &dtype, tm, &fsec, &tz);
-	if (dterr != 0)
-		DateTimeParseError(dterr, str, "timestamp");
+	if (dterr != 0) {
+		DateTimeParseErrorSafe(dterr, str, "timestamp", fcinfo->context);
+		return 0;
+	}
 
 	switch (dtype)
 	{
@@ -786,8 +788,10 @@ timestamptz_in(PG_FUNCTION_ARGS)
 						  field, ftype, MAXDATEFIELDS, &nf);
 	if (dterr == 0)
 		dterr = DecodeDateTime(field, ftype, nf, &dtype, tm, &fsec, &tz);
-	if (dterr != 0)
-		DateTimeParseError(dterr, str, "timestamp with time zone");
+	if (dterr != 0) {
+		DateTimeParseErrorSafe(dterr, str, "timestamp with time zone", fcinfo->context);
+		return 0;
+	}
 
 	switch (dtype)
 	{
@@ -1251,7 +1255,8 @@ interval_in(PG_FUNCTION_ARGS)
 	{
 		if (dterr == DTERR_FIELD_OVERFLOW)
 			dterr = DTERR_INTERVAL_OVERFLOW;
-		DateTimeParseError(dterr, str, "interval");
+		DateTimeParseErrorSafe(dterr, str, "interval", fcinfo->context);
+		return 0;
 	}
 
 	result = (Interval *) palloc(sizeof(Interval));

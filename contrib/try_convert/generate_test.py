@@ -147,18 +147,24 @@ for (id, name) in re.findall(func_pattern, content):
 ### GET TYPE IDs
 
 # TODO Is_have_IO
+# DATA(insert OID = 1231 (  _numeric	 PGNSP PGUID -1 f b A f t \054 0	1700 0 array_in array_out array_recv array_send numerictypmodin numerictypmodout array_typanalyze i x f 0 -1 0 0 _null_ _null_ _null_ ));
 
 f = open(pg_type_path)
 content = f.read()
 
-type_pattern = r'DATA\(insert OID = (.*) \([\s]*(.*?)[\s]';
+type_pattern = r'DATA\(insert OID = (.*) \([\s]+(.*?)[\s]+(.*?\s+){12}(.*?)\s+(.*?)\s+';
 
 type_name_id = {}
 type_id_name = {}
 
 supported_types_count = 0
 
-for (id, name) in re.findall(type_pattern, content):
+for t in re.findall(type_pattern, content):
+    id = t[0]
+    name = t[1]
+    infunc = t[3]
+    outfunc = t[4]
+    # print(len(t), t[3])
     if name != '' and name[0] != '_':
         id = int(id)
         type_id_name[id] = name
@@ -166,6 +172,7 @@ for (id, name) in re.findall(type_pattern, content):
 
         if name in supported_types:
             # print(f'|{name}|✅|')
+            print(f'{id} {name} {infunc} {outfunc}')
             supported_types_count += 1
 
 supported_extension_types_count = 0
@@ -456,10 +463,13 @@ for string_type in string_types:
 
                 to_text_in, to_text_out = create_test(type_name, string_type, test_type_table, default_value, type_varlen, string_varlen)
                 from_text_in, from_text_out = create_test(string_type, type_name, text_type_table, default_value, string_varlen, type_varlen)
-                # from_corrupted_text_in, from_corrupted_text_out = create_test(string_type, type_name, test_corrupted_text_data, default_value, string_varlen, type_varlen)
+                from_corrupted_text_in, from_corrupted_text_out = create_test(string_type, type_name, test_corrupted_text_data, default_value, string_varlen, type_varlen)
 
                 text_tests_in += [to_text_in, from_text_in]
                 text_tests_out += [to_text_out, from_text_out]
+
+                text_tests_in += [from_corrupted_text_in]
+                text_tests_out += [from_corrupted_text_out]
 
 # print(text_tests_in[0])
 # print(text_tests_in[1])

@@ -214,8 +214,10 @@ abstimein(PG_FUNCTION_ARGS)
 						  field, ftype, MAXDATEFIELDS, &nf);
 	if (dterr == 0)
 		dterr = DecodeDateTime(field, ftype, nf, &dtype, tm, &fsec, &tz);
-	if (dterr != 0)
-		DateTimeParseError(dterr, str, "abstime");
+	if (dterr != 0) {
+		DateTimeParseErrorSafe(dterr, str, "abstime", fcinfo->context);
+		return 0;
+	}
 
 	switch (dtype)
 	{
@@ -616,7 +618,8 @@ reltimein(PG_FUNCTION_ARGS)
 	{
 		if (dterr == DTERR_FIELD_OVERFLOW)
 			dterr = DTERR_INTERVAL_OVERFLOW;
-		DateTimeParseError(dterr, str, "reltime");
+		DateTimeParseErrorSafe(dterr, str, "reltime", fcinfo->context);
+		return 0;
 	}
 
 	switch (dtype)

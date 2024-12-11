@@ -127,8 +127,10 @@ date_in(PG_FUNCTION_ARGS)
 						  field, ftype, MAXDATEFIELDS, &nf);
 	if (dterr == 0)
 		dterr = DecodeDateTime(field, ftype, nf, &dtype, tm, &fsec, &tzp);
-	if (dterr != 0)
-		DateTimeParseError(dterr, str, "date");
+	if (dterr != 0) {
+		DateTimeParseErrorSafe(dterr, str, "date", fcinfo->context);
+		return 0;
+	}
 
 	switch (dtype)
 	{
@@ -136,7 +138,7 @@ date_in(PG_FUNCTION_ARGS)
 			break;
 
 		case DTK_CURRENT:
-			ereport(ERROR,
+			ereturn(fcinfo->context, 0,
 					(errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
 			  errmsg("date/time value \"current\" is no longer supported")));
 
@@ -156,8 +158,9 @@ date_in(PG_FUNCTION_ARGS)
 			PG_RETURN_DATEADT(date);
 
 		default:
-			DateTimeParseError(DTERR_BAD_FORMAT, str, "date");
-			break;
+			DateTimeParseErrorSafe(DTERR_BAD_FORMAT, str, "date", fcinfo->context);
+			return;
+
 	}
 
 	if (!IS_VALID_JULIAN(tm->tm_year, tm->tm_mon, tm->tm_mday))
@@ -1090,8 +1093,10 @@ time_in(PG_FUNCTION_ARGS)
 						  field, ftype, MAXDATEFIELDS, &nf);
 	if (dterr == 0)
 		dterr = DecodeTimeOnly(field, ftype, nf, &dtype, tm, &fsec, &tz);
-	if (dterr != 0)
-		DateTimeParseError(dterr, str, "time");
+	if (dterr != 0) {
+		DateTimeParseErrorSafe(dterr, str, "time", fcinfo->context);
+		return;
+	}
 
 	tm2time(tm, fsec, &result);
 	AdjustTimeForTypmod(&result, typmod);
@@ -1611,7 +1616,7 @@ timestamp_time(PG_FUNCTION_ARGS)
 		PG_RETURN_NULL();
 
 	if (timestamp2tm(timestamp, NULL, tm, &fsec, NULL, NULL) != 0)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 				 errmsg("timestamp out of range")));
 
@@ -1647,7 +1652,7 @@ timestamptz_time(PG_FUNCTION_ARGS)
 		PG_RETURN_NULL();
 
 	if (timestamp2tm(timestamp, &tz, tm, &fsec, NULL, NULL) != 0)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 				 errmsg("timestamp out of range")));
 
@@ -2035,8 +2040,9 @@ timetz_in(PG_FUNCTION_ARGS)
 						  field, ftype, MAXDATEFIELDS, &nf);
 	if (dterr == 0)
 		dterr = DecodeTimeOnly(field, ftype, nf, &dtype, tm, &fsec, &tz);
-	if (dterr != 0)
-		DateTimeParseError(dterr, str, "time with time zone");
+	if (dterr != 0) {
+		DateTimeParseErrorSafe(dterr, str, "time with time zone", fcinfo->context);
+	}
 
 	result = (TimeTzADT *) palloc(sizeof(TimeTzADT));
 	tm2timetz(tm, fsec, tz, result);
@@ -2593,7 +2599,7 @@ timestamptz_timetz(PG_FUNCTION_ARGS)
 		PG_RETURN_NULL();
 
 	if (timestamp2tm(timestamp, &tz, tm, &fsec, NULL, NULL) != 0)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 				 errmsg("timestamp out of range")));
 

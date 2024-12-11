@@ -216,6 +216,14 @@ extern void errfinish(int dummy,...);
 #define errsave(context, rest)	\
 	errsave_domain(context, TEXTDOMAIN, rest)
 
+#define ereturn_void_domain(context, domain, rest)	\
+	do { \
+		errsave_domain(context, domain, rest); \
+		return; \
+	} while(0)
+#define ereturn_void(context, rest)	\
+	ereturn_void_domain(context, TEXTDOMAIN, rest)
+
 #define ereturn_domain(context, dummy_value, domain, rest)	\
 	do { \
 		errsave_domain(context, domain, rest); \

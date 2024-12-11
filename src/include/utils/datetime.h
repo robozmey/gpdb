@@ -309,6 +309,8 @@ extern int DecodeISO8601Interval(char *str,
 
 extern void DateTimeParseError(int dterr, const char *str,
 				   const char *datatype) __attribute__((noreturn));
+extern void DateTimeParseErrorSafe(int dterr, const char *str,
+				   const char *datatype, Node* escontext) __attribute__((noreturn));
 
 extern int	DetermineTimeZoneOffset(struct pg_tm * tm, pg_tz *tzp);
 extern int	DetermineTimeZoneAbbrevOffset(struct pg_tm * tm, const char *abbr, pg_tz *tzp);

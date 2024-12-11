@@ -2028,12 +2028,22 @@ select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_int8) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_text_of_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_int4) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2048,12 +2058,22 @@ select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NULL::int2) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_int2) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_float8) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from tt_text_of_float8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_float8) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2068,12 +2088,22 @@ select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, 
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, NULL::float4) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_float4) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_numeric) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from tt_text_of_numeric) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_numeric) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2088,12 +2118,22 @@ select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v, NULL::complex) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_complex) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::bool) as v1, try_convert_by_sql(v, NULL::bool) as v2 from tt_text_of_bool) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bool) as v1, try_convert_by_sql(v, NULL::bool) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_bool) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2108,12 +2148,22 @@ select * from (select try_convert(v, NULL::bit) as v1, try_convert_by_sql(v, NUL
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::bit) as v1, try_convert_by_sql(v, NULL::bit) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_bit) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql_text(v::text, NULL::text, 'bit(1)'::text) as v2 from tt_bit_1) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::bit(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 1) as v2 from tt_text_of_bit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 1) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_bit_1) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2128,12 +2178,22 @@ select * from (select try_convert(v, NULL::bit(5)) as v1, try_convert_by_sql_wit
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::bit(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 5) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_bit_5) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql_text(v::text, NULL::text, 'bit(10)'::text) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::bit(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 10) as v2 from tt_text_of_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 10) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_bit_10) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2148,12 +2208,22 @@ select * from (select try_convert(v, NULL::bit(20)) as v1, try_convert_by_sql_wi
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::bit(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 20) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_bit_20) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_varbit) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::varbit) as v1, try_convert_by_sql(v, NULL::varbit) as v2 from tt_text_of_varbit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit) as v1, try_convert_by_sql(v, NULL::varbit) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_varbit) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2168,12 +2238,22 @@ select * from (select try_convert(v, NULL::varbit(1)) as v1, try_convert_by_sql_
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varbit(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 1) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_varbit_1) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql_text(v::text, NULL::text, 'varbit(5)'::text) as v2 from tt_varbit_5) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::varbit(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 5) as v2 from tt_text_of_varbit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 5) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_varbit_5) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2188,12 +2268,22 @@ select * from (select try_convert(v, NULL::varbit(10)) as v1, try_convert_by_sql
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varbit(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 10) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_varbit_10) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql_text(v::text, NULL::text, 'varbit(20)'::text) as v2 from tt_varbit_20) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::varbit(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 20) as v2 from tt_text_of_varbit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 20) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_varbit_20) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2208,12 +2298,22 @@ select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NULL::date) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_date) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_time) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from tt_text_of_time) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_time) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2228,12 +2328,22 @@ select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, 
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, NULL::timetz) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_timetz) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_timestamp) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from tt_text_of_timestamp) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_timestamp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2248,12 +2358,22 @@ select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sq
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_timestamptz) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_interval) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from tt_text_of_interval) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_interval) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2268,12 +2388,22 @@ select * from (select try_convert(v, NULL::abstime) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::abstime) as v1, try_convert_by_sql(v, NULL::abstime) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_abstime) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_reltime) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::reltime) as v1, try_convert_by_sql(v, NULL::reltime) as v2 from tt_text_of_reltime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::reltime) as v1, try_convert_by_sql(v, NULL::reltime) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_reltime) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2288,12 +2418,22 @@ select * from (select try_convert(v, NULL::point) as v1, try_convert_by_sql(v, N
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::point) as v1, try_convert_by_sql(v, NULL::point) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_point) as t(v)) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_cidr) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::cidr) as v1, try_convert_by_sql(v, NULL::cidr) as v2 from tt_text_of_cidr) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::cidr) as v1, try_convert_by_sql(v, NULL::cidr) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_cidr) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2308,12 +2448,22 @@ select * from (select try_convert(v, NULL::inet) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::inet) as v1, try_convert_by_sql(v, NULL::inet) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_inet) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_macaddr) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::macaddr) as v1, try_convert_by_sql(v, NULL::macaddr) as v2 from tt_text_of_macaddr) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::macaddr) as v1, try_convert_by_sql(v, NULL::macaddr) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_macaddr) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2328,12 +2478,22 @@ select * from (select try_convert(v, NULL::json) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::json) as v1, try_convert_by_sql(v, NULL::json) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_json) as t(v)) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_jsonb) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::jsonb) as v1, try_convert_by_sql(v, NULL::jsonb) as v2 from tt_text_of_jsonb) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::jsonb) as v1, try_convert_by_sql(v, NULL::jsonb) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_jsonb) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2348,12 +2508,22 @@ select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql(v, NUL
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql(v, NULL::xml) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_xml) as t(v)) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_char) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_text_of_char) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_char) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2368,12 +2538,22 @@ select * from (select try_convert(v, NULL::char(1)) as v1, try_convert_by_sql_wi
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::char(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 1) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_char_1) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql_text(v::text, NULL::text, 'char(5)'::text) as v2 from tt_char_5) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::char(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 5) as v2 from tt_text_of_char_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 5) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_char_5) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2388,12 +2568,22 @@ select * from (select try_convert(v, NULL::char(10)) as v1, try_convert_by_sql_w
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::char(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 10) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_char_10) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql_text(v::text, NULL::text, 'char(20)'::text) as v2 from tt_char_20) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::char(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 20) as v2 from tt_text_of_char_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 20) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_char_20) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2408,12 +2598,22 @@ select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_varchar) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql_text(v::text, NULL::text, 'varchar(1)'::text) as v2 from tt_varchar_1) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::varchar(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 1) as v2 from tt_text_of_varchar_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 1) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_varchar_1) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2428,12 +2628,22 @@ select * from (select try_convert(v, NULL::varchar(5)) as v1, try_convert_by_sql
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varchar(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 5) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_varchar_5) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql_text(v::text, NULL::text, 'varchar(10)'::text) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::varchar(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 10) as v2 from tt_text_of_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 10) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_varchar_10) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2448,12 +2658,22 @@ select * from (select try_convert(v, NULL::varchar(20)) as v1, try_convert_by_sq
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varchar(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 20) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_varchar_20) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_text_of_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_text) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2468,12 +2688,22 @@ select * from (select try_convert(v, NULL::money) as v1, try_convert_by_sql(v, N
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::money) as v1, try_convert_by_sql(v, NULL::money) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_money) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_uuid) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::uuid) as v1, try_convert_by_sql(v, NULL::uuid) as v2 from tt_text_of_uuid) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::uuid) as v1, try_convert_by_sql(v, NULL::uuid) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_uuid) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2488,12 +2718,22 @@ select * from (select try_convert(v, NULL::regtype) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::regtype) as v1, try_convert_by_sql(v, NULL::regtype) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_regtype) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_citext) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_text_of_citext) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_text_of_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2508,12 +2748,22 @@ select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_int8) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_citext_of_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_int4) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2528,12 +2778,22 @@ select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NULL::int2) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_int2) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_float8) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from tt_citext_of_float8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_float8) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2548,12 +2808,22 @@ select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, 
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, NULL::float4) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_float4) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_numeric) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from tt_citext_of_numeric) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_numeric) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2568,12 +2838,22 @@ select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v, NULL::complex) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_complex) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::bool) as v1, try_convert_by_sql(v, NULL::bool) as v2 from tt_citext_of_bool) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bool) as v1, try_convert_by_sql(v, NULL::bool) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_bool) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2588,12 +2868,22 @@ select * from (select try_convert(v, NULL::bit) as v1, try_convert_by_sql(v, NUL
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::bit) as v1, try_convert_by_sql(v, NULL::bit) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_bit) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql_text(v::text, NULL::citext, 'bit(1)'::text) as v2 from tt_bit_1) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::bit(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 1) as v2 from tt_citext_of_bit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 1) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_bit_1) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2608,12 +2898,22 @@ select * from (select try_convert(v, NULL::bit(5)) as v1, try_convert_by_sql_wit
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::bit(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 5) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_bit_5) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql_text(v::text, NULL::citext, 'bit(10)'::text) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::bit(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 10) as v2 from tt_citext_of_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 10) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_bit_10) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2628,12 +2928,22 @@ select * from (select try_convert(v, NULL::bit(20)) as v1, try_convert_by_sql_wi
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::bit(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 20) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_bit_20) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_varbit) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::varbit) as v1, try_convert_by_sql(v, NULL::varbit) as v2 from tt_citext_of_varbit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit) as v1, try_convert_by_sql(v, NULL::varbit) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_varbit) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2648,12 +2958,22 @@ select * from (select try_convert(v, NULL::varbit(1)) as v1, try_convert_by_sql_
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varbit(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 1) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_varbit_1) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql_text(v::text, NULL::citext, 'varbit(5)'::text) as v2 from tt_varbit_5) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::varbit(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 5) as v2 from tt_citext_of_varbit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 5) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_varbit_5) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2668,12 +2988,22 @@ select * from (select try_convert(v, NULL::varbit(10)) as v1, try_convert_by_sql
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varbit(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 10) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_varbit_10) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql_text(v::text, NULL::citext, 'varbit(20)'::text) as v2 from tt_varbit_20) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::varbit(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 20) as v2 from tt_citext_of_varbit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 20) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_varbit_20) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2688,12 +3018,22 @@ select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NULL::date) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_date) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_time) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from tt_citext_of_time) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_time) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2708,12 +3048,22 @@ select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, 
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, NULL::timetz) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_timetz) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_timestamp) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from tt_citext_of_timestamp) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_timestamp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2728,12 +3078,22 @@ select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sq
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_timestamptz) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_interval) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from tt_citext_of_interval) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_interval) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2748,12 +3108,22 @@ select * from (select try_convert(v, NULL::abstime) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::abstime) as v1, try_convert_by_sql(v, NULL::abstime) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_abstime) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_reltime) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::reltime) as v1, try_convert_by_sql(v, NULL::reltime) as v2 from tt_citext_of_reltime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::reltime) as v1, try_convert_by_sql(v, NULL::reltime) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_reltime) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2768,12 +3138,22 @@ select * from (select try_convert(v, NULL::point) as v1, try_convert_by_sql(v, N
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::point) as v1, try_convert_by_sql(v, NULL::point) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_point) as t(v)) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_cidr) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::cidr) as v1, try_convert_by_sql(v, NULL::cidr) as v2 from tt_citext_of_cidr) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::cidr) as v1, try_convert_by_sql(v, NULL::cidr) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_cidr) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2788,12 +3168,22 @@ select * from (select try_convert(v, NULL::inet) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::inet) as v1, try_convert_by_sql(v, NULL::inet) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_inet) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_macaddr) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::macaddr) as v1, try_convert_by_sql(v, NULL::macaddr) as v2 from tt_citext_of_macaddr) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::macaddr) as v1, try_convert_by_sql(v, NULL::macaddr) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_macaddr) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2808,12 +3198,22 @@ select * from (select try_convert(v, NULL::json) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::json) as v1, try_convert_by_sql(v, NULL::json) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_json) as t(v)) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_jsonb) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::jsonb) as v1, try_convert_by_sql(v, NULL::jsonb) as v2 from tt_citext_of_jsonb) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::jsonb) as v1, try_convert_by_sql(v, NULL::jsonb) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_jsonb) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2828,12 +3228,22 @@ select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql(v, NUL
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql(v, NULL::xml) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_xml) as t(v)) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_char) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_citext_of_char) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_char) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2848,12 +3258,22 @@ select * from (select try_convert(v, NULL::char(1)) as v1, try_convert_by_sql_wi
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::char(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 1) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_char_1) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql_text(v::text, NULL::citext, 'char(5)'::text) as v2 from tt_char_5) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::char(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 5) as v2 from tt_citext_of_char_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 5) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_char_5) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2868,12 +3288,22 @@ select * from (select try_convert(v, NULL::char(10)) as v1, try_convert_by_sql_w
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::char(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 10) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_char_10) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql_text(v::text, NULL::citext, 'char(20)'::text) as v2 from tt_char_20) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::char(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 20) as v2 from tt_citext_of_char_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 20) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_char_20) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2888,12 +3318,22 @@ select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_varchar) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql_text(v::text, NULL::citext, 'varchar(1)'::text) as v2 from tt_varchar_1) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::varchar(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 1) as v2 from tt_citext_of_varchar_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 1) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_varchar_1) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2908,12 +3348,22 @@ select * from (select try_convert(v, NULL::varchar(5)) as v1, try_convert_by_sql
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varchar(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 5) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_varchar_5) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql_text(v::text, NULL::citext, 'varchar(10)'::text) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::varchar(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 10) as v2 from tt_citext_of_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 10) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_varchar_10) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2928,12 +3378,22 @@ select * from (select try_convert(v, NULL::varchar(20)) as v1, try_convert_by_sq
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varchar(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 20) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_varchar_20) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_citext_of_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_text) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2948,12 +3408,22 @@ select * from (select try_convert(v, NULL::money) as v1, try_convert_by_sql(v, N
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::money) as v1, try_convert_by_sql(v, NULL::money) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_money) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_uuid) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::uuid) as v1, try_convert_by_sql(v, NULL::uuid) as v2 from tt_citext_of_uuid) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::uuid) as v1, try_convert_by_sql(v, NULL::uuid) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_uuid) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2968,12 +3438,22 @@ select * from (select try_convert(v, NULL::regtype) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::regtype) as v1, try_convert_by_sql(v, NULL::regtype) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_regtype) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_citext) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_citext_of_citext) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_citext_of_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -2988,12 +3468,22 @@ select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_int8) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_char_of_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_int4) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3008,12 +3498,22 @@ select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NULL::int2) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_int2) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_float8) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from tt_char_of_float8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_float8) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3028,12 +3528,22 @@ select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, 
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, NULL::float4) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_float4) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_numeric) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from tt_char_of_numeric) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_numeric) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3048,12 +3558,22 @@ select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v, NULL::complex) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_complex) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::bool) as v1, try_convert_by_sql(v, NULL::bool) as v2 from tt_char_of_bool) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bool) as v1, try_convert_by_sql(v, NULL::bool) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_bool) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3068,12 +3588,22 @@ select * from (select try_convert(v, NULL::bit) as v1, try_convert_by_sql(v, NUL
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::bit) as v1, try_convert_by_sql(v, NULL::bit) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_bit) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql_text(v::text, NULL::char, 'bit(1)'::text) as v2 from tt_bit_1) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::bit(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 1) as v2 from tt_char_of_bit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 1) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_bit_1) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3088,12 +3618,22 @@ select * from (select try_convert(v, NULL::bit(5)) as v1, try_convert_by_sql_wit
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::bit(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 5) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_bit_5) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql_text(v::text, NULL::char, 'bit(10)'::text) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::bit(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 10) as v2 from tt_char_of_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 10) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_bit_10) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3108,12 +3648,22 @@ select * from (select try_convert(v, NULL::bit(20)) as v1, try_convert_by_sql_wi
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::bit(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 20) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_bit_20) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_varbit) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::varbit) as v1, try_convert_by_sql(v, NULL::varbit) as v2 from tt_char_of_varbit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit) as v1, try_convert_by_sql(v, NULL::varbit) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_varbit) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3128,12 +3678,22 @@ select * from (select try_convert(v, NULL::varbit(1)) as v1, try_convert_by_sql_
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varbit(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 1) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_varbit_1) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql_text(v::text, NULL::char, 'varbit(5)'::text) as v2 from tt_varbit_5) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::varbit(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 5) as v2 from tt_char_of_varbit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 5) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_varbit_5) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3148,12 +3708,22 @@ select * from (select try_convert(v, NULL::varbit(10)) as v1, try_convert_by_sql
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varbit(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 10) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_varbit_10) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql_text(v::text, NULL::char, 'varbit(20)'::text) as v2 from tt_varbit_20) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::varbit(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 20) as v2 from tt_char_of_varbit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 20) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_varbit_20) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3168,12 +3738,22 @@ select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NULL::date) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_date) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_time) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from tt_char_of_time) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_time) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3188,12 +3768,22 @@ select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, 
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, NULL::timetz) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_timetz) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_timestamp) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from tt_char_of_timestamp) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_timestamp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3208,12 +3798,22 @@ select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sq
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_timestamptz) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_interval) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from tt_char_of_interval) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_interval) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3228,12 +3828,22 @@ select * from (select try_convert(v, NULL::abstime) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::abstime) as v1, try_convert_by_sql(v, NULL::abstime) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_abstime) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_reltime) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::reltime) as v1, try_convert_by_sql(v, NULL::reltime) as v2 from tt_char_of_reltime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::reltime) as v1, try_convert_by_sql(v, NULL::reltime) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_reltime) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3248,12 +3858,22 @@ select * from (select try_convert(v, NULL::point) as v1, try_convert_by_sql(v, N
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::point) as v1, try_convert_by_sql(v, NULL::point) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_point) as t(v)) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_cidr) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::cidr) as v1, try_convert_by_sql(v, NULL::cidr) as v2 from tt_char_of_cidr) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::cidr) as v1, try_convert_by_sql(v, NULL::cidr) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_cidr) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3268,12 +3888,22 @@ select * from (select try_convert(v, NULL::inet) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::inet) as v1, try_convert_by_sql(v, NULL::inet) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_inet) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_macaddr) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::macaddr) as v1, try_convert_by_sql(v, NULL::macaddr) as v2 from tt_char_of_macaddr) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::macaddr) as v1, try_convert_by_sql(v, NULL::macaddr) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_macaddr) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3288,12 +3918,22 @@ select * from (select try_convert(v, NULL::json) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::json) as v1, try_convert_by_sql(v, NULL::json) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_json) as t(v)) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_jsonb) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::jsonb) as v1, try_convert_by_sql(v, NULL::jsonb) as v2 from tt_char_of_jsonb) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::jsonb) as v1, try_convert_by_sql(v, NULL::jsonb) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_jsonb) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3308,12 +3948,22 @@ select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql(v, NUL
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql(v, NULL::xml) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_xml) as t(v)) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_char) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_char_of_char) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_char) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3328,12 +3978,22 @@ select * from (select try_convert(v, NULL::char(1)) as v1, try_convert_by_sql_wi
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::char(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 1) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_char_1) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql_text(v::text, NULL::char, 'char(5)'::text) as v2 from tt_char_5) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::char(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 5) as v2 from tt_char_of_char_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 5) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_char_5) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3348,12 +4008,22 @@ select * from (select try_convert(v, NULL::char(10)) as v1, try_convert_by_sql_w
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::char(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 10) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_char_10) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql_text(v::text, NULL::char, 'char(20)'::text) as v2 from tt_char_20) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::char(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 20) as v2 from tt_char_of_char_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 20) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_char_20) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3368,12 +4038,22 @@ select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_varchar) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql_text(v::text, NULL::char, 'varchar(1)'::text) as v2 from tt_varchar_1) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::varchar(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 1) as v2 from tt_char_of_varchar_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 1) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_varchar_1) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3388,12 +4068,22 @@ select * from (select try_convert(v, NULL::varchar(5)) as v1, try_convert_by_sql
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varchar(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 5) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_varchar_5) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql_text(v::text, NULL::char, 'varchar(10)'::text) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::varchar(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 10) as v2 from tt_char_of_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 10) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_varchar_10) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3408,12 +4098,22 @@ select * from (select try_convert(v, NULL::varchar(20)) as v1, try_convert_by_sq
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varchar(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 20) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_varchar_20) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_char_of_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_text) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3428,12 +4128,22 @@ select * from (select try_convert(v, NULL::money) as v1, try_convert_by_sql(v, N
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::money) as v1, try_convert_by_sql(v, NULL::money) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_money) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_uuid) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::uuid) as v1, try_convert_by_sql(v, NULL::uuid) as v2 from tt_char_of_uuid) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::uuid) as v1, try_convert_by_sql(v, NULL::uuid) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_uuid) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3448,12 +4158,22 @@ select * from (select try_convert(v, NULL::regtype) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::regtype) as v1, try_convert_by_sql(v, NULL::regtype) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_regtype) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_citext) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_char_of_citext) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_char_of_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3468,12 +4188,22 @@ select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::int8) as v1, try_convert_by_sql(v, NULL::int8) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_int8) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_int4) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from tt_varchar_of_int4) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::int4) as v1, try_convert_by_sql(v, NULL::int4) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_int4) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3488,12 +4218,22 @@ select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::int2) as v1, try_convert_by_sql(v, NULL::int2) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_int2) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_float8) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from tt_varchar_of_float8) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::float8) as v1, try_convert_by_sql(v, NULL::float8) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_float8) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3508,12 +4248,22 @@ select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, 
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::float4) as v1, try_convert_by_sql(v, NULL::float4) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_float4) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_numeric) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from tt_varchar_of_numeric) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::numeric) as v1, try_convert_by_sql(v, NULL::numeric) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_numeric) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3528,12 +4278,22 @@ select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::complex) as v1, try_convert_by_sql(v, NULL::complex) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_complex) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_bool) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::bool) as v1, try_convert_by_sql(v, NULL::bool) as v2 from tt_varchar_of_bool) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bool) as v1, try_convert_by_sql(v, NULL::bool) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_bool) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3548,12 +4308,22 @@ select * from (select try_convert(v, NULL::bit) as v1, try_convert_by_sql(v, NUL
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::bit) as v1, try_convert_by_sql(v, NULL::bit) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_bit) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql_text(v::text, NULL::varchar, 'bit(1)'::text) as v2 from tt_bit_1) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::bit(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 1) as v2 from tt_varchar_of_bit_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 1) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_bit_1) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3568,12 +4338,22 @@ select * from (select try_convert(v, NULL::bit(5)) as v1, try_convert_by_sql_wit
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::bit(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 5) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_bit_5) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql_text(v::text, NULL::varchar, 'bit(10)'::text) as v2 from tt_bit_10) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::bit(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 10) as v2 from tt_varchar_of_bit_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::bit(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 10) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_bit_10) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3588,12 +4368,22 @@ select * from (select try_convert(v, NULL::bit(20)) as v1, try_convert_by_sql_wi
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::bit(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::bit, 20) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_bit_20) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_varbit) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::varbit) as v1, try_convert_by_sql(v, NULL::varbit) as v2 from tt_varchar_of_varbit) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit) as v1, try_convert_by_sql(v, NULL::varbit) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_varbit) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3608,12 +4398,22 @@ select * from (select try_convert(v, NULL::varbit(1)) as v1, try_convert_by_sql_
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varbit(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 1) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_varbit_1) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql_text(v::text, NULL::varchar, 'varbit(5)'::text) as v2 from tt_varbit_5) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::varbit(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 5) as v2 from tt_varchar_of_varbit_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 5) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_varbit_5) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3628,12 +4428,22 @@ select * from (select try_convert(v, NULL::varbit(10)) as v1, try_convert_by_sql
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varbit(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 10) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_varbit_10) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql_text(v::text, NULL::varchar, 'varbit(20)'::text) as v2 from tt_varbit_20) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::varbit(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 20) as v2 from tt_varchar_of_varbit_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varbit(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::varbit, 20) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_varbit_20) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3648,12 +4458,22 @@ select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::date) as v1, try_convert_by_sql(v, NULL::date) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_date) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_time) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from tt_varchar_of_time) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::time) as v1, try_convert_by_sql(v, NULL::time) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_time) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3668,12 +4488,22 @@ select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, 
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::timetz) as v1, try_convert_by_sql(v, NULL::timetz) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_timetz) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_timestamp) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from tt_varchar_of_timestamp) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::timestamp) as v1, try_convert_by_sql(v, NULL::timestamp) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_timestamp) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3688,12 +4518,22 @@ select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sq
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::timestamptz) as v1, try_convert_by_sql(v, NULL::timestamptz) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_timestamptz) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_interval) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from tt_varchar_of_interval) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::interval) as v1, try_convert_by_sql(v, NULL::interval) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_interval) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3708,12 +4548,22 @@ select * from (select try_convert(v, NULL::abstime) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::abstime) as v1, try_convert_by_sql(v, NULL::abstime) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_abstime) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_reltime) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::reltime) as v1, try_convert_by_sql(v, NULL::reltime) as v2 from tt_varchar_of_reltime) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::reltime) as v1, try_convert_by_sql(v, NULL::reltime) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_reltime) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3728,12 +4578,22 @@ select * from (select try_convert(v, NULL::point) as v1, try_convert_by_sql(v, N
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::point) as v1, try_convert_by_sql(v, NULL::point) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_point) as t(v)) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_cidr) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::cidr) as v1, try_convert_by_sql(v, NULL::cidr) as v2 from tt_varchar_of_cidr) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::cidr) as v1, try_convert_by_sql(v, NULL::cidr) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_cidr) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3748,12 +4608,22 @@ select * from (select try_convert(v, NULL::inet) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::inet) as v1, try_convert_by_sql(v, NULL::inet) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_inet) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_macaddr) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::macaddr) as v1, try_convert_by_sql(v, NULL::macaddr) as v2 from tt_varchar_of_macaddr) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::macaddr) as v1, try_convert_by_sql(v, NULL::macaddr) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_macaddr) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3768,12 +4638,22 @@ select * from (select try_convert(v, NULL::json) as v1, try_convert_by_sql(v, NU
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::json) as v1, try_convert_by_sql(v, NULL::json) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_json) as t(v)) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_jsonb) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::jsonb) as v1, try_convert_by_sql(v, NULL::jsonb) as v2 from tt_varchar_of_jsonb) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::jsonb) as v1, try_convert_by_sql(v, NULL::jsonb) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_jsonb) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3788,12 +4668,22 @@ select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql(v, NUL
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::xml) as v1, try_convert_by_sql(v, NULL::xml) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_xml) as t(v)) as t(v1, v2) where v1::text is distinct from  v2::text;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_char) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from tt_varchar_of_char) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char) as v1, try_convert_by_sql(v, NULL::char) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_char) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3808,12 +4698,22 @@ select * from (select try_convert(v, NULL::char(1)) as v1, try_convert_by_sql_wi
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::char(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 1) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_char_1) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql_text(v::text, NULL::varchar, 'char(5)'::text) as v2 from tt_char_5) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::char(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 5) as v2 from tt_varchar_of_char_5) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 5) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_char_5) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3828,12 +4728,22 @@ select * from (select try_convert(v, NULL::char(10)) as v1, try_convert_by_sql_w
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::char(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 10) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_char_10) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql_text(v::text, NULL::varchar, 'char(20)'::text) as v2 from tt_char_20) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::char(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 20) as v2 from tt_varchar_of_char_20) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::char(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::char, 20) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_char_20) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3848,12 +4758,22 @@ select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_varchar) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql_text(v::text, NULL::varchar, 'varchar(1)'::text) as v2 from tt_varchar_1) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::varchar(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 1) as v2 from tt_varchar_of_varchar_1) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(1)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 1) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_varchar_1) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3868,12 +4788,22 @@ select * from (select try_convert(v, NULL::varchar(5)) as v1, try_convert_by_sql
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varchar(5)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 5) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_varchar_5) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql_text(v::text, NULL::varchar, 'varchar(10)'::text) as v2 from tt_varchar_10) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::varchar(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 10) as v2 from tt_varchar_of_varchar_10) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::varchar(10)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 10) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_varchar_10) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3888,12 +4818,22 @@ select * from (select try_convert(v, NULL::varchar(20)) as v1, try_convert_by_sq
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::varchar(20)) as v1, try_convert_by_sql_with_len_out(v, NULL::varchar, 20) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_varchar_20) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_text) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from tt_varchar_of_text) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::text) as v1, try_convert_by_sql(v, NULL::text) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_text) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3908,12 +4848,22 @@ select * from (select try_convert(v, NULL::money) as v1, try_convert_by_sql(v, N
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::money) as v1, try_convert_by_sql(v, NULL::money) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_money) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_uuid) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::uuid) as v1, try_convert_by_sql(v, NULL::uuid) as v2 from tt_varchar_of_uuid) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::uuid) as v1, try_convert_by_sql(v, NULL::uuid) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_uuid) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
@@ -3928,12 +4878,22 @@ select * from (select try_convert(v, NULL::regtype) as v1, try_convert_by_sql(v,
 ----+----
 (0 rows)
 
+select * from (select try_convert(v, NULL::regtype) as v1, try_convert_by_sql(v, NULL::regtype) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_regtype) as t(v)) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
 select * from (select try_convert(v, NULL::varchar) as v1, try_convert_by_sql(v, NULL::varchar) as v2 from tt_citext) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
 
 select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from tt_varchar_of_citext) as t(v1, v2) where v1 is distinct from v2;
+ v1 | v2 
+----+----
+(0 rows)
+
+select * from (select try_convert(v, NULL::citext) as v1, try_convert_by_sql(v, NULL::citext) as v2 from (select ('!@#%^&*' || v || '!@#%^&*') from tt_varchar_of_citext) as t(v)) as t(v1, v2) where v1 is distinct from v2;
  v1 | v2 
 ----+----
 (0 rows)
