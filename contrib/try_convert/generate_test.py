@@ -120,10 +120,28 @@ print('Supported types:', ' '.join(supported_types))
 
 pg_type_path = '/home/robozmey/gpdb_src/src/include/catalog/pg_type.h'
 pg_cast_path = '/home/robozmey/gpdb_src/src/include/catalog/pg_cast.h'
+pg_proc_path = '/home/robozmey/gpdb_src/src/backend/catalog/pg_proc_combined.h'
 
 
 def remove_empty_lines(t):
     return "\n".join([s for s in t.split("\n") if s])
+
+### GET FUNCTION IDs
+
+f = open(pg_proc_path)
+content = f.read()
+
+# DATA(insert OID =  46 (  textin			   PGNSP PGUID 12 1 0 0 0 f f f f t f i 1 0 25 "2275" _null_ _null_ _null_ _null_ textin _null_ _null_ _null_ ));
+func_pattern = r'DATA\(insert OID =\s+(\w*)\s+\(.*?(\w*) _null_ _null_ _null_ n?\s?a?\s?\)\);';
+
+func_id_name = {}
+
+func_id_name['0'] = 'via I/O'
+
+for (id, name) in re.findall(func_pattern, content):
+    func_id_name[id] = name
+    # print(id, name)
+
 
 
 ### GET TYPE IDs
@@ -169,8 +187,9 @@ cast_pattern = r'DATA\(insert \([\s]*(\d+)[\s]+(\d+)[\s]+(\d+)[\s]+(.)[\s]+(.)';
 casts = []
 supported_cast_count = 0
 
-for (source, target, _, _, meth) in re.findall(cast_pattern, content):
+for (source, target, funcid, _, meth) in re.findall(cast_pattern, content):
     casts += [(int(source), int(target), meth)]
+    print(type_id_name[int(source)], ' -> ', type_id_name[int(target)], ' via ', meth, f'({funcid} - {func_id_name[funcid]}) ', f'{source}-{target}')
     if type_id_name[int(source)] in supported_types and type_id_name[int(target)] in supported_types:
             supported_cast_count += 1
 
