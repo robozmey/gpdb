@@ -571,6 +571,8 @@ typedef enum NodeTag
 	T_GpPolicy,	/* in catalog/gp_policy.h */
 	T_RetrieveStmt,
 
+	T_ErrorSaveContext,
+
 } NodeTag;
 
 /*
