@@ -8,6 +8,7 @@
 
 #include "funcapi.h"
 
+// #define USE_PG_TRY_CATCH
 
 PG_MODULE_MAGIC;
 
@@ -191,13 +192,28 @@ try_convert_from_function(Datum value, int32 typmod, Oid funcId, bool *is_failed
 {
     Datum res = 0;
 
-	ErrorSaveContext escontext = {T_ErrorSaveContext, false};;
+	ErrorSaveContext escontext = {T_ErrorSaveContext, false};
+
+#ifdef USE_PG_TRY_CATCH
+	PG_TRY();
+	{
+#endif
 
 	res = OidFunctionCall3Safe(funcId, value, typmod, true, &escontext);
 
 	if (escontext.error_occurred) {
 		*is_failed = true;
 	}
+
+#ifdef USE_PG_TRY_CATCH
+	}
+	PG_CATCH();
+	{
+		*is_failed = true;
+		FlushErrorState();
+	}
+	PG_END_TRY();
+#endif
 
 
     return res;
@@ -207,8 +223,8 @@ try_convert_from_function(Datum value, int32 typmod, Oid funcId, bool *is_failed
 Datum
 try_convert_via_io(Datum value, Oid sourceTypeId, Oid targetTypeId, int32 targetTypMod, bool *is_failed)
 {
-    FmgrInfo *outfunc;
-    FmgrInfo *infunc;
+    FmgrInfo outfunc;
+    FmgrInfo infunc;
 
     Oid iofunc = InvalidOid;
 	bool outtypisvarlena = false;
@@ -232,26 +248,33 @@ try_convert_via_io(Datum value, Oid sourceTypeId, Oid targetTypeId, int32 target
 
 	ErrorSaveContext escontext = {T_ErrorSaveContext, false};
 
+#ifdef USE_PG_TRY_CATCH
 	PG_TRY();
 	{
-        // value cannot be null
-        string = OutputFunctionCall(&outfunc, value);
+#endif
 
-        res = InputFunctionCallSafe(&infunc,
-                                string,
-                                intypioparam,
-                                -1,
-								&escontext);
+	// value cannot be null
+	string = OutputFunctionCall(&outfunc, value);
 
-		if (escontext.error_occurred) {
-			*is_failed = true;
-		}
-    }
+	res = InputFunctionCallSafe(&infunc,
+							string,
+							intypioparam,
+							-1,
+							&escontext);
+
+	if (escontext.error_occurred) {
+		*is_failed = true;
+	}
+
+#ifdef USE_PG_TRY_CATCH
+	}
 	PG_CATCH();
-    {
-		res = 0;
-    }
+	{
+		*is_failed = true;
+		FlushErrorState();
+	}
 	PG_END_TRY();
+#endif
 
     return res;
 }
