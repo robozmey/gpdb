@@ -652,8 +652,6 @@ extern Datum OidFunctionCall3CollSafe(Oid functionId, Oid collation,
 /* Special cases for convenient invocation of datatype I/O functions. */
 extern Datum InputFunctionCall(FmgrInfo *flinfo, char *str,
 				  Oid typioparam, int32 typmod);
-extern Datum InputFunctionCallSafe(FmgrInfo *flinfo, char *str,
-				  Oid typioparam, int32 typmod, fmNodePtr escontext);
 extern Datum OidInputFunctionCall(Oid functionId, char *str,
 					 Oid typioparam, int32 typmod);
 extern char *OutputFunctionCall(FmgrInfo *flinfo, Datum val);
