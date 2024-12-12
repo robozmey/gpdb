@@ -79,6 +79,7 @@
 #include "libpq/pqformat.h"
 #include "libpq/pqsignal.h"
 #include "mb/pg_wchar.h"
+#include "nodes/miscnodes.h"
 #include "miscadmin.h"
 #include "postmaster/postmaster.h"
 #include "postmaster/syslogger.h"
@@ -830,6 +831,37 @@ errfinish_and_return(int dummy __attribute__((unused)),...)
 	return edata_copy;
 }
 
+/*
+ * errsave_start --- begin a "soft" error-reporting cycle
+ *
+ * If "context" isn't an ErrorSaveContext node, this behaves as
+ * errstart(ERROR, domain), and the errsave() macro ends up acting
+ * exactly like ereport(ERROR, ...).
+ *
+ * If "context" is an ErrorSaveContext node, we just set
+ * the error_occurred flag in the ErrorSaveContext node and return false,
+ * which will cause us to skip the remaining error processing steps.
+ */
+bool
+errsave_start(struct Node *context, 
+				const char *filename, int lineno,
+		 		const char *funcname, const char *domain)
+{
+	ErrorSaveContext *escontext;
+
+	/*
+	 * Do we have a context for soft error reporting?  If not, just punt to
+	 * errstart().
+	 */
+	if (context == NULL || !IsA(context, ErrorSaveContext))
+		return errstart(ERROR, filename, lineno, funcname, domain);
+
+	/* Report that a soft error was detected */
+	escontext = (ErrorSaveContext *) context;
+	escontext->error_occurred = true;
+
+	return false;
+}
 
 /*
  * errcode --- add SQLSTATE error code to the current error

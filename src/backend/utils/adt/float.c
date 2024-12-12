@@ -194,7 +194,7 @@ float4in(PG_FUNCTION_ARGS)
 	 * strtod() on different platforms.
 	 */
 	if (*num == '\0')
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 				 errmsg("invalid input syntax for type real: \"%s\"",
 						orig_num)));
@@ -262,13 +262,13 @@ float4in(PG_FUNCTION_ARGS)
 			 * to see if the result is zero or huge.
 			 */
 			if (val == 0.0 || val >= HUGE_VAL || val <= -HUGE_VAL)
-				ereport(ERROR,
+				ereturn(fcinfo->context, 0,
 						(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 						 errmsg("\"%s\" is out of range for type real",
 								orig_num)));
 		}
 		else
-			ereport(ERROR,
+			ereturn(fcinfo->context, 0,
 					(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 					 errmsg("invalid input syntax for type real: \"%s\"",
 							orig_num)));
@@ -292,7 +292,7 @@ float4in(PG_FUNCTION_ARGS)
 
 	/* if there is any junk left at the end of the string, bail out */
 	if (*endptr != '\0')
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 				 errmsg("invalid input syntax for type real: \"%s\"",
 						orig_num)));
@@ -394,7 +394,7 @@ float8in(PG_FUNCTION_ARGS)
 	 * strtod() on different platforms.
 	 */
 	if (*num == '\0')
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 			 errmsg("invalid input syntax for type double precision: \"%s\"",
 					orig_num)));
@@ -462,13 +462,13 @@ float8in(PG_FUNCTION_ARGS)
 			 * to see if the result is zero or huge.
 			 */
 			if (val == 0.0 || val >= HUGE_VAL || val <= -HUGE_VAL)
-				ereport(ERROR,
+				ereturn(fcinfo->context, 0,
 						(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				   errmsg("\"%s\" is out of range for type double precision",
 						  orig_num)));
 		}
 		else
-			ereport(ERROR,
+			ereturn(fcinfo->context, 0,
 					(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 			 errmsg("invalid input syntax for type double precision: \"%s\"",
 					orig_num)));
@@ -492,7 +492,7 @@ float8in(PG_FUNCTION_ARGS)
 
 	/* if there is any junk left at the end of the string, bail out */
 	if (*endptr != '\0')
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 			 errmsg("invalid input syntax for type double precision: \"%s\"",
 					orig_num)));
@@ -788,7 +788,7 @@ float4div(PG_FUNCTION_ARGS)
 	float4		result;
 
 	if (arg2 == 0.0)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_DIVISION_BY_ZERO),
 				 errmsg("division by zero")));
 
@@ -852,7 +852,7 @@ float8div(PG_FUNCTION_ARGS)
 	float8		result;
 
 	if (arg2 == 0.0)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_DIVISION_BY_ZERO),
 				 errmsg("division by zero")));
 
@@ -1167,7 +1167,7 @@ dtoi4(PG_FUNCTION_ARGS)
 
 	/* Range check */
 	if (isnan(num) || !FLOAT8_FITS_IN_INT32(num))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("integer out of range")));
 
@@ -1192,7 +1192,7 @@ dtoi2(PG_FUNCTION_ARGS)
 
 	/* Range check */
 	if (isnan(num) || !FLOAT8_FITS_IN_INT16(num))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("smallint out of range")));
 
@@ -1241,7 +1241,7 @@ ftoi4(PG_FUNCTION_ARGS)
 
 	/* Range check */
 	if (isnan(num) || !FLOAT4_FITS_IN_INT32(num))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("integer out of range")));
 
@@ -1266,7 +1266,7 @@ ftoi2(PG_FUNCTION_ARGS)
 
 	/* Range check */
 	if (isnan(num) || !FLOAT4_FITS_IN_INT16(num))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("smallint out of range")));
 
@@ -2684,7 +2684,7 @@ float48div(PG_FUNCTION_ARGS)
 	float8		result;
 
 	if (arg2 == 0.0)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_DIVISION_BY_ZERO),
 				 errmsg("division by zero")));
 
@@ -2747,7 +2747,7 @@ float84div(PG_FUNCTION_ARGS)
 	float8		result;
 
 	if (arg2 == 0.0)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_DIVISION_BY_ZERO),
 				 errmsg("division by zero")));
 

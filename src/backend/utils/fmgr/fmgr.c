@@ -23,6 +23,7 @@
 #include "lib/stringinfo.h"
 #include "miscadmin.h"
 #include "nodes/nodeFuncs.h"
+#include "nodes/miscnodes.h"
 #include "pgstat.h"
 #include "utils/acl.h"
 #include "utils/builtins.h"
@@ -1879,6 +1880,55 @@ OidFunctionCall9Coll(Oid functionId, Oid collation, Datum arg1, Datum arg2,
 	fcinfo.argnull[8] = false;
 
 	result = FunctionCallInvoke(&fcinfo);
+
+	/* Check for null result, since caller is clearly not expecting one */
+	if (fcinfo.isnull)
+		elog(ERROR, "function %u returned NULL", flinfo.fn_oid);
+
+	return result;
+}
+
+/*
+ * Call a previously-looked-up OidFunctionCallNColl function, with non-exception
+ * handling of "soft" errors.
+ * 
+ * This is basically like OidFunctionCallNColl, but the converted Datum is
+ * returned into *result while the function result is true for success or
+ * false for failure.  Also, the caller may pass an ErrorSaveContext node.
+ * (We declare that as "fmNodePtr" to avoid including nodes.h in fmgr.h.)
+ * 
+ * If escontext points to an ErrorSaveContext, any "soft" errors detected by
+ * the input function will be reported by filling the escontext struct and
+ * returning (Datum) 0.
+ * 
+ * If escontext does not point to an ErrorSaveContext, errors are reported
+ * via ereport(ERROR), so that there is no functional difference from
+ * OidFunctionCall3CollSafe; the result will always be true if control returns.
+ */
+Datum
+OidFunctionCall3CollSafe(Oid functionId, Oid collation, Datum arg1, Datum arg2,
+					 Datum arg3, fmNodePtr escontext)
+{
+	FmgrInfo	flinfo;
+	FunctionCallInfoData fcinfo;
+	Datum		result;
+
+	fmgr_info(functionId, &flinfo);
+
+	InitFunctionCallInfoData(fcinfo, &flinfo, 3, collation, escontext, NULL);
+
+	fcinfo.arg[0] = arg1;
+	fcinfo.arg[1] = arg2;
+	fcinfo.arg[2] = arg3;
+	fcinfo.argnull[0] = false;
+	fcinfo.argnull[1] = false;
+	fcinfo.argnull[2] = false;
+
+	result = FunctionCallInvoke(&fcinfo);
+
+	/* Result value is garbage, and could be null, if an error was reported */
+	if (SOFT_ERROR_OCCURRED(escontext))
+		return (Datum) 0;
 
 	/* Check for null result, since caller is clearly not expecting one */
 	if (fcinfo.isnull)

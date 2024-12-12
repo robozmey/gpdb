@@ -24,6 +24,7 @@
 
 
 extern bool scanint8(const char *str, bool errorOK, int64 *result);
+extern bool scanint8_safe(const char *str, bool errorOK, int64 *result, Node* escontext);
 
 extern Datum int8in(PG_FUNCTION_ARGS);
 extern Datum int8out(PG_FUNCTION_ARGS);
