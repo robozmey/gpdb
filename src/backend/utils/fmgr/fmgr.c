@@ -1888,6 +1888,30 @@ OidFunctionCall9Coll(Oid functionId, Oid collation, Datum arg1, Datum arg2,
 	return result;
 }
 
+Datum
+DirectFunctionCall1CollSafe(PGFunction func, Oid collation, Datum arg1, fmNodePtr escontext)
+{
+	FunctionCallInfoData fcinfo;
+	Datum		result;
+
+	InitFunctionCallInfoData(fcinfo, NULL, 1, collation, escontext, NULL);
+
+	fcinfo.arg[0] = arg1;
+	fcinfo.argnull[0] = false;
+
+	result = (*func) (&fcinfo);
+
+	/* Result value is garbage, and could be null, if an error was reported */
+	if (SOFT_ERROR_OCCURRED(escontext))
+		return (Datum) 0;
+
+	/* Check for null result, since caller is clearly not expecting one */
+	if (fcinfo.isnull)
+		elog(ERROR, "function %p returned NULL", (void *) func);
+
+	return result;
+}
+
 /*
  * Call a previously-looked-up OidFunctionCallNColl function, with non-exception
  * handling of "soft" errors.

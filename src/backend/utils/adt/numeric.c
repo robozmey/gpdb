@@ -33,6 +33,7 @@
 #include "miscadmin.h"
 #include "nodes/nodeFuncs.h"
 #include "nodes/execnodes.h"
+#include "nodes/miscnodes.h"
 #include "utils/array.h"
 #include "utils/builtins.h"
 #include "utils/int8.h"
@@ -404,7 +405,7 @@ static void dump_var(const char *str, NumericVar *var);
 static void alloc_var(NumericVar *var, int ndigits);
 static void zero_var(NumericVar *var);
 
-static const char *init_var_from_str(const char *str, const char *cp, NumericVar *dest);
+static bool init_var_from_str(const char *str, const char *cp, NumericVar *dest, const char **endptr, Node* escontext);
 static void set_var_from_var(NumericVar *value, NumericVar *dest);
 static void init_var_from_var(NumericVar *value, NumericVar *dest);
 static void init_ro_var_from_var(NumericVar *value, NumericVar *dest);
@@ -421,16 +422,16 @@ static Numeric make_result(NumericVar *var);
  * ----------
  */
 
-static void apply_typmod(NumericVar *var, int32 typmod);
+static bool apply_typmod(NumericVar *var, int32 typmod, Node *escontext);
 
-static int32 numericvar_to_int32(NumericVar *var);
+static bool numericvar_to_int32(NumericVar *var, int32 *result, Node* escontext);
 static bool numericvar_to_int64(NumericVar *var, int64 *result);
 static void int64_to_numericvar(int64 val, NumericVar *var);
 #ifdef HAVE_INT128
 static bool numericvar_to_int128(NumericVar *var, int128 *result);
 static void int128_to_numericvar(int128 val, NumericVar *var);
 #endif
-static double numericvar_to_double_no_overflow(NumericVar *var);
+static bool numericvar_to_double_no_overflow(NumericVar *var, double *result, Node *escontext);
 
 static int	cmp_var(NumericVar *var1, NumericVar *var2);
 static int	cmp_var_common(const NumericDigit *var1digits, int var1ndigits,
@@ -497,6 +498,7 @@ numeric_in(PG_FUNCTION_ARGS)
 	int32		typmod = PG_GETARG_INT32(2);
 	Numeric		res;
 	const char *cp;
+	Node *escontext = fcinfo->context;
 
 	/* Skip leading spaces */
 	cp = str;
@@ -519,7 +521,7 @@ numeric_in(PG_FUNCTION_ARGS)
 		while (*cp)
 		{
 			if (!isspace((unsigned char) *cp))
-				ereport(ERROR,
+				ereturn(escontext, 0,
 						(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 					  errmsg("invalid input syntax for type numeric: \"%s\"",
 							 str)));
@@ -534,7 +536,8 @@ numeric_in(PG_FUNCTION_ARGS)
 		 */
 		NumericVar	value;
 
-		cp = init_var_from_str(str, cp, &value);
+		if(!init_var_from_str(str, cp, &value, &cp, escontext))
+			PG_RETURN_NULL();
 
 		/*
 		 * We duplicate a few lines of code here because we would like to
@@ -545,14 +548,15 @@ numeric_in(PG_FUNCTION_ARGS)
 		while (*cp)
 		{
 			if (!isspace((unsigned char) *cp))
-				ereport(ERROR,
+				ereturn(fcinfo->context, 0,
 						(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 					  errmsg("invalid input syntax for type numeric: \"%s\"",
 							 str)));
 			cp++;
 		}
 
-		apply_typmod(&value, typmod);
+		if(!apply_typmod(&value, typmod, fcinfo->context))
+			PG_RETURN_NULL();
 
 		res = make_result(&value);
 		free_var(&value);
@@ -765,13 +769,13 @@ numeric_recv(PG_FUNCTION_ARGS)
 	if (!(value.sign == NUMERIC_POS ||
 		  value.sign == NUMERIC_NEG ||
 		  value.sign == NUMERIC_NAN))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_INVALID_BINARY_REPRESENTATION),
 				 errmsg("invalid sign in external \"numeric\" value")));
 
 	value.dscale = (uint16) pq_getmsgint(buf, sizeof(uint16));
 	if ((value.dscale & NUMERIC_DSCALE_MASK) != value.dscale)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_INVALID_BINARY_REPRESENTATION),
 				 errmsg("invalid scale in external \"numeric\" value")));
 
@@ -780,7 +784,7 @@ numeric_recv(PG_FUNCTION_ARGS)
 		NumericDigit d = pq_getmsgint(buf, sizeof(NumericDigit));
 
 		if (d < 0 || d >= NBASE)
-			ereport(ERROR,
+			ereturn(fcinfo->context, 0,
 					(errcode(ERRCODE_INVALID_BINARY_REPRESENTATION),
 					 errmsg("invalid digit in external \"numeric\" value")));
 		value.digits[i] = d;
@@ -794,7 +798,7 @@ numeric_recv(PG_FUNCTION_ARGS)
 	 */
 	trunc_var(&value, value.dscale);
 
-	apply_typmod(&value, typmod);
+	apply_typmod(&value, typmod, NULL);
 
 	res = make_result(&value);
 
@@ -949,7 +953,8 @@ numeric		(PG_FUNCTION_ARGS)
 	init_var(&var);
 
 	set_var_from_num(num, &var);
-	apply_typmod(&var, typmod);
+	if(!apply_typmod(&var, typmod, fcinfo->context))
+		PG_RETURN_NULL();
 	new = make_result(&var);
 
 	free_var(&var);
@@ -970,12 +975,12 @@ numerictypmodin(PG_FUNCTION_ARGS)
 	if (n == 2)
 	{
 		if (tl[0] < 1 || tl[0] > NUMERIC_MAX_PRECISION)
-			ereport(ERROR,
+			ereturn(fcinfo->context, 0,
 					(errcode(ERRCODE_INVALID_PARAMETER_VALUE),
 					 errmsg("NUMERIC precision %d must be between 1 and %d",
 							tl[0], NUMERIC_MAX_PRECISION)));
 		if (tl[1] < 0 || tl[1] > tl[0])
-			ereport(ERROR,
+			ereturn(fcinfo->context, 0,
 					(errcode(ERRCODE_INVALID_PARAMETER_VALUE),
 				errmsg("NUMERIC scale %d must be between 0 and precision %d",
 					   tl[1], tl[0])));
@@ -984,7 +989,7 @@ numerictypmodin(PG_FUNCTION_ARGS)
 	else if (n == 1)
 	{
 		if (tl[0] < 1 || tl[0] > NUMERIC_MAX_PRECISION)
-			ereport(ERROR,
+			ereturn(fcinfo->context, 0,
 					(errcode(ERRCODE_INVALID_PARAMETER_VALUE),
 					 errmsg("NUMERIC precision %d must be between 1 and %d",
 							tl[0], NUMERIC_MAX_PRECISION)));
@@ -993,7 +998,7 @@ numerictypmodin(PG_FUNCTION_ARGS)
 	}
 	else
 	{
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_INVALID_PARAMETER_VALUE),
 				 errmsg("invalid NUMERIC type modifier")));
 		typmod = 0;				/* keep compiler quiet */
@@ -1313,7 +1318,7 @@ width_bucket_numeric(PG_FUNCTION_ARGS)
 	int32		count = PG_GETARG_INT32(3);
 	NumericVar	count_var;
 	NumericVar	result_var;
-	int32		result;
+	int32		result = 0;
 
 	if (count <= 0)
 		ereport(ERROR,
@@ -1366,7 +1371,7 @@ width_bucket_numeric(PG_FUNCTION_ARGS)
 	}
 
 	/* if result exceeds the range of a legal int4, we ereport here */
-	result = numericvar_to_int32(&result_var);
+	(void) numericvar_to_int32(&result_var, &result, NULL);
 
 	free_var(&count_var);
 	free_var(&result_var);
@@ -2141,7 +2146,7 @@ numeric_exp(PG_FUNCTION_ARGS)
 	quick_init_var(&result);
 
 	/* convert input to float8, ignoring overflow */
-	val = numericvar_to_double_no_overflow(&arg);
+	(void) numericvar_to_double_no_overflow(&arg, &val, NULL);
 
 	/*
 	 * log10(result) = num * log10(e), so this is approximately the decimal
@@ -2447,7 +2452,7 @@ numeric_li_fraction(Numeric x, Numeric x0, Numeric x1,
 			set_var_from_var(&const_zero, &v);
 		}
 		
-		result = numericvar_to_double_no_overflow(&v);
+		(void) numericvar_to_double_no_overflow(&v, &result, NULL);
 	}
 	
 	return result;
@@ -2478,6 +2483,7 @@ numeric_li_value(float8 f, Numeric y0, Numeric y1)
 		NumericVar v1;
 		NumericVar vf;
 		char buf[DBL_DIG + 100];
+		const char *endptr;
 		
 		init_var_from_num(y0, &v0);
 		init_var_from_num(y1, &v1);
@@ -2487,7 +2493,7 @@ numeric_li_value(float8 f, Numeric y0, Numeric y1)
 		snprintf(buf, sizeof(buf), "%.*g", DBL_DIG, f);
 
 		/* Assume we need not worry about leading/trailing spaces */
-		(void) init_var_from_str(buf, buf, &vf);
+		(void) init_var_from_str(buf, buf, &vf, &endptr, NULL);
 		
 		mul_var(&vf, &v1, &v1, vf.dscale + v1.dscale);
 		add_var(&v0, &v1, &v1);  
@@ -2596,42 +2602,43 @@ numeric_int4(PG_FUNCTION_ARGS)
 
 	/* XXX would it be better to return NULL? */
 	if (NUMERIC_IS_NAN(num))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
 				 errmsg("cannot convert NaN to integer")));
 
 	/* Convert to variable format, then convert to int4 */
 	init_var_from_num(num, &x);
-	result = numericvar_to_int32(&x);
+	if(!numericvar_to_int32(&x, &result, fcinfo->context))
+		PG_RETURN_NULL();
 	PG_RETURN_INT32(result);
 }
 
 /*
  * Given a NumericVar, convert it to an int32. If the NumericVar
  * exceeds the range of an int32, raise the appropriate error via
- * ereport(). The input NumericVar is *not* free'd.
+ * ereport() or if escontext is ErrorSaveContext saves error and 
+ * returns false. The input NumericVar is *not* free'd.
  */
-static int32
-numericvar_to_int32(NumericVar *var)
+static bool
+numericvar_to_int32(NumericVar *var, int32 *result, Node* escontext)
 {
-	int32		result;
 	int64		val = 0;
 
 	if (!numericvar_to_int64(var, &val))
-		ereport(ERROR,
+		ereturn(escontext, false,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("integer out of range")));
 
 	/* Down-convert to int4 */
-	result = (int32) val;
+	*result = (int32) val;
 
 	/* Test for overflow by reverse-conversion. */
-	if ((int64) result != val)
-		ereport(ERROR,
+	if ((int64) *result != val)
+		ereturn(escontext, false,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("integer out of range")));
 
-	return result;
+	return true;
 }
 
 Datum
@@ -2660,7 +2667,7 @@ numeric_int8(PG_FUNCTION_ARGS)
 
 	/* XXX would it be better to return NULL? */
 	if (NUMERIC_IS_NAN(num))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
 				 errmsg("cannot convert NaN to bigint")));
 
@@ -2668,7 +2675,7 @@ numeric_int8(PG_FUNCTION_ARGS)
 	init_var_from_num(num, &x);
 
 	if (!numericvar_to_int64(&x, &result))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("bigint out of range")));
 
@@ -2703,7 +2710,7 @@ numeric_int2(PG_FUNCTION_ARGS)
 
 	/* XXX would it be better to return NULL? */
 	if (NUMERIC_IS_NAN(num))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
 				 errmsg("cannot convert NaN to smallint")));
 
@@ -2711,7 +2718,7 @@ numeric_int2(PG_FUNCTION_ARGS)
 	init_var_from_num(num, &x);
 
 	if (!numericvar_to_int64(&x, &val))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("smallint out of range")));
 
@@ -2720,7 +2727,7 @@ numeric_int2(PG_FUNCTION_ARGS)
 
 	/* Test for overflow by reverse-conversion. */
 	if ((int64) result != val)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("smallint out of range")));
 
@@ -2735,19 +2742,21 @@ float8_numeric(PG_FUNCTION_ARGS)
 	Numeric		res;
 	NumericVar	result;
 	char		buf[DBL_DIG + 100];
+	const char *endptr;
 
 	if (isnan(val))
 		PG_RETURN_NUMERIC(make_result(&const_nan));
 
 	if (isinf(val))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
 				 errmsg("cannot convert infinity to numeric")));
 
 	snprintf(buf, sizeof(buf), "%.*g", DBL_DIG, val);
 
 	/* Assume we need not worry about leading/trailing spaces */
-	(void) init_var_from_str(buf, buf, &result);
+	if(!init_var_from_str(buf, buf, &result, &endptr, fcinfo->context))
+		PG_RETURN_NULL();
 
 	res = make_result(&result);
 
@@ -2759,18 +2768,27 @@ Datum
 numeric_float8(PG_FUNCTION_ARGS)
 {
 	Numeric		num = PG_GETARG_NUMERIC(0);
+	Datum 		tmp_datum;
 	char	   *tmp;
 	Datum		result;
+	Node	   *escontext = fcinfo->context;
 
 	if (NUMERIC_IS_NAN(num))
 		PG_RETURN_FLOAT8(get_float8_nan());
 
-	tmp = DatumGetCString(DirectFunctionCall1(numeric_out,
-											  NumericGetDatum(num)));
+	tmp_datum = DirectFunctionCall1Safe(numeric_out, NumericGetDatum(num), escontext);
 
-	result = DirectFunctionCall1(float8in, CStringGetDatum(tmp));
+	if (SOFT_ERROR_OCCURRED(escontext))
+		PG_RETURN_NULL();
+	
+	tmp = DatumGetCString(tmp_datum);
+
+	result = DirectFunctionCall1Safe(float8in, CStringGetDatum(tmp), escontext);
 
 	pfree(tmp);
+
+	if (SOFT_ERROR_OCCURRED(escontext))
+		PG_RETURN_NULL();
 
 	PG_RETURN_DATUM(result);
 }
@@ -2798,19 +2816,21 @@ float4_numeric(PG_FUNCTION_ARGS)
 	Numeric		res;
 	NumericVar	result;
 	char		buf[FLT_DIG + 100];
+	const char *endptr;
 
 	if (isnan(val))
 		PG_RETURN_NUMERIC(make_result(&const_nan));
 
 	if (isinf(val))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
 				 errmsg("cannot convert infinity to numeric")));
 
 	snprintf(buf, sizeof(buf), "%.*g", FLT_DIG, val);
 
 	/* Assume we need not worry about leading/trailing spaces */
-	(void) init_var_from_str(buf, buf, &result);
+	if(!init_var_from_str(buf, buf, &result, &endptr, fcinfo->context))
+		PG_RETURN_NULL();
 
 	res = make_result(&result);
 
@@ -2822,18 +2842,27 @@ Datum
 numeric_float4(PG_FUNCTION_ARGS)
 {
 	Numeric		num = PG_GETARG_NUMERIC(0);
+	Datum		tmp_datum;
 	char	   *tmp;
 	Datum		result;
+	Node	   *escontext = fcinfo->context;
 
 	if (NUMERIC_IS_NAN(num))
 		PG_RETURN_FLOAT4(get_float4_nan());
 
-	tmp = DatumGetCString(DirectFunctionCall1(numeric_out,
-											  NumericGetDatum(num)));
+	tmp_datum = DirectFunctionCall1Safe(numeric_out, NumericGetDatum(num), escontext);
 
-	result = DirectFunctionCall1(float4in, CStringGetDatum(tmp));
+	if (SOFT_ERROR_OCCURRED(escontext))
+		PG_RETURN_NULL();
+	
+	tmp = DatumGetCString(tmp_datum);
+
+	result = DirectFunctionCall1Safe(float4in, CStringGetDatum(tmp), escontext);
 
 	pfree(tmp);
+
+	if (SOFT_ERROR_OCCURRED(escontext))
+		PG_RETURN_NULL();
 
 	PG_RETURN_DATUM(result);
 }
@@ -5130,14 +5159,14 @@ zero_var(NumericVar *var)
  *	Parse a string and put the number into a variable
  *
  * This function does not handle leading or trailing spaces, and it doesn't
- * accept "NaN" either.  It returns the end+1 position so that caller can
- * check for trailing spaces/garbage if deemed necessary.
+ * accept "NaN" either.  It returns the end+1 position into *endptr 
+ * so that caller can check for trailing spaces/garbage if deemed necessary.
  *
  * cp is the place to actually start parsing; str is what to use in error
  * reports.  (Typically cp would be the same except advanced over spaces.)
  */
-static const char *
-init_var_from_str(const char *str, const char *cp, NumericVar *dest)
+static bool
+init_var_from_str(const char *str, const char *cp, NumericVar *dest, const char **endptr, Node *escontext)
 {
 	bool		have_dp = FALSE;
 	int			i;
@@ -5175,7 +5204,7 @@ init_var_from_str(const char *str, const char *cp, NumericVar *dest)
 	}
 
 	if (!isdigit((unsigned char) *cp))
-		ereport(ERROR,
+		ereturn(escontext, false,
 				(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 			  errmsg("invalid input syntax for type numeric: \"%s\"", str)));
 
@@ -5201,7 +5230,7 @@ init_var_from_str(const char *str, const char *cp, NumericVar *dest)
 		else if (*cp == '.')
 		{
 			if (have_dp)
-				ereport(ERROR,
+				ereturn(escontext, false,
 						(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 					  errmsg("invalid input syntax for type numeric: \"%s\"",
 							 str)));
@@ -5225,7 +5254,7 @@ init_var_from_str(const char *str, const char *cp, NumericVar *dest)
 		cp++;
 		exponent = strtol(cp, &endptr, 10);
 		if (endptr == cp)
-			ereport(ERROR,
+			ereturn(escontext, false,
 					(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 					 errmsg("invalid input syntax for type numeric: \"%s\"",
 							str)));
@@ -5240,7 +5269,7 @@ init_var_from_str(const char *str, const char *cp, NumericVar *dest)
 		 * for consistency use the same ereport errcode/text as make_result().
 		 */
 		if (exponent >= INT_MAX / 2 || exponent <= -(INT_MAX / 2))
-			ereport(ERROR,
+			ereturn(escontext, false,
 					(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 					 errmsg("value overflows numeric format")));
 		dweight += (int) exponent;
@@ -5290,7 +5319,8 @@ init_var_from_str(const char *str, const char *cp, NumericVar *dest)
 		pfree(decdigits);
 
 	/* Return end+1 position for caller */
-	return cp;
+	*endptr = cp;
+	return true;
 }
 
 
@@ -5733,9 +5763,12 @@ make_result(NumericVar *var)
  *
  *	Do bounds checking and rounding according to the attributes
  *	typmod field.
+
+ * Returns true on success, false on failure (if escontext points to an
+ * ErrorSaveContext; otherwise errors are thrown).
  */
-static void
-apply_typmod(NumericVar *var, int32 typmod)
+static bool
+apply_typmod(NumericVar *var, int32 typmod, Node *escontext)
 {
 	int			precision;
 	int			scale;
@@ -5745,7 +5778,7 @@ apply_typmod(NumericVar *var, int32 typmod)
 
 	/* Do nothing if we have a default typmod (-1) */
 	if (typmod < (int32) (VARHDRSZ))
-		return;
+		return true;
 
 	typmod -= VARHDRSZ;
 	precision = (typmod >> 16) & 0xffff;
@@ -5789,7 +5822,7 @@ apply_typmod(NumericVar *var, int32 typmod)
 #error unsupported NBASE
 #endif
 				if (ddigits > maxdigits)
-					ereport(ERROR,
+					ereturn(escontext, false,
 							(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 							 errmsg("numeric field overflow"),
 							 errdetail("A field with precision %d, scale %d must round to an absolute value less than %s%d.",
@@ -5803,6 +5836,7 @@ apply_typmod(NumericVar *var, int32 typmod)
 			ddigits -= DEC_DIGITS;
 		}
 	}
+	return true;
 }
 
 /*
@@ -6073,8 +6107,8 @@ numeric_to_double_no_overflow(Numeric num)
 }
 
 /* As above, but work from a NumericVar */
-static double
-numericvar_to_double_no_overflow(NumericVar *var)
+static bool
+numericvar_to_double_no_overflow(NumericVar *var, double *result, Node *escontext)
 {
 	char	   *tmp;
 	double		val;
@@ -6087,15 +6121,18 @@ numericvar_to_double_no_overflow(NumericVar *var)
 	if (*endptr != '\0')
 	{
 		/* shouldn't happen ... */
-		ereport(ERROR,
+		errsave(escontext,
 				(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 			 errmsg("invalid input syntax for type double precision: \"%s\"",
 					tmp)));
+		pfree(tmp);
+		return false;
 	}
 
 	pfree(tmp);
 
-	return val;
+	*result = val;
+	return true;
 }
 
 
@@ -7729,7 +7766,7 @@ power_var(NumericVar *base, NumericVar *exp, NumericVar *result)
 	/* Set scale for exp() -- compare numeric_exp() */
 
 	/* convert input to float8, ignoring overflow */
-	val = numericvar_to_double_no_overflow(&ln_num);
+	(void) numericvar_to_double_no_overflow(&ln_num, &val, NULL);
 
 	/*
 	 * log10(result) = num * log10(e), so this is approximately the weight:
