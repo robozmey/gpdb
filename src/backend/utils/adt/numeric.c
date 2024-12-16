@@ -405,7 +405,8 @@ static void dump_var(const char *str, NumericVar *var);
 static void alloc_var(NumericVar *var, int ndigits);
 static void zero_var(NumericVar *var);
 
-static bool init_var_from_str(const char *str, const char *cp, NumericVar *dest, const char **endptr, Node* escontext);
+static const char *init_var_from_str(const char *str, const char *cp, NumericVar *dest);
+static bool init_var_from_str_safe(const char *str, const char *cp, NumericVar *dest, const char **endptr, Node* escontext);
 static void set_var_from_var(NumericVar *value, NumericVar *dest);
 static void init_var_from_var(NumericVar *value, NumericVar *dest);
 static void init_ro_var_from_var(NumericVar *value, NumericVar *dest);
@@ -536,7 +537,7 @@ numeric_in(PG_FUNCTION_ARGS)
 		 */
 		NumericVar	value;
 
-		if(!init_var_from_str(str, cp, &value, &cp, escontext))
+		if(!init_var_from_str_safe(str, cp, &value, &cp, escontext))
 			PG_RETURN_NULL();
 
 		/*
@@ -2493,7 +2494,7 @@ numeric_li_value(float8 f, Numeric y0, Numeric y1)
 		snprintf(buf, sizeof(buf), "%.*g", DBL_DIG, f);
 
 		/* Assume we need not worry about leading/trailing spaces */
-		(void) init_var_from_str(buf, buf, &vf, &endptr, NULL);
+		(void) init_var_from_str_safe(buf, buf, &vf, &endptr, NULL);
 		
 		mul_var(&vf, &v1, &v1, vf.dscale + v1.dscale);
 		add_var(&v0, &v1, &v1);  
@@ -2755,7 +2756,7 @@ float8_numeric(PG_FUNCTION_ARGS)
 	snprintf(buf, sizeof(buf), "%.*g", DBL_DIG, val);
 
 	/* Assume we need not worry about leading/trailing spaces */
-	if(!init_var_from_str(buf, buf, &result, &endptr, fcinfo->context))
+	if(!init_var_from_str_safe(buf, buf, &result, &endptr, fcinfo->context))
 		PG_RETURN_NULL();
 
 	res = make_result(&result);
@@ -2829,7 +2830,7 @@ float4_numeric(PG_FUNCTION_ARGS)
 	snprintf(buf, sizeof(buf), "%.*g", FLT_DIG, val);
 
 	/* Assume we need not worry about leading/trailing spaces */
-	if(!init_var_from_str(buf, buf, &result, &endptr, fcinfo->context))
+	if(!init_var_from_str_safe(buf, buf, &result, &endptr, fcinfo->context))
 		PG_RETURN_NULL();
 
 	res = make_result(&result);
@@ -5165,8 +5166,16 @@ zero_var(NumericVar *var)
  * cp is the place to actually start parsing; str is what to use in error
  * reports.  (Typically cp would be the same except advanced over spaces.)
  */
+static const char *
+init_var_from_str(const char *str, const char *cp, NumericVar *dest)
+{
+	const char *result;
+	(void) init_var_from_str_safe(str, cp, dest, &result, NULL);
+	return result;
+}
+
 static bool
-init_var_from_str(const char *str, const char *cp, NumericVar *dest, const char **endptr, Node *escontext)
+init_var_from_str_safe(const char *str, const char *cp, NumericVar *dest, const char **endptr, Node *escontext)
 {
 	bool		have_dp = FALSE;
 	int			i;
