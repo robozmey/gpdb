@@ -31,14 +31,14 @@
  *****************************************************************************/
 
 static Oid
-oidin_subr(const char *s, char **endloc)
+oidin_subr_safe(const char *s, char **endloc, Oid *res, Node *escontext)
 {
 	unsigned long cvt;
 	char	   *endptr;
 	Oid			result;
 
 	if (*s == '\0')
-		ereport(ERROR,
+		ereturn(escontext, false,
 				(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 				 errmsg("invalid input syntax for type oid: \"%s\"",
 						s)));
@@ -52,19 +52,19 @@ oidin_subr(const char *s, char **endloc)
 	 * handled by the second "if" consistent across platforms.
 	 */
 	if (errno && errno != ERANGE && errno != EINVAL)
-		ereport(ERROR,
+		ereturn(escontext, false,
 				(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 				 errmsg("invalid input syntax for type oid: \"%s\"",
 						s)));
 
 	if (endptr == s && *s != '\0')
-		ereport(ERROR,
+		ereturn(escontext, false,
 				(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 				 errmsg("invalid input syntax for type oid: \"%s\"",
 						s)));
 
 	if (errno == ERANGE)
-		ereport(ERROR,
+		ereturn(escontext, false,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("value \"%s\" is out of range for type oid", s)));
 
@@ -79,7 +79,7 @@ oidin_subr(const char *s, char **endloc)
 		while (*endptr && isspace((unsigned char) *endptr))
 			endptr++;
 		if (*endptr)
-			ereport(ERROR,
+			ereturn(escontext, false,
 					(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 					 errmsg("invalid input syntax for type oid: \"%s\"",
 							s)));
@@ -102,11 +102,20 @@ oidin_subr(const char *s, char **endloc)
 #if OID_MAX != ULONG_MAX
 	if (cvt != (unsigned long) result &&
 		cvt != (unsigned long) ((int) result))
-		ereport(ERROR,
+		ereturn(escontext, false,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("value \"%s\" is out of range for type oid", s)));
 #endif
 
+	*res = result;
+	return true;
+}
+
+static Oid
+oidin_subr(const char *s, char **endloc)
+{
+	Oid result;
+	(void) oidin_subr_safe(s, endloc, &result, NULL);
 	return result;
 }
 
@@ -116,7 +125,8 @@ oidin(PG_FUNCTION_ARGS)
 	char	   *s = PG_GETARG_CSTRING(0);
 	Oid			result;
 
-	result = oidin_subr(s, NULL);
+	if (!oidin_subr_safe(s, NULL, &result, fcinfo->context))
+		PG_RETURN_NULL();
 	PG_RETURN_OID(result);
 }
 
@@ -202,12 +212,13 @@ oidvectorin(PG_FUNCTION_ARGS)
 			oidString++;
 		if (*oidString == '\0')
 			break;
-		result->values[n] = oidin_subr(oidString, &oidString);
+		if (!oidin_subr_safe(oidString, &oidString, &result->values[n], fcinfo->context))
+			PG_RETURN_NULL();
 	}
 	while (*oidString && isspace((unsigned char) *oidString))
 		oidString++;
 	if (*oidString)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_INVALID_PARAMETER_VALUE),
 				 errmsg("oidvector has too many elements")));
 
@@ -282,13 +293,13 @@ oidvectorrecv(PG_FUNCTION_ARGS)
 		ARR_HASNULL(result) ||
 		ARR_ELEMTYPE(result) != OIDOID ||
 		ARR_LBOUND(result)[0] != 0)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_INVALID_BINARY_REPRESENTATION),
 				 errmsg("invalid oidvector data")));
 
 	/* check length for consistency with oidvectorin() */
 	if (ARR_DIMS(result)[0] > FUNC_MAX_ARGS)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_INVALID_PARAMETER_VALUE),
 				 errmsg("oidvector has too many elements")));
 
@@ -307,13 +318,14 @@ oidvectorsend(PG_FUNCTION_ARGS)
 /*
  *		oidparse				- get OID from IConst/FConst node
  */
-Oid
-oidparse(Node *node)
+bool
+oidparse_safe(Node *node, Oid *result, Node *escontext)
 {
 	switch (nodeTag(node))
 	{
 		case T_Integer:
-			return intVal(node);
+			*result = intVal(node);
+			return true;
 		case T_Float:
 
 			/*
@@ -321,11 +333,22 @@ oidparse(Node *node)
 			 * constants by the lexer.  Accept these if they are valid OID
 			 * strings.
 			 */
-			return oidin_subr(strVal(node), NULL);
+			if (!oidin_subr_safe(strVal(node), NULL, result, escontext))
+				return false;
+			return true;
 		default:
 			elog(ERROR, "unrecognized node type: %d", (int) nodeTag(node));
 	}
-	return InvalidOid;			/* keep compiler quiet */
+	*result = InvalidOid;
+	return true;			/* keep compiler quiet */
+}
+
+Oid
+oidparse(Node *node)
+{
+	Oid result = 0;
+	(void) oidparse_safe(node, &result, NULL);
+	return result;
 }
 
 
