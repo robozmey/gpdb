@@ -235,10 +235,12 @@ extern Datum timestamptz_part(PG_FUNCTION_ARGS);
 extern float8 timestamp_li_fraction(Timestamp x, Timestamp x0, Timestamp x1, 
 									bool *eq_bounds, bool *eq_abscissas);
 extern Timestamp timestamp_li_value(float8 f, Timestamp y0, Timestamp y1);
+extern bool timestamp_li_value_safe(float8 f, Timestamp y0, Timestamp y1, Timestamp *result, Node *escontext);
 
 extern float8 timestamptz_li_fraction(TimestampTz x, TimestampTz x0, TimestampTz x1, 
 									  bool *eq_bounds, bool *eq_abscissas);
 extern Timestamp timestamptz_li_value(float8 f, TimestampTz y0, TimestampTz y1);
+extern bool timestamptz_li_value_safe(float8 f, TimestampTz y0, TimestampTz y1, Timestamp *result, Node *escontext);
 
 extern Datum now(PG_FUNCTION_ARGS);
 extern Datum statement_timestamp(PG_FUNCTION_ARGS);
@@ -282,6 +284,7 @@ extern int timestamp2tm(Timestamp dt, int *tzp, struct pg_tm * tm,
 extern void dt2time(Timestamp dt, int *hour, int *min, int *sec, fsec_t *fsec);
 
 extern int	interval2tm(Interval span, struct pg_tm * tm, fsec_t *fsec);
+extern int	interval2tm_safe(Interval span, struct pg_tm * tm, fsec_t *fsec, Node *escontext);
 extern int	tm2interval(struct pg_tm * tm, fsec_t fsec, Interval *span);
 
 extern Timestamp SetEpochTimestamp(void);

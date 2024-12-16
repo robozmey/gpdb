@@ -964,6 +964,8 @@ static int	from_char_seq_search(int *dest, const char **src,
 								 FormatNode *node);
 static void do_to_timestamp(text *date_txt, text *fmt,
 				struct pg_tm * tm, fsec_t *fsec);
+static bool do_to_timestamp_safe(text *date_txt, text *fmt,
+				struct pg_tm * tm, fsec_t *fsec, Node *escontext);
 static char *fill_str(char *str, int c, int max);
 static FormatNode *NUM_cache(int len, NUMDesc *Num, text *pars_str, bool *shouldFree);
 static char *int_to_roman(int number);
@@ -2360,8 +2362,17 @@ from_char_seq_search(int *dest, const char **src, const char *const *array,
  * The formatted data is written to the string pointed to by 'out'.
  * ----------
  */
+static bool
+DCH_to_char_safe(FormatNode *node, bool is_interval, TmToChar *in, char *out, Oid collid, Node *escontext);
+
 static void
 DCH_to_char(FormatNode *node, bool is_interval, TmToChar *in, char *out, Oid collid)
+{
+	(void) DCH_to_char_safe(node, is_interval, in, out, collid, NULL); 
+}
+
+static bool
+DCH_to_char_safe(FormatNode *node, bool is_interval, TmToChar *in, char *out, Oid collid, Node *escontext)
 {
 	FormatNode *n;
 	char	   *s;
@@ -2538,7 +2549,7 @@ DCH_to_char(FormatNode *node, bool is_interval, TmToChar *in, char *out, Oid col
 					if (strlen(str) < (n->key->len + TM_SUFFIX_LEN) * DCH_MAX_ITEM_SIZ)
 						strcpy(s, str);
 					else
-						ereport(ERROR,
+						ereturn(escontext, false,
 								(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 								 errmsg("localized string format value too long")));
 				}
@@ -2558,7 +2569,7 @@ DCH_to_char(FormatNode *node, bool is_interval, TmToChar *in, char *out, Oid col
 					if (strlen(str) < (n->key->len + TM_SUFFIX_LEN) * DCH_MAX_ITEM_SIZ)
 						strcpy(s, str);
 					else
-						ereport(ERROR,
+						ereturn(escontext, false,
 								(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 								 errmsg("localized string format value too long")));
 				}
@@ -2578,7 +2589,7 @@ DCH_to_char(FormatNode *node, bool is_interval, TmToChar *in, char *out, Oid col
 					if (strlen(str) < (n->key->len + TM_SUFFIX_LEN) * DCH_MAX_ITEM_SIZ)
 						strcpy(s, str);
 					else
-						ereport(ERROR,
+						ereturn(escontext, false,
 								(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 								 errmsg("localized string format value too long")));
 				}
@@ -2598,7 +2609,7 @@ DCH_to_char(FormatNode *node, bool is_interval, TmToChar *in, char *out, Oid col
 					if (strlen(str) < (n->key->len + TM_SUFFIX_LEN) * DCH_MAX_ITEM_SIZ)
 						strcpy(s, str);
 					else
-						ereport(ERROR,
+						ereturn(escontext, false,
 								(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 								 errmsg("localized string format value too long")));
 				}
@@ -2617,7 +2628,7 @@ DCH_to_char(FormatNode *node, bool is_interval, TmToChar *in, char *out, Oid col
 					if (strlen(str) < (n->key->len + TM_SUFFIX_LEN) * DCH_MAX_ITEM_SIZ)
 						strcpy(s, str);
 					else
-						ereport(ERROR,
+						ereturn(escontext, false,
 								(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 								 errmsg("localized string format value too long")));
 				}
@@ -2636,7 +2647,7 @@ DCH_to_char(FormatNode *node, bool is_interval, TmToChar *in, char *out, Oid col
 					if (strlen(str) < (n->key->len + TM_SUFFIX_LEN) * DCH_MAX_ITEM_SIZ)
 						strcpy(s, str);
 					else
-						ereport(ERROR,
+						ereturn(escontext, false,
 								(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 								 errmsg("localized string format value too long")));
 				}
@@ -2659,7 +2670,7 @@ DCH_to_char(FormatNode *node, bool is_interval, TmToChar *in, char *out, Oid col
 					if (strlen(str) < (n->key->len + TM_SUFFIX_LEN) * DCH_MAX_ITEM_SIZ)
 						strcpy(s, str);
 					else
-						ereport(ERROR,
+						ereturn(escontext, false,
 								(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 								 errmsg("localized string format value too long")));
 				}
@@ -2677,7 +2688,7 @@ DCH_to_char(FormatNode *node, bool is_interval, TmToChar *in, char *out, Oid col
 					if (strlen(str) < (n->key->len + TM_SUFFIX_LEN) * DCH_MAX_ITEM_SIZ)
 						strcpy(s, str);
 					else
-						ereport(ERROR,
+						ereturn(escontext, false,
 								(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 								 errmsg("localized string format value too long")));
 				}
@@ -2695,7 +2706,7 @@ DCH_to_char(FormatNode *node, bool is_interval, TmToChar *in, char *out, Oid col
 					if (strlen(str) < (n->key->len + TM_SUFFIX_LEN) * DCH_MAX_ITEM_SIZ)
 						strcpy(s, str);
 					else
-						ereport(ERROR,
+						ereturn(escontext, false,
 								(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 								 errmsg("localized string format value too long")));
 				}
@@ -2713,7 +2724,7 @@ DCH_to_char(FormatNode *node, bool is_interval, TmToChar *in, char *out, Oid col
 					if (strlen(str) < (n->key->len + TM_SUFFIX_LEN) * DCH_MAX_ITEM_SIZ)
 						strcpy(s, str);
 					else
-						ereport(ERROR,
+						ereturn(escontext, false,
 								(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 								 errmsg("localized string format value too long")));
 				}
@@ -2730,7 +2741,7 @@ DCH_to_char(FormatNode *node, bool is_interval, TmToChar *in, char *out, Oid col
 					if (strlen(str) < (n->key->len + TM_SUFFIX_LEN) * DCH_MAX_ITEM_SIZ)
 						strcpy(s, str);
 					else
-						ereport(ERROR,
+						ereturn(escontext, false,
 								(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 								 errmsg("localized string format value too long")));
 				}
@@ -2747,7 +2758,7 @@ DCH_to_char(FormatNode *node, bool is_interval, TmToChar *in, char *out, Oid col
 					if (strlen(str) < (n->key->len + TM_SUFFIX_LEN) * DCH_MAX_ITEM_SIZ)
 						strcpy(s, str);
 					else
-						ereport(ERROR,
+						ereturn(escontext, false,
 								(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 								 errmsg("localized string format value too long")));
 				}
@@ -2920,6 +2931,7 @@ DCH_to_char(FormatNode *node, bool is_interval, TmToChar *in, char *out, Oid col
 	}
 
 	*s = '\0';
+	return true;
 }
 
 /* ----------
@@ -2930,8 +2942,17 @@ DCH_to_char(FormatNode *node, bool is_interval, TmToChar *in, char *out, Oid col
  * is no need here for INVALID_FOR_INTERVAL checks.
  * ----------
  */
+static bool
+DCH_from_char_safe(FormatNode *node, const char *in, TmFromChar *out, Node *escontext);
+
 static void
 DCH_from_char(FormatNode *node, const char *in, TmFromChar *out)
+{
+	(void) DCH_from_char_safe(node, in, out, NULL);
+}
+
+static bool
+DCH_from_char_safe(FormatNode *node, const char *in, TmFromChar *out, Node *escontext)
 {
 	FormatNode *n;
 	const char *s;
@@ -3031,7 +3052,7 @@ DCH_from_char(FormatNode *node, const char *in, TmFromChar *out)
 			case DCH_tz:
 			case DCH_TZ:
 			case DCH_OF:
-				ereport(ERROR,
+				ereturn(escontext, false,
 						(errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
 						 errmsg("\"TZ\"/\"tz\"/\"OF\" format patterns are not supported in to_date")));
 				break;
@@ -3141,7 +3162,7 @@ DCH_from_char(FormatNode *node, const char *in, TmFromChar *out)
 
 					matched = sscanf(s, "%d,%03d%n", &millenia, &years, &nch);
 					if (matched < 2)
-						ereport(ERROR,
+						ereturn(escontext, false,
 								(errcode(ERRCODE_INVALID_DATETIME_FORMAT),
 							 errmsg("invalid input string for \"Y,YYY\" in function \"to_date\"")));
 					years += (millenia * 1000);
@@ -3194,6 +3215,7 @@ DCH_from_char(FormatNode *node, const char *in, TmFromChar *out)
 				break;
 		}
 	}
+	return true;
 }
 
 static DCHCacheEntry *
@@ -3279,8 +3301,19 @@ DCH_cache_search(char *str)
  * We parse fmt into a list of FormatNodes.  This is then passed to DCH_to_char
  * for formatting.
  */
+static bool
+datetime_to_char_body_safe(TmToChar *tmtc, text *fmt, bool is_interval, Oid collid, text **result_text, Node *escontext);
+
 static text *
 datetime_to_char_body(TmToChar *tmtc, text *fmt, bool is_interval, Oid collid)
+{
+	text *result;
+	(void) datetime_to_char_body_safe(tmtc, fmt, is_interval, collid, &result, NULL);
+	return result;
+
+}
+static bool
+datetime_to_char_body_safe(TmToChar *tmtc, text *fmt, bool is_interval, Oid collid, text **result_text, Node *escontext)
 {
 	FormatNode *format;
 	char	   *fmt_str,
@@ -3348,7 +3381,14 @@ datetime_to_char_body(TmToChar *tmtc, text *fmt, bool is_interval, Oid collid)
 	}
 
 	/* The real work is here */
-	DCH_to_char(format, is_interval, tmtc, result, collid);
+	if (!DCH_to_char_safe(format, is_interval, tmtc, result, collid, escontext)) {
+		if (!incache)
+			pfree(format);
+		pfree(fmt_str);
+		pfree(result);
+
+		return false;
+	}
 
 	if (!incache)
 		pfree(format);
@@ -3359,7 +3399,9 @@ datetime_to_char_body(TmToChar *tmtc, text *fmt, bool is_interval, Oid collid)
 	res = cstring_to_text(result);
 
 	pfree(result);
-	return res;
+
+	*result_text = res;
+	return true;
 }
 
 /****************************************************************************
@@ -3387,7 +3429,7 @@ timestamp_to_char(PG_FUNCTION_ARGS)
 	tm = tmtcTm(&tmtc);
 
 	if (timestamp2tm(dt, NULL, tm, &tmtcFsec(&tmtc), NULL, NULL) != 0)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 				 errmsg("timestamp out of range for function \"to_char\"")));
 
@@ -3395,7 +3437,10 @@ timestamp_to_char(PG_FUNCTION_ARGS)
 	tm->tm_wday = (thisdate + 1) % 7;
 	tm->tm_yday = thisdate - date2j(tm->tm_year, 1, 1) + 1;
 
-	if (!(res = datetime_to_char_body(&tmtc, fmt, false, PG_GET_COLLATION())))
+	if (!datetime_to_char_body_safe(&tmtc, fmt, false, PG_GET_COLLATION(), &res, fcinfo->context))
+		PG_RETURN_NULL();
+
+	if (!res)
 		PG_RETURN_NULL();
 
 	PG_RETURN_TEXT_P(res);
@@ -3419,7 +3464,7 @@ timestamptz_to_char(PG_FUNCTION_ARGS)
 	tm = tmtcTm(&tmtc);
 
 	if (timestamp2tm(dt, &tz, tm, &tmtcFsec(&tmtc), &tmtcTzn(&tmtc), NULL) != 0)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 				 errmsg("timestamp out of range for function \"to_char\"")));
 
@@ -3427,7 +3472,10 @@ timestamptz_to_char(PG_FUNCTION_ARGS)
 	tm->tm_wday = (thisdate + 1) % 7;
 	tm->tm_yday = thisdate - date2j(tm->tm_year, 1, 1) + 1;
 
-	if (!(res = datetime_to_char_body(&tmtc, fmt, false, PG_GET_COLLATION())))
+	if (!datetime_to_char_body_safe(&tmtc, fmt, false, PG_GET_COLLATION(), &res, fcinfo->context))
+		PG_RETURN_NULL();
+
+	if (!res)
 		PG_RETURN_NULL();
 
 	PG_RETURN_TEXT_P(res);
@@ -3459,7 +3507,10 @@ interval_to_char(PG_FUNCTION_ARGS)
 	/* wday is meaningless, yday approximates the total span in days */
 	tm->tm_yday = (tm->tm_year * MONTHS_PER_YEAR + tm->tm_mon) * DAYS_PER_MONTH + tm->tm_mday;
 
-	if (!(res = datetime_to_char_body(&tmtc, fmt, true, PG_GET_COLLATION())))
+	if (!datetime_to_char_body_safe(&tmtc, fmt, true, PG_GET_COLLATION(), &res, fcinfo->context))
+		PG_RETURN_NULL();
+
+	if (!res)
 		PG_RETURN_NULL();
 
 	PG_RETURN_TEXT_P(res);
@@ -3482,12 +3533,13 @@ to_timestamp(PG_FUNCTION_ARGS)
 	struct pg_tm tm;
 	fsec_t		fsec;
 
-	do_to_timestamp(date_txt, fmt, &tm, &fsec);
+	if (!do_to_timestamp_safe(date_txt, fmt, &tm, &fsec, fcinfo->context))
+		PG_RETURN_NULL();
 
 	tz = DetermineTimeZoneOffset(&tm, session_timezone);
 
 	if (tm2timestamp(&tm, fsec, &tz, &result) != 0)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 				 errmsg("timestamp out of range for function \"to_timestamp\"")));
 
@@ -3508,10 +3560,11 @@ to_date(PG_FUNCTION_ARGS)
 	struct pg_tm tm;
 	fsec_t		fsec;
 
-	do_to_timestamp(date_txt, fmt, &tm, &fsec);
+	if (!do_to_timestamp_safe(date_txt, fmt, &tm, &fsec, fcinfo->context))
+		PG_RETURN_NULL();
 
 	if (!IS_VALID_JULIAN(tm.tm_year, tm.tm_mon, tm.tm_mday))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 				 errmsg("date out of range: \"%s\"",
 						text_to_cstring(date_txt))));
@@ -3537,6 +3590,13 @@ to_date(PG_FUNCTION_ARGS)
 static void
 do_to_timestamp(text *date_txt, text *fmt,
 				struct pg_tm * tm, fsec_t *fsec)
+{
+	(void) do_to_timestamp_safe(date_txt, fmt, tm, fsec, NULL);
+}
+
+static bool
+do_to_timestamp_safe(text *date_txt, text *fmt,
+				struct pg_tm * tm, fsec_t *fsec, Node *escontext)
 {
 	FormatNode *format;
 	TmFromChar	tmfc;
@@ -3607,7 +3667,12 @@ do_to_timestamp(text *date_txt, text *fmt,
 		/* dump_index(DCH_keywords, DCH_index); */
 #endif
 
-		DCH_from_char(format, date_str, &tmfc);
+		if (!DCH_from_char_safe(format, date_str, &tmfc, escontext)){
+			pfree(fmt_str);
+			if (!incache)
+				pfree(format);
+			return false;
+		}
 
 		pfree(fmt_str);
 		if (!incache)
@@ -3652,7 +3717,7 @@ do_to_timestamp(text *date_txt, text *fmt,
 				tm->tm_hour = tm->tm_hour - HOURS_PER_DAY / 2;
 			}
 			else
-				ereport(ERROR,
+				ereturn(escontext, false,
 						(errcode(ERRCODE_INVALID_DATETIME_FORMAT),
 						 errmsg("hour \"%d\" is invalid for the 12-hour clock",
 								tm->tm_hour),
@@ -3761,7 +3826,7 @@ do_to_timestamp(text *date_txt, text *fmt,
 		 */
 
 		if (!tm->tm_year && !tmfc.bc)
-			ereport(ERROR,
+			ereturn(escontext, false,
 					(errcode(ERRCODE_INVALID_DATETIME_FORMAT),
 			errmsg("cannot calculate day of year without year information")));
 
@@ -3825,7 +3890,8 @@ do_to_timestamp(text *date_txt, text *fmt,
 			 * said DTERR_MD_FIELD_OVERFLOW, because we don't want to print an
 			 * irrelevant hint about datestyle.
 			 */
-			DateTimeParseError(DTERR_FIELD_OVERFLOW, date_str, "timestamp");
+			if (!DateTimeParseErrorSafe(DTERR_FIELD_OVERFLOW, date_str, "timestamp", escontext))
+				return false;
 		}
 	}
 
@@ -3839,11 +3905,14 @@ do_to_timestamp(text *date_txt, text *fmt,
 		*fsec < 0 || *fsec >= 1
 #endif
 		)
-		DateTimeParseError(DTERR_FIELD_OVERFLOW, date_str, "timestamp");
+		if (!DateTimeParseErrorSafe(DTERR_FIELD_OVERFLOW, date_str, "timestamp", escontext))
+			return false;
 
 	DEBUG_TM(tm);
 
 	pfree(date_str);
+
+	return true;
 }
 
 

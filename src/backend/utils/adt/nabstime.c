@@ -75,6 +75,10 @@ static void reltime2tm(RelativeTime time, struct pg_tm * tm);
 static void parsetinterval(char *i_string,
 			   AbsoluteTime *i_start,
 			   AbsoluteTime *i_end);
+static bool parsetinterval_safe(char *i_string,
+			   AbsoluteTime *i_start,
+			   AbsoluteTime *i_end,
+			   Node *escontext);
 
 
 /*
@@ -213,9 +217,11 @@ abstimein(PG_FUNCTION_ARGS)
 	dterr = ParseDateTime(str, workbuf, sizeof(workbuf),
 						  field, ftype, MAXDATEFIELDS, &nf);
 	if (dterr == 0)
-		dterr = DecodeDateTime(field, ftype, nf, &dtype, tm, &fsec, &tz);
+		if (!DecodeDateTimeSafe(field, ftype, nf, &dtype, tm, &fsec, &tz, &dterr, fcinfo->context))
+		 	PG_RETURN_NULL();
 	if (dterr != 0)
-		DateTimeParseError(dterr, str, "abstime");
+		if (!DateTimeParseErrorSafe(dterr, str, "abstime", fcinfo->context))
+			PG_RETURN_NULL();
 
 	switch (dtype)
 	{
@@ -453,7 +459,7 @@ timestamp_abstime(PG_FUNCTION_ARGS)
 	}
 	else
 	{
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 				 errmsg("timestamp out of range")));
 		result = INVALID_ABSTIME;
@@ -479,7 +485,7 @@ abstime_timestamp(PG_FUNCTION_ARGS)
 	switch (abstime)
 	{
 		case INVALID_ABSTIME:
-			ereport(ERROR,
+			ereturn(fcinfo->context, 0,
 					(errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
 				 errmsg("cannot convert abstime \"invalid\" to timestamp")));
 			TIMESTAMP_NOBEGIN(result);
@@ -496,7 +502,7 @@ abstime_timestamp(PG_FUNCTION_ARGS)
 		default:
 			abstime2tm(abstime, &tz, tm, &tzn);
 			if (tm2timestamp(tm, 0, NULL, &result) != 0)
-				ereport(ERROR,
+				ereturn(fcinfo->context, 0,
 						(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 						 errmsg("timestamp out of range")));
 			break;
@@ -526,7 +532,7 @@ timestamptz_abstime(PG_FUNCTION_ARGS)
 		result = tm2abstime(tm, 0);
 	else
 	{
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 				 errmsg("timestamp out of range")));
 		result = INVALID_ABSTIME;
@@ -552,7 +558,7 @@ abstime_timestamptz(PG_FUNCTION_ARGS)
 	switch (abstime)
 	{
 		case INVALID_ABSTIME:
-			ereport(ERROR,
+			ereturn(fcinfo->context, 0,
 					(errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
 				 errmsg("cannot convert abstime \"invalid\" to timestamp")));
 			TIMESTAMP_NOBEGIN(result);
@@ -569,7 +575,7 @@ abstime_timestamptz(PG_FUNCTION_ARGS)
 		default:
 			abstime2tm(abstime, &tz, tm, &tzn);
 			if (tm2timestamp(tm, 0, &tz, &result) != 0)
-				ereport(ERROR,
+				ereturn(fcinfo->context, 0,
 						(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 						 errmsg("timestamp out of range")));
 			break;
@@ -616,7 +622,8 @@ reltimein(PG_FUNCTION_ARGS)
 	{
 		if (dterr == DTERR_FIELD_OVERFLOW)
 			dterr = DTERR_INTERVAL_OVERFLOW;
-		DateTimeParseError(dterr, str, "reltime");
+		if (!DateTimeParseErrorSafe(dterr, str, "reltime", fcinfo->context))
+			PG_RETURN_NULL();
 	}
 
 	switch (dtype)
@@ -708,7 +715,8 @@ tintervalin(PG_FUNCTION_ARGS)
 				t1,
 				t2;
 
-	parsetinterval(tintervalstr, &t1, &t2);
+	if (!parsetinterval_safe(tintervalstr, &t1, &t2, fcinfo->context))
+		PG_RETURN_NULL();
 
 	tinterval = (TimeInterval) palloc(sizeof(TimeIntervalData));
 
@@ -779,7 +787,7 @@ tintervalrecv(PG_FUNCTION_ARGS)
 		status = T_INTERVAL_VALID;
 
 	if (status != tinterval->status)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_INVALID_BINARY_REPRESENTATION),
 				 errmsg("invalid status in external \"tinterval\" value")));
 
@@ -853,7 +861,7 @@ reltime_interval(PG_FUNCTION_ARGS)
 	switch (reltime)
 	{
 		case INVALID_RELTIME:
-			ereport(ERROR,
+			ereturn(fcinfo->context, 0,
 					(errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
 				  errmsg("cannot convert reltime \"invalid\" to interval")));
 			result->time = 0;
@@ -1447,6 +1455,14 @@ parsetinterval(char *i_string,
 			   AbsoluteTime *i_start,
 			   AbsoluteTime *i_end)
 {
+	(void) parsetinterval_safe(i_string, i_start, i_end, NULL);
+}
+static bool
+parsetinterval_safe(char *i_string,
+			   AbsoluteTime *i_start,
+			   AbsoluteTime *i_end,
+			   Node *escontext)
+{
 	char	   *p,
 			   *p1;
 	char		c;
@@ -1545,14 +1561,15 @@ parsetinterval(char *i_string,
 		goto bogus;				/* syntax error */
 
 	/* it seems to be a valid tinterval */
-	return;
+	return true;
 
 bogus:
-	ereport(ERROR,
+	ereturn(escontext, false,
 			(errcode(ERRCODE_INVALID_DATETIME_FORMAT),
 			 errmsg("invalid input syntax for type tinterval: \"%s\"",
 					i_string)));
 	*i_start = *i_end = INVALID_ABSTIME;		/* keep compiler quiet */
+	return false;
 }
 
 
