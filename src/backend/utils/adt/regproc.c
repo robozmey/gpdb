@@ -47,6 +47,8 @@ static char *format_operator_internal(Oid operator_oid, bool force_qualify);
 static char *format_procedure_internal(Oid procedure_oid, bool force_qualify);
 static void parseNameAndArgTypes(const char *string, bool allowNone,
 					 List **names, int *nargs, Oid *argtypes);
+static bool parseNameAndArgTypesSafe(const char *string, bool allowNone,
+					 List **names, int *nargs, Oid *argtypes, Node *escontext);
 
 
 /*****************************************************************************
@@ -119,12 +121,12 @@ regprocin(PG_FUNCTION_ARGS)
 		heap_close(hdesc, AccessShareLock);
 
 		if (matches == 0)
-			ereport(ERROR,
+			ereturn(fcinfo->context, 0,
 					(errcode(ERRCODE_UNDEFINED_FUNCTION),
 				 errmsg("function \"%s\" does not exist", pro_name_or_oid)));
 
 		else if (matches > 1)
-			ereport(ERROR,
+			ereturn(fcinfo->context, 0,
 					(errcode(ERRCODE_AMBIGUOUS_FUNCTION),
 					 errmsg("more than one function named \"%s\"",
 							pro_name_or_oid)));
@@ -136,15 +138,16 @@ regprocin(PG_FUNCTION_ARGS)
 	 * Normal case: parse the name into components and see if it matches any
 	 * pg_proc entries in the current search path.
 	 */
-	names = stringToQualifiedNameList(pro_name_or_oid);
+	if (!stringToQualifiedNameListSafe(pro_name_or_oid, &names, fcinfo->context))
+		PG_RETURN_NULL();
 	clist = FuncnameGetCandidates(names, -1, NIL, false, false, false);
 
 	if (clist == NULL)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_UNDEFINED_FUNCTION),
 				 errmsg("function \"%s\" does not exist", pro_name_or_oid)));
 	else if (clist->next != NULL)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_AMBIGUOUS_FUNCTION),
 				 errmsg("more than one function named \"%s\"",
 						pro_name_or_oid)));
@@ -170,7 +173,8 @@ to_regproc(PG_FUNCTION_ARGS)
 	 * Parse the name into components and see if it matches any pg_proc
 	 * entries in the current search path.
 	 */
-	names = stringToQualifiedNameList(pro_name);
+	if (!stringToQualifiedNameListSafe(pro_name, &names, fcinfo->context))
+		PG_RETURN_NULL();
 	clist = FuncnameGetCandidates(names, -1, NIL, false, false, true);
 
 	if (clist == NULL || clist->next != NULL)
@@ -304,7 +308,8 @@ regprocedurein(PG_FUNCTION_ARGS)
 	 * datatype cannot be used for any system column that needs to receive
 	 * data during bootstrap.
 	 */
-	parseNameAndArgTypes(pro_name_or_oid, false, &names, &nargs, argtypes);
+	if (!parseNameAndArgTypesSafe(pro_name_or_oid, false, &names, &nargs, argtypes, fcinfo->context))
+		PG_RETURN_NULL();
 
 	clist = FuncnameGetCandidates(names, nargs, NIL, false, false, false);
 
@@ -315,7 +320,7 @@ regprocedurein(PG_FUNCTION_ARGS)
 	}
 
 	if (clist == NULL)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_UNDEFINED_FUNCTION),
 				 errmsg("function \"%s\" does not exist", pro_name_or_oid)));
 
@@ -343,7 +348,8 @@ to_regprocedure(PG_FUNCTION_ARGS)
 	 * namespace search list, and scan to see which one exactly matches the
 	 * given argument types.    (There will not be more than one match.)
 	 */
-	parseNameAndArgTypes(pro_name, false, &names, &nargs, argtypes);
+	if (!parseNameAndArgTypesSafe(pro_name, false, &names, &nargs, argtypes, fcinfo->context))
+		PG_RETURN_NULL();
 
 	clist = FuncnameGetCandidates(names, nargs, NIL, false, false, true);
 
@@ -540,11 +546,11 @@ regoperin(PG_FUNCTION_ARGS)
 				break;
 		}
 		if (matches == 0)
-			ereport(ERROR,
+			ereturn(fcinfo->context, 0,
 					(errcode(ERRCODE_UNDEFINED_FUNCTION),
 					 errmsg("operator does not exist: %s", opr_name_or_oid)));
 		else if (matches > 1)
-			ereport(ERROR,
+			ereturn(fcinfo->context, 0,
 					(errcode(ERRCODE_AMBIGUOUS_FUNCTION),
 					 errmsg("more than one operator named %s",
 							opr_name_or_oid)));
@@ -556,15 +562,16 @@ regoperin(PG_FUNCTION_ARGS)
 	 * Normal case: parse the name into components and see if it matches any
 	 * pg_operator entries in the current search path.
 	 */
-	names = stringToQualifiedNameList(opr_name_or_oid);
+	if (!stringToQualifiedNameListSafe(opr_name_or_oid, &names, fcinfo->context))
+		PG_RETURN_NULL();
 	clist = OpernameGetCandidates(names, '\0', false);
 
 	if (clist == NULL)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_UNDEFINED_FUNCTION),
 				 errmsg("operator does not exist: %s", opr_name_or_oid)));
 	else if (clist->next != NULL)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_AMBIGUOUS_FUNCTION),
 				 errmsg("more than one operator named %s",
 						opr_name_or_oid)));
@@ -590,7 +597,8 @@ to_regoper(PG_FUNCTION_ARGS)
 	 * Parse the name into components and see if it matches any pg_operator
 	 * entries in the current search path.
 	 */
-	names = stringToQualifiedNameList(opr_name);
+	if (!stringToQualifiedNameListSafe(opr_name, &names, fcinfo->context))
+		PG_RETURN_NULL();
 	clist = OpernameGetCandidates(names, '\0', true);
 
 	if (clist == NULL || clist->next != NULL)
@@ -729,14 +737,15 @@ regoperatorin(PG_FUNCTION_ARGS)
 	 * datatype cannot be used for any system column that needs to receive
 	 * data during bootstrap.
 	 */
-	parseNameAndArgTypes(opr_name_or_oid, true, &names, &nargs, argtypes);
+	if (!parseNameAndArgTypesSafe(opr_name_or_oid, true, &names, &nargs, argtypes, fcinfo->context))
+		PG_RETURN_NULL();
 	if (nargs == 1)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_UNDEFINED_PARAMETER),
 				 errmsg("missing argument"),
 				 errhint("Use NONE to denote the missing argument of a unary operator.")));
 	if (nargs != 2)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_TOO_MANY_ARGUMENTS),
 				 errmsg("too many arguments"),
 				 errhint("Provide two argument types for operator.")));
@@ -744,7 +753,7 @@ regoperatorin(PG_FUNCTION_ARGS)
 	result = OpernameGetOprid(names, argtypes[0], argtypes[1]);
 
 	if (!OidIsValid(result))
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_UNDEFINED_FUNCTION),
 				 errmsg("operator does not exist: %s", opr_name_or_oid)));
 
@@ -770,14 +779,15 @@ to_regoperator(PG_FUNCTION_ARGS)
 	 * namespace search list, and scan to see which one exactly matches the
 	 * given argument types.    (There will not be more than one match.)
 	 */
-	parseNameAndArgTypes(opr_name_or_oid, true, &names, &nargs, argtypes);
+	if (!parseNameAndArgTypesSafe(opr_name_or_oid, true, &names, &nargs, argtypes, fcinfo->context))
+		PG_RETURN_NULL();
 	if (nargs == 1)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_UNDEFINED_PARAMETER),
 				 errmsg("missing argument"),
 				 errhint("Use NONE to denote the missing argument of a unary operator.")));
 	if (nargs != 2)
-		ereport(ERROR,
+		ereturn(fcinfo->context, 0,
 				(errcode(ERRCODE_TOO_MANY_ARGUMENTS),
 				 errmsg("too many arguments"),
 				 errhint("Provide two argument types for operator.")));
@@ -967,7 +977,7 @@ regclassin(PG_FUNCTION_ARGS)
 		if (HeapTupleIsValid(tuple = systable_getnext(sysscan)))
 			result = HeapTupleGetOid(tuple);
 		else
-			ereport(ERROR,
+			ereturn(fcinfo->context, 0,
 					(errcode(ERRCODE_UNDEFINED_TABLE),
 			   errmsg("relation \"%s\" does not exist", class_name_or_oid)));
 
@@ -983,7 +993,8 @@ regclassin(PG_FUNCTION_ARGS)
 	 * Normal case: parse the name into components and see if it matches any
 	 * pg_class entries in the current search path.
 	 */
-	names = stringToQualifiedNameList(class_name_or_oid);
+	if (!stringToQualifiedNameListSafe(class_name_or_oid, &names, fcinfo->context))
+		PG_RETURN_NULL();
 
 	/* We might not even have permissions on this relation; don't lock it. */
 	result = RangeVarGetRelid(makeRangeVarFromNameList(names), NoLock, false);
@@ -1007,7 +1018,8 @@ to_regclass(PG_FUNCTION_ARGS)
 	 * Parse the name into components and see if it matches any pg_class
 	 * entries in the current search path.
 	 */
-	names = stringToQualifiedNameList(class_name);
+	if (!stringToQualifiedNameListSafe(class_name, &names, fcinfo->context))
+		PG_RETURN_NULL();
 
 	/* We might not even have permissions on this relation; don't lock it. */
 	result = RangeVarGetRelid(makeRangeVarFromNameList(names), NoLock, true);
@@ -1158,7 +1170,7 @@ regtypein(PG_FUNCTION_ARGS)
 		if (HeapTupleIsValid(tuple = systable_getnext(sysscan)))
 			result = HeapTupleGetOid(tuple);
 		else
-			ereport(ERROR,
+			ereturn(fcinfo->context, 0,
 					(errcode(ERRCODE_UNDEFINED_OBJECT),
 					 errmsg("type \"%s\" does not exist", typ_name_or_oid)));
 
@@ -1307,7 +1319,8 @@ regconfigin(PG_FUNCTION_ARGS)
 	 * Normal case: parse the name into components and see if it matches any
 	 * pg_ts_config entries in the current search path.
 	 */
-	names = stringToQualifiedNameList(cfg_name_or_oid);
+	if (!stringToQualifiedNameListSafe(cfg_name_or_oid, &names, fcinfo->context))
+		PG_RETURN_NULL();
 
 	result = get_ts_config_oid(names, false);
 
@@ -1417,7 +1430,8 @@ regdictionaryin(PG_FUNCTION_ARGS)
 	 * Normal case: parse the name into components and see if it matches any
 	 * pg_ts_dict entries in the current search path.
 	 */
-	names = stringToQualifiedNameList(dict_name_or_oid);
+	if (!stringToQualifiedNameListSafe(dict_name_or_oid, &names, fcinfo->context))
+		PG_RETURN_NULL();
 
 	result = get_ts_dict_oid(names, false);
 
@@ -1624,6 +1638,14 @@ text_regclass(PG_FUNCTION_ARGS)
 List *
 stringToQualifiedNameList(const char *string)
 {
+	List *result;
+	(void) stringToQualifiedNameListSafe(string, &result, NULL);
+	return result;
+}
+
+bool
+stringToQualifiedNameListSafe(const char *string, List **res, Node *escontext)
+{
 	char	   *rawname;
 	List	   *result = NIL;
 	List	   *namelist;
@@ -1633,12 +1655,12 @@ stringToQualifiedNameList(const char *string)
 	rawname = pstrdup(string);
 
 	if (!SplitIdentifierString(rawname, '.', &namelist))
-		ereport(ERROR,
+		ereturn(escontext, 0,
 				(errcode(ERRCODE_INVALID_NAME),
 				 errmsg("invalid name syntax")));
 
 	if (namelist == NIL)
-		ereport(ERROR,
+		ereturn(escontext, 0,
 				(errcode(ERRCODE_INVALID_NAME),
 				 errmsg("invalid name syntax")));
 
@@ -1652,7 +1674,7 @@ stringToQualifiedNameList(const char *string)
 	pfree(rawname);
 	list_free(namelist);
 
-	return result;
+	*res = result;
 }
 
 /*****************************************************************************
@@ -1669,9 +1691,9 @@ stringToQualifiedNameList(const char *string)
  * If allowNone is TRUE, accept "NONE" and return it as InvalidOid (this is
  * for unary operators).
  */
-static void
-parseNameAndArgTypes(const char *string, bool allowNone, List **names,
-					 int *nargs, Oid *argtypes)
+static bool
+parseNameAndArgTypesSafe(const char *string, bool allowNone, List **names,
+					 int *nargs, Oid *argtypes, Node *escontext)
 {
 	char	   *rawname;
 	char	   *ptr;
@@ -1696,7 +1718,7 @@ parseNameAndArgTypes(const char *string, bool allowNone, List **names,
 			break;
 	}
 	if (*ptr == '\0')
-		ereport(ERROR,
+		ereturn(escontext, false,
 				(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 				 errmsg("expected a left parenthesis")));
 
@@ -1712,7 +1734,7 @@ parseNameAndArgTypes(const char *string, bool allowNone, List **names,
 			break;
 	}
 	if (*ptr2 != ')')
-		ereport(ERROR,
+		ereturn(escontext, false,
 				(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 				 errmsg("expected a right parenthesis")));
 
@@ -1731,7 +1753,7 @@ parseNameAndArgTypes(const char *string, bool allowNone, List **names,
 		{
 			/* End of string.  Okay unless we had a comma before. */
 			if (had_comma)
-				ereport(ERROR,
+				ereturn(escontext, false,
 						(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 						 errmsg("expected a type name")));
 			break;
@@ -1763,7 +1785,7 @@ parseNameAndArgTypes(const char *string, bool allowNone, List **names,
 			}
 		}
 		if (in_quote || paren_count != 0)
-			ereport(ERROR,
+			ereturn(escontext, false,
 					(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 					 errmsg("improper type name")));
 
@@ -1798,7 +1820,7 @@ parseNameAndArgTypes(const char *string, bool allowNone, List **names,
 			parseTypeString(typename, &typeid, &typmod, false);
 		}
 		if (*nargs >= FUNC_MAX_ARGS)
-			ereport(ERROR,
+			ereturn(escontext, false,
 					(errcode(ERRCODE_TOO_MANY_ARGUMENTS),
 					 errmsg("too many arguments")));
 
@@ -1807,4 +1829,13 @@ parseNameAndArgTypes(const char *string, bool allowNone, List **names,
 	}
 
 	pfree(rawname);
+
+	return true;
+}
+
+static void
+parseNameAndArgTypes(const char *string, bool allowNone, List **names,
+					 int *nargs, Oid *argtypes)
+{
+	(void) parseNameAndArgTypesSafe(string, allowNone, nargs, names, argtypes, NULL);
 }

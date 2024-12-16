@@ -684,6 +684,7 @@ extern Datum regdictionaryrecv(PG_FUNCTION_ARGS);
 extern Datum regdictionarysend(PG_FUNCTION_ARGS);
 extern Datum text_regclass(PG_FUNCTION_ARGS);
 extern List *stringToQualifiedNameList(const char *string);
+extern bool stringToQualifiedNameListSafe(const char *string, List **result, Node *escotext);
 extern char *format_procedure(Oid procedure_oid);
 extern char *format_procedure_qualified(Oid procedure_oid);
 extern char *format_operator(Oid operator_oid);
