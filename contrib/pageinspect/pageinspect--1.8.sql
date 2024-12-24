@@ -169,3 +169,12 @@ CREATE FUNCTION bm_bitmap_page_items(IN page bytea,
     RETURNS SETOF record
 AS 'MODULE_PATHNAME', 'bm_bitmap_page_items_bytea'
     LANGUAGE C STRICT;
+
+
+CREATE FUNCTION get_ao_headers_info(
+    reloid OID
+)
+RETURNS TABLE ("first row number" BIGINT, "current item count" INTEGER, isCompressed BOOLEAN, isLarge BOOLEAN, dataLen INTEGER)
+AS 'MODULE_PATHNAME', 'get_ao_headers_info'
+    LANGUAGE C STRICT
+EXECUTE ON ALL SEGMENTS;
