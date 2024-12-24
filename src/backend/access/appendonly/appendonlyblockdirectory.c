@@ -367,42 +367,29 @@ set_directoryentry_range(
 	Assert(fsInfo != NULL);
 
 	if (blockDirectory->isAOCol)
-	{
 		aocsFsInfo = (AOCSFileSegInfo *) fsInfo;
-	}
 
 	entry = &(minipageInfo->minipage->entry[entry_no]);
 	if (((uint32) entry_no) < minipageInfo->numMinipageEntries - 1)
-	{
 		next_entry = &(minipageInfo->minipage->entry[entry_no + 1]);
-	}
 
 	directoryEntry->range.fileOffset = entry->fileOffset;
 	directoryEntry->range.firstRowNum = entry->firstRowNum;
 	if (next_entry != NULL)
-	{
 		directoryEntry->range.afterFileOffset = next_entry->fileOffset;
-	}
 	else
 	{
 		if (!blockDirectory->isAOCol)
-		{
 			directoryEntry->range.afterFileOffset = fsInfo->eof;
-		}
-
 		else
-		{
 			directoryEntry->range.afterFileOffset =
 				aocsFsInfo->vpinfo.entry[columnGroupNo].eof;
-		}
 	}
 
 	directoryEntry->range.lastRowNum = entry->firstRowNum + entry->rowCount - 1;
 	if (next_entry == NULL && gp_blockdirectory_entry_min_range != 0)
-	{
 		directoryEntry->range.lastRowNum = (~(((int64) 1) << 63));	/* set to the maximal
 																	 * value */
-	}
 
 	/*
 	 * When crashes during inserts, or cancellation during inserts, the block
@@ -419,17 +406,13 @@ set_directoryentry_range(
 
 	if ((!blockDirectory->isAOCol &&
 		 directoryEntry->range.afterFileOffset > fsInfo->eof))
-	{
 		directoryEntry->range.afterFileOffset = fsInfo->eof;
-	}
 
 	if (blockDirectory->isAOCol &&
 		directoryEntry->range.afterFileOffset >
 		aocsFsInfo->vpinfo.entry[columnGroupNo].eof)
-	{
 		directoryEntry->range.afterFileOffset =
 			aocsFsInfo->vpinfo.entry[columnGroupNo].eof;
-	}
 
 	ereportif(Debug_appendonly_print_blockdirectory, LOG,
 			  (errmsg("Append-only block directory find entry: "
