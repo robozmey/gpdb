@@ -812,6 +812,7 @@ VarBlockGetItemPtrAndLen(
 	VarBlockByteOffset offset;
 
 	Assert(varBlockReader != NULL);
+	Assert(varBlockReader->header);
 
 	header = varBlockReader->header;
 	buffer = (uint8 *) header;
@@ -861,6 +862,7 @@ VarBlockReaderGetNextItemPtr(
 
 	Assert(varBlockReader != NULL);
 	Assert(itemLen != NULL);
+	Assert(varBlockReader->header);
 
 	if (varBlockReader->nextIndex >=
 		VarBlockGet_itemCount(varBlockReader->header))
@@ -885,6 +887,7 @@ VarBlockReaderItemCount(
 						VarBlockReader *varBlockReader)
 {
 	Assert(varBlockReader != NULL);
+	Assert(varBlockReader->header != NULL);
 
 	return VarBlockGet_itemCount(varBlockReader->header);
 }
@@ -901,6 +904,7 @@ VarBlockReaderGetItemPtr(
 	uint8	   *nextItemPtr;
 
 	Assert(varBlockReader != NULL);
+	Assert(varBlockReader->header);
 	Assert(itemIndex >= 0);
 	Assert(itemIndex < VarBlockGet_itemCount(varBlockReader->header));
 

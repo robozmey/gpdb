@@ -169,7 +169,7 @@ initscan(AppendOnlyScanDesc scan, ScanKey key)
 /*
  * Open the next file segment to scan and allocate all resources needed for it.
  */
-static bool
+bool
 SetNextFileSegForRead(AppendOnlyScanDesc scan)
 {
 	Relation	reln = scan->aos_rd;
@@ -585,7 +585,7 @@ CloseWritableFileSeg(AppendOnlyInsertDesc aoInsertDesc)
 
 /* ------------------------------------------------------------------------------ */
 
-static void
+void
 AppendOnlyExecutorReadBlock_GetContents(AppendOnlyExecutorReadBlock *executorReadBlock)
 {
 	VarBlockCheckError varBlockCheckError;
@@ -776,7 +776,7 @@ AppendOnlyExecutorReadBlock_GetContents(AppendOnlyExecutorReadBlock *executorRea
 	}
 }
 
-static bool
+bool
 AppendOnlyExecutorReadBlock_GetBlockInfo(AppendOnlyStorageRead *storageRead,
 										 AppendOnlyExecutorReadBlock *executorReadBlock)
 {
@@ -1065,7 +1065,8 @@ AppendOnlyExecutorReadBlock_ProcessTuple(AppendOnlyExecutorReadBlock *executorRe
 	return valid;
 }
 
-static bool
+
+bool
 AppendOnlyExecutorReadBlock_ScanNextTuple(AppendOnlyExecutorReadBlock *executorReadBlock,
 										  int nkeys,
 										  ScanKey key,
