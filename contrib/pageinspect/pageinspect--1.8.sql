@@ -188,3 +188,20 @@ RETURNS TABLE (
 AS 'MODULE_PATHNAME', 'get_ao_headers_info'
     LANGUAGE C STRICT
 EXECUTE ON ALL SEGMENTS;
+
+CREATE FUNCTION get_aocs_headers_info(
+    reloid OID
+)
+RETURNS TABLE (
+    "column number" INTEGER,
+    "large read position" BIGINT,
+    "buffer offset" INTEGER,
+    "header kind" TEXT,
+    "first row" INTEGER,
+    isCompressed BOOLEAN,
+    isLarge BOOLEAN,
+    "row count" INTEGER
+)
+AS 'MODULE_PATHNAME', 'get_aocs_headers_info'
+    LANGUAGE C STRICT
+EXECUTE ON ALL SEGMENTS;
