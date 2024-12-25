@@ -51,6 +51,15 @@
 #define DEFAULT_VARBLOCK_TEMPSPACE_LEN   	 (4 * 1024)
 #define DEFAULT_FS_SAFE_WRITE_SIZE			 (0)
 
+
+typedef enum AoExecutorBlockKind
+{
+	AoExecutorBlockKind_None = 0,
+	AoExecutorBlockKind_VarBlock,
+	AoExecutorBlockKind_SingleRow,
+	MaxAoExecutorBlockKind		/* must always be last */
+}			AoExecutorBlockKind;
+
 /*
  * AppendOnlyInsertDescData is used for inserting data into append-only
  * relations. It serves an equivalent purpose as AppendOnlyScanDescData

@@ -268,4 +268,8 @@ extern void aocs_addcol_emptyvpe(
 		int32 nseg, int num_newcols);
 extern void aocs_addcol_setfirstrownum(AOCSAddColumnDesc desc,
 		int64 firstRowNum);
+
+extern int open_next_scan_seg(AOCSScanDesc scan);
+extern void close_cur_scan_seg(AOCSScanDesc scan);
+
 #endif   /* AOCSAM_H */

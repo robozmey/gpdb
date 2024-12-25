@@ -324,7 +324,7 @@ aocs_initscan(AOCSScanDesc scan)
 	pgstat_count_heap_scan(scan->aos_rel);
 }
 
-static int
+int
 open_next_scan_seg(AOCSScanDesc scan)
 {
 	int			nvp = scan->relationTupleDesc->natts;
@@ -408,7 +408,7 @@ open_next_scan_seg(AOCSScanDesc scan)
 	return -1;
 }
 
-static void
+void
 close_cur_scan_seg(AOCSScanDesc scan)
 {
 	int			nvp = scan->relationTupleDesc->natts;
