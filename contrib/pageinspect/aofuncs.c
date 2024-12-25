@@ -23,7 +23,7 @@ typedef struct AOHeadersInfoCxt {
 } AOHeadersInfoCxt;
 
 
-#define NUM_GET_AO_HEADERS_INFO 5
+#define NUM_GET_AO_HEADERS_INFO 7
 
 Datum get_ao_headers_info(PG_FUNCTION_ARGS)
 {
@@ -76,13 +76,17 @@ Datum get_ao_headers_info(PG_FUNCTION_ARGS)
 
         TupleDescInitEntry(funcctx->tuple_desc, (AttrNumber)1, "first row number", INT8OID,
                         -1 /* typmod */, 0 /* attdim */);
-        TupleDescInitEntry(funcctx->tuple_desc, (AttrNumber)2, "current item count", INT4OID,
+        TupleDescInitEntry(funcctx->tuple_desc, (AttrNumber)2, "large read position", INT8OID,
                         -1 /* typmod */, 0 /* attdim */);
-        TupleDescInitEntry(funcctx->tuple_desc, (AttrNumber)3, "isCompressed",
+        TupleDescInitEntry(funcctx->tuple_desc, (AttrNumber)3, "buffer offset", INT4OID,
+                        -1 /* typmod */, 0 /* attdim */);
+        TupleDescInitEntry(funcctx->tuple_desc, (AttrNumber)4, "current item count", INT4OID,
+                        -1 /* typmod */, 0 /* attdim */);
+        TupleDescInitEntry(funcctx->tuple_desc, (AttrNumber)5, "isCompressed",
                         BOOLOID, -1 /* typmod */, 0 /* attdim */);
-        TupleDescInitEntry(funcctx->tuple_desc, (AttrNumber)4, "isLarge",
+        TupleDescInitEntry(funcctx->tuple_desc, (AttrNumber)6, "isLarge",
                         BOOLOID, -1 /* typmod */, 0 /* attdim */);
-        TupleDescInitEntry(funcctx->tuple_desc, (AttrNumber)5,
+        TupleDescInitEntry(funcctx->tuple_desc, (AttrNumber)7,
                         "dataLen", INT4OID, -1 /* typmod */,
                         0 /* attdim */);
 
@@ -124,21 +128,25 @@ Datum get_ao_headers_info(PG_FUNCTION_ARGS)
             break;
         }
 
-        elog(DEBUG5, "block stat: first row num: %ld, current item count: %d, isCompressed: %d, isLarge: %d, dataLen: %d", 
+        elog(DEBUG5, "block stat: first row num: %ld, largeReadPosition %ld, bufferOffset: %d, current item count: %d, isCompressed: %d, isLarge: %d, dataLen: %d", 
             scan->executorReadBlock.blockFirstRowNum,
+            scan->storageRead.bufferedRead.largeReadPosition,
+            scan->storageRead.bufferedRead.bufferOffset,
             scan->executorReadBlock.currentItemCount,
             scan->executorReadBlock.isCompressed, scan->executorReadBlock.isLarge,
             scan->executorReadBlock.dataLen);
 
+        values[0] = Int64GetDatum(scan->executorReadBlock.blockFirstRowNum);
+        values[1] = Int64GetDatum(scan->storageRead.bufferedRead.largeReadPosition);
+        values[2] = Int32GetDatum(scan->storageRead.bufferedRead.bufferOffset);
+        values[3] = Int32GetDatum(scan->executorReadBlock.currentItemCount);
+        values[4] = BoolGetDatum(scan->executorReadBlock.isCompressed);
+        values[5] = BoolGetDatum(scan->executorReadBlock.isLarge);
+        values[6] = Int32GetDatum(scan->executorReadBlock.dataLen);
+
         AppendOnlyExecutorReadBlock_GetContents(
                                                 &scan->executorReadBlock);
         MemSet(nulls, 0, sizeof(nulls));
-
-        values[0] = Int64GetDatum(scan->executorReadBlock.blockFirstRowNum);
-        values[1] = Int32GetDatum(scan->executorReadBlock.currentItemCount);
-        values[2] = BoolGetDatum(scan->executorReadBlock.isCompressed);
-        values[3] = BoolGetDatum(scan->executorReadBlock.isLarge);
-        values[4] = Int32GetDatum(scan->executorReadBlock.dataLen);
 
         tuple = heap_form_tuple(funcctx->tuple_desc, values, nulls);
         result = HeapTupleGetDatum(tuple);
@@ -165,7 +173,6 @@ Datum get_ao_headers_info(PG_FUNCTION_ARGS)
 
 
     ExecDropSingleTupleTableSlot(slot);
-
     appendonly_endscan(scan);
 
     relation_close(r, AccessShareLock);

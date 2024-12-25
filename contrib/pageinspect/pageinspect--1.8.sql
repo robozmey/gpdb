@@ -174,7 +174,15 @@ AS 'MODULE_PATHNAME', 'bm_bitmap_page_items_bytea'
 CREATE FUNCTION get_ao_headers_info(
     reloid OID
 )
-RETURNS TABLE ("first row number" BIGINT, "current item count" INTEGER, isCompressed BOOLEAN, isLarge BOOLEAN, dataLen INTEGER)
+RETURNS TABLE (
+    "first row number" BIGINT,
+    "large read position" BIGINT,
+    "buffer offset" INTEGER,
+    "current item count" INTEGER,
+    isCompressed BOOLEAN,
+    isLarge BOOLEAN,
+    dataLen INTEGER
+)
 AS 'MODULE_PATHNAME', 'get_ao_headers_info'
     LANGUAGE C STRICT
 EXECUTE ON ALL SEGMENTS;
