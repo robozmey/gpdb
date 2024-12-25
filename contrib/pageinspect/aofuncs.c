@@ -22,8 +22,7 @@ typedef struct AOHeadersInfoCxt {
     TupleTableSlot *slot;
 } AOHeadersInfoCxt;
 
-
-#define NUM_GET_AO_HEADERS_INFO 7
+#define NUM_GET_AO_HEADERS_INFO 9
 
 Datum get_ao_headers_info(PG_FUNCTION_ARGS)
 {
@@ -80,13 +79,17 @@ Datum get_ao_headers_info(PG_FUNCTION_ARGS)
                         -1 /* typmod */, 0 /* attdim */);
         TupleDescInitEntry(funcctx->tuple_desc, (AttrNumber)3, "buffer offset", INT4OID,
                         -1 /* typmod */, 0 /* attdim */);
-        TupleDescInitEntry(funcctx->tuple_desc, (AttrNumber)4, "current item count", INT4OID,
+        TupleDescInitEntry(funcctx->tuple_desc, (AttrNumber)4, "block kind", TEXTOID,
                         -1 /* typmod */, 0 /* attdim */);
-        TupleDescInitEntry(funcctx->tuple_desc, (AttrNumber)5, "isCompressed",
+        TupleDescInitEntry(funcctx->tuple_desc, (AttrNumber)5, "header kind", TEXTOID,
+                        -1 /* typmod */, 0 /* attdim */);
+        TupleDescInitEntry(funcctx->tuple_desc, (AttrNumber)6, "current item count", INT4OID,
+                        -1 /* typmod */, 0 /* attdim */);
+        TupleDescInitEntry(funcctx->tuple_desc, (AttrNumber)7, "isCompressed",
                         BOOLOID, -1 /* typmod */, 0 /* attdim */);
-        TupleDescInitEntry(funcctx->tuple_desc, (AttrNumber)6, "isLarge",
+        TupleDescInitEntry(funcctx->tuple_desc, (AttrNumber)8, "isLarge",
                         BOOLOID, -1 /* typmod */, 0 /* attdim */);
-        TupleDescInitEntry(funcctx->tuple_desc, (AttrNumber)7,
+        TupleDescInitEntry(funcctx->tuple_desc, (AttrNumber)9,
                         "dataLen", INT4OID, -1 /* typmod */,
                         0 /* attdim */);
 
@@ -139,10 +142,42 @@ Datum get_ao_headers_info(PG_FUNCTION_ARGS)
         values[0] = Int64GetDatum(scan->executorReadBlock.blockFirstRowNum);
         values[1] = Int64GetDatum(scan->storageRead.bufferedRead.largeReadPosition);
         values[2] = Int32GetDatum(scan->storageRead.bufferedRead.bufferOffset);
-        values[3] = Int32GetDatum(scan->executorReadBlock.currentItemCount);
-        values[4] = BoolGetDatum(scan->executorReadBlock.isCompressed);
-        values[5] = BoolGetDatum(scan->executorReadBlock.isLarge);
-        values[6] = Int32GetDatum(scan->executorReadBlock.dataLen);
+
+        switch (scan->executorReadBlock.executorBlockKind)
+        {
+            case AoExecutorBlockKind_VarBlock:
+            values[3] = CStringGetTextDatum("varblock");
+            break;
+            case AoExecutorBlockKind_SingleRow:
+            values[3] = CStringGetTextDatum("single row");
+            break;
+            default:
+            values[3] = CStringGetTextDatum("unknown");
+            break;
+        }
+
+        switch (scan->storageRead.current.headerKind)
+        {
+            case AoHeaderKind_SmallContent:
+            values[4] = CStringGetTextDatum("small content");
+            break;
+            case AoHeaderKind_LargeContent:
+            values[4] = CStringGetTextDatum("large content");
+            break;
+            case AoHeaderKind_NonBulkDenseContent:
+            values[4] = CStringGetTextDatum("non bulk dense content");
+            break;
+            case AoHeaderKind_BulkDenseContent:
+            values[4] = CStringGetTextDatum("bulk dense content");
+            break;
+            default:
+            break;
+        }
+
+        values[5] = Int32GetDatum(scan->executorReadBlock.currentItemCount);
+        values[6] = BoolGetDatum(scan->executorReadBlock.isCompressed);
+        values[7] = BoolGetDatum(scan->executorReadBlock.isLarge);
+        values[8] = Int32GetDatum(scan->executorReadBlock.dataLen);
 
         AppendOnlyExecutorReadBlock_GetContents(
                                                 &scan->executorReadBlock);

@@ -178,6 +178,8 @@ RETURNS TABLE (
     "first row number" BIGINT,
     "large read position" BIGINT,
     "buffer offset" INTEGER,
+    "block kind" TEXT,
+    "header kind" TEXT,
     "current item count" INTEGER,
     isCompressed BOOLEAN,
     isLarge BOOLEAN,
