@@ -171,6 +171,7 @@ Datum get_ao_headers_info(PG_FUNCTION_ARGS)
             values[4] = CStringGetTextDatum("bulk dense content");
             break;
             default:
+            values[4] = CStringGetTextDatum("unknown");
             break;
         }
 
