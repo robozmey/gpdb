@@ -882,11 +882,6 @@ ExecBitmapHeapScan(BitmapHeapScanState *node)
 						(ExecScanAccessMtd) BitmapHeapNext,
 						(ExecScanRecheckMtd) BitmapHeapRecheck);
 
-	if (TupIsNull(slot))
-	{
-		/* next partition, if needed */
-	}
-
 	return slot;
 }
 
