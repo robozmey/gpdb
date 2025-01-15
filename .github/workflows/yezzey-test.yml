@@ -1,0 +1,20 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "OPENGPDB_STABLE", "MDB_6_25_STABLE_YEZZEY" ]
+  pull_request:
+    branches: [ "OPENGPDB_STABLE", "YGP_6.27_STABLE", "MDB_6_25_STABLE_YEZZEY" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: docker build . --file docker/yezzey/Dockerfile --tag yezzey_test:1234 && docker run yezzey_test:1234
+      
+      

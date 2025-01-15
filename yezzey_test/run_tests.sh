@@ -51,24 +51,17 @@ make destroy-demo-cluster && make create-demo-cluster
 export USER=krebs
 source gpAux/gpdemo/gpdemo-env.sh
 
-gpconfig -c yezzey.storage_prefix -v "'yezzey-test-files'"
-gpconfig -c yezzey.storage_bucket -v "'${S3_BUCKET}'"
-gpconfig -c yezzey.storage_config -v "'/home/krebs/yezzey_test/yezzey-s3.conf'"
-gpconfig -c yezzey.storage_host -v "'https://storage.yandexcloud.net'"
-gpconfig -c yezzey.gpg_key_id -v  "'$(gpg --list-keys | head -n 4 | tail -n 1)'"
-gpconfig -c yezzey.walg_bin_path -v  "'wal-g'"
-gpconfig -c yezzey.walg_config_path -v  "'/home/krebs/yezzey_test/wal-g-conf.yaml'"
-
-gpconfig -c max_worker_processes -v 10
-
-gpconfig -c yezzey.autooffload -v  "on"
-
 gpconfig -c shared_preload_libraries -v yezzey
+
+gpconfig -c yezzey.yproxy_socket -v "'/tmp/yproxy.sock'"
+gpconfig -c yezzey.use_gpg_crypto -v "false"
 
 gpstop -a -i && gpstart -a
 
-
 createdb $USER
+
+#run yproxy in daemon mode
+/usr/bin/yproxy -c /tmp/yproxy.yaml -ldebug > /dev/null 2>&1 &
 
 # Run tests
 psql postgres -f ./gpcontrib/yezzey/test/regress/expirity.sql
