@@ -160,6 +160,16 @@ submake-contrib-dummy_seclabel:
 
 .PHONY: submake-contrib-spi submake-contrib-dummy_seclabel
 
+#YC MDB hooks setup
+
+.PHONY: hook-setup
+hook-setup:
+	gpconfig -c ycmdb.yc_allow_copy_from_file -v true
+	gpconfig -c ycmdb.yc_allow_copy_to_program -v true
+	gpconfig -c ycmdb.yc_allow_copy_to_file -v true
+
+	gpstop -a -i && gpstart -a
+
 # Tablespace setup
 
 .PHONY: tablespace-setup
