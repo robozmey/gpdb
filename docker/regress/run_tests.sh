@@ -57,5 +57,5 @@ gpstop -a -i && gpstart -a
 
 createdb $USER
 
+PGPORT=6000 make installcheck || /home/krebs/src/test/regress/regression.out
 
-PGPORT=6000 make installcheck
