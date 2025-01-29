@@ -55,11 +55,6 @@ COPY yezzey_test/generate_ssh_key.sh /home/krebs/
 RUN ["/home/krebs/generate_ssh_key.sh"]
 
 RUN cd /tmp/ \
-&& git clone https://github.com/greenplum-db/gp-xerces.git \
-&& cd ./gp-xerces/ && mkdir build && cd build && ../configure --prefix=/usr/local && make -j \
-&& sudo make install
-
-RUN cd /tmp/ \
 && git clone https://github.com/boundary/sigar.git \
 && cd ./sigar/ \
 && mkdir build && cd build && cmake .. && make \
