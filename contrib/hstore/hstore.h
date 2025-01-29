@@ -6,6 +6,7 @@
 
 #include "fmgr.h"
 #include "utils/array.h"
+#include "nodes/nodes.h"
 
 
 /*
@@ -171,7 +172,9 @@ typedef struct
 extern int	hstoreUniquePairs(Pairs *a, int32 l, int32 *buflen);
 extern HStore *hstorePairs(Pairs *pairs, int32 pcount, int32 buflen);
 
+extern bool hstoreCheckKeyLenSafe(size_t len, size_t *result, Node *escontext);
 extern size_t hstoreCheckKeyLen(size_t len);
+extern bool hstoreCheckValLenSafe(size_t len, size_t *result, Node *escontext);
 extern size_t hstoreCheckValLen(size_t len);
 
 extern int	hstoreFindKey(HStore *hs, int *lowbound, char *key, int keylen);

@@ -255,6 +255,54 @@ extern void errfinish(int dummy,...);
 #define ereturn(context, dummy_value, rest)	\
 	ereturn_domain(context, dummy_value, TEXTDOMAIN, rest)
 
+#define ereturn_domain_with_free(context, dummy_value, domain, rest, free)	\
+	do { \
+		errsave_domain(context, domain, rest); \
+		do free while(0); \
+		return dummy_value; \
+	} while(0)
+#define ereturn_with_free(context, dummy_value, rest, free)	\
+	ereturn_domain_with_free(context, dummy_value, TEXTDOMAIN, rest, free)
+
+/*	
+ *
+ */
+#define PG_ERETURN_DOMAIN(context, domain, rest)	\
+	do { \
+		errsave_domain(context, domain, rest); \
+		PG_RETURN_NULL(); \
+	} while(0)
+#define PG_ERETURN(context, rest)	\
+	PG_ERETURN_DOMAIN(context, TEXTDOMAIN, rest)
+
+/*
+ * Use to call function with "soft" error handling from another function with "soft" error handling
+ */
+#define safe_call(func, args) \
+	do { \
+		if (!func args) { \
+			return false; \
+		} \
+	} while(0);
+
+#define safe_call_with_free(func, args, free) \
+	do { \
+		if (!func args) { \
+			do free while(0); \
+			return false; \
+		} \
+	} while(0);
+
+/*
+ * Use to call function with "soft" error handling from PG function. 
+ * Same as safe_call but sets fcinfo.isnull = true
+ */
+#define PG_SAFE_CALL(func, args) \
+	do { \
+		if (!func args) \
+			PG_RETURN_NULL(); \
+	} while(0);
+
 extern bool errsave_start(struct Node* context, const char *filename, int lineno,
 		 const char *funcname, const char *domain);
 

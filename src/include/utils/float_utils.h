@@ -38,4 +38,17 @@ do {															\
 		 errmsg("value out of range: underflow")));				\
 } while(0)
 
+#define PG_CHECKFLOATVAL_SAFE(val, inf_is_valid, zero_is_valid)			\
+do {															\
+	if (isinf(val) && !(inf_is_valid))							\
+		PG_ERETURN(fcinfo->context,								\
+				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),	\
+		  errmsg("value out of range: overflow")));				\
+																\
+	if ((val) == 0.0 && !(zero_is_valid))						\
+		PG_ERETURN(fcinfo->context,								\
+				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),	\
+		 errmsg("value out of range: underflow")));				\
+} while(0)
+
 #endif /* FLOAT_UTILS_H */

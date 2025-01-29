@@ -17,6 +17,7 @@
 #include "utils/lsyscache.h"
 #include "utils/memutils.h"
 #include "utils/typcache.h"
+#include "nodes/nodes.h"
 
 #include "hstore.h"
 
@@ -58,7 +59,7 @@ do { \
 #define GV_WAITESCESCIN 4
 
 static bool
-get_val(HSParser *state, bool ignoreeq, bool *escaped)
+get_val(HSParser *state, bool ignoreeq, bool *escaped, bool *result, Node *escontext)
 {
 	int			st = GV_WAITVAL;
 
@@ -77,11 +78,14 @@ get_val(HSParser *state, bool ignoreeq, bool *escaped)
 			}
 			else if (*(state->ptr) == '\0')
 			{
-				return false;
+				*result = false;
+				return true;
 			}
 			else if (*(state->ptr) == '=' && !ignoreeq)
 			{
-				elog(ERROR, "Syntax error near '%c' at position %d", *(state->ptr), (int32) (state->ptr - state->begin));
+				ereturn(escontext, false, 
+					(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
+					errmsg("Syntax error near '%c' at position %d", *(state->ptr), (int32) (state->ptr - state->begin))));
 			}
 			else if (*(state->ptr) == '\\')
 			{
@@ -103,20 +107,24 @@ get_val(HSParser *state, bool ignoreeq, bool *escaped)
 			else if (*(state->ptr) == '=' && !ignoreeq)
 			{
 				state->ptr--;
+				*result = true;
 				return true;
 			}
 			else if (*(state->ptr) == ',' && ignoreeq)
 			{
 				state->ptr--;
+				*result = true;
 				return true;
 			}
 			else if (isspace((unsigned char) *(state->ptr)))
 			{
+				*result = true;
 				return true;
 			}
 			else if (*(state->ptr) == '\0')
 			{
 				state->ptr--;
+				*result = true;
 				return true;
 			}
 			else
@@ -134,11 +142,14 @@ get_val(HSParser *state, bool ignoreeq, bool *escaped)
 			}
 			else if (*(state->ptr) == '"')
 			{
+				*result = true;
 				return true;
 			}
 			else if (*(state->ptr) == '\0')
 			{
-				elog(ERROR, "Unexpected end of string");
+				ereturn(escontext, false, 
+					(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
+					errmsg("Unexpected end of string")));
 			}
 			else
 			{
@@ -150,7 +161,9 @@ get_val(HSParser *state, bool ignoreeq, bool *escaped)
 		else if (st == GV_WAITESCIN)
 		{
 			if (*(state->ptr) == '\0')
-				elog(ERROR, "Unexpected end of string");
+				ereturn(escontext, false, 
+					(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
+					errmsg("Unexpected end of string")));
 			RESIZEPRSBUF;
 			*(state->cur) = *(state->ptr);
 			state->cur++;
@@ -159,14 +172,18 @@ get_val(HSParser *state, bool ignoreeq, bool *escaped)
 		else if (st == GV_WAITESCESCIN)
 		{
 			if (*(state->ptr) == '\0')
-				elog(ERROR, "Unexpected end of string");
+				ereturn(escontext, false, 
+					(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
+					errmsg("Unexpected end of string")));
 			RESIZEPRSBUF;
 			*(state->cur) = *(state->ptr);
 			state->cur++;
 			st = GV_INESCVAL;
 		}
 		else
-			elog(ERROR, "Unknown state %d at position line %d in file '%s'", st, __LINE__, __FILE__);
+			ereturn(escontext, false, 
+					(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
+					errmsg("Unknown state %d at position line %d in file '%s'", st, __LINE__, __FILE__)));
 
 		state->ptr++;
 	}
@@ -179,11 +196,12 @@ get_val(HSParser *state, bool ignoreeq, bool *escaped)
 #define WDEL	4
 
 
-static void
-parse_hstore(HSParser *state)
+static bool
+parse_hstore(HSParser *state, Node *escontext)
 {
 	int			st = WKEY;
 	bool		escaped = false;
+	bool		is_got_val = false;
 
 	state->plen = 16;
 	state->pairs = (Pairs *) palloc(sizeof(Pairs) * state->plen);
@@ -195,15 +213,16 @@ parse_hstore(HSParser *state)
 	{
 		if (st == WKEY)
 		{
-			if (!get_val(state, false, &escaped))
-				return;
+			safe_call(get_val, (state, false, &escaped, &is_got_val, escontext));
+			if (!is_got_val)
+				return true;
 			if (state->pcur >= state->plen)
 			{
 				state->plen *= 2;
 				state->pairs = (Pairs *) repalloc(state->pairs, sizeof(Pairs) * state->plen);
 			}
 			state->pairs[state->pcur].key = state->word;
-			state->pairs[state->pcur].keylen = hstoreCheckKeyLen(state->cur - state->word);
+			safe_call(hstoreCheckKeyLenSafe, (state->cur - state->word, &state->pairs[state->pcur].keylen, escontext));
 			state->pairs[state->pcur].val = NULL;
 			state->word = NULL;
 			st = WEQ;
@@ -216,11 +235,15 @@ parse_hstore(HSParser *state)
 			}
 			else if (*(state->ptr) == '\0')
 			{
-				elog(ERROR, "Unexpected end of string");
+				ereturn(escontext, false, 
+					(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
+					errmsg("Unexpected end of string")));
 			}
 			else if (!isspace((unsigned char) *(state->ptr)))
 			{
-				elog(ERROR, "Syntax error near '%c' at position %d", *(state->ptr), (int32) (state->ptr - state->begin));
+				ereturn(escontext, false, 
+					(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
+					errmsg("Syntax error near '%c' at position %d", *(state->ptr), (int32) (state->ptr - state->begin))));
 			}
 		}
 		else if (st == WGT)
@@ -231,19 +254,26 @@ parse_hstore(HSParser *state)
 			}
 			else if (*(state->ptr) == '\0')
 			{
-				elog(ERROR, "Unexpected end of string");
+				ereturn(escontext, false, 
+					(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
+					errmsg(ERROR, "Unexpected end of string")));
 			}
 			else
 			{
-				elog(ERROR, "Syntax error near '%c' at position %d", *(state->ptr), (int32) (state->ptr - state->begin));
+				ereturn(escontext, false, 
+					(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
+					errmsg("Syntax error near '%c' at position %d", *(state->ptr), (int32) (state->ptr - state->begin))));
 			}
 		}
 		else if (st == WVAL)
 		{
-			if (!get_val(state, true, &escaped))
-				elog(ERROR, "Unexpected end of string");
+			safe_call(get_val, (state, true, &escaped, &is_got_val, escontext));
+			if (!is_got_val)
+				ereturn(escontext, false, 
+					(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
+					errmsg("Unexpected end of string")));
 			state->pairs[state->pcur].val = state->word;
-			state->pairs[state->pcur].vallen = hstoreCheckValLen(state->cur - state->word);
+			safe_call(hstoreCheckValLenSafe, (state->cur - state->word, &(state->pairs[state->pcur].vallen), escontext));
 			state->pairs[state->pcur].isnull = false;
 			state->pairs[state->pcur].needfree = true;
 			if (state->cur - state->word == 4 && !escaped)
@@ -264,15 +294,19 @@ parse_hstore(HSParser *state)
 			}
 			else if (*(state->ptr) == '\0')
 			{
-				return;
+				return true;
 			}
 			else if (!isspace((unsigned char) *(state->ptr)))
 			{
-				elog(ERROR, "Syntax error near '%c' at position %d", *(state->ptr), (int32) (state->ptr - state->begin));
+				ereturn(escontext, false, 
+					(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
+					errmsg("Syntax error near '%c' at position %d", *(state->ptr), (int32) (state->ptr - state->begin))));
 			}
 		}
 		else
-			elog(ERROR, "Unknown state %d at line %d in file '%s'", st, __LINE__, __FILE__);
+			ereturn(escontext, false, 
+					(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
+					errmsg("Unknown state %d at line %d in file '%s'", st, __LINE__, __FILE__)));
 
 		state->ptr++;
 	}
@@ -354,21 +388,37 @@ hstoreUniquePairs(Pairs *a, int32 l, int32 *buflen)
 size_t
 hstoreCheckKeyLen(size_t len)
 {
+	size_t result;
+	(void) hstoreCheckKeyLenSafe(len, &result, NULL);
+	return result;
+}
+bool
+hstoreCheckKeyLenSafe(size_t len, size_t *result, Node *escontext)
+{
 	if (len > HSTORE_MAX_KEY_LEN)
-		ereport(ERROR,
+		ereturn(escontext, false,
 				(errcode(ERRCODE_STRING_DATA_RIGHT_TRUNCATION),
 				 errmsg("string too long for hstore key")));
-	return len;
+	*result = len;
+	return true;
 }
 
 size_t
 hstoreCheckValLen(size_t len)
 {
+	size_t result;
+	(void) hstoreCheckValLenSafe(len, &result, NULL);
+	return result;
+}
+bool
+hstoreCheckValLenSafe(size_t len, size_t *result, Node *escontext)
+{
 	if (len > HSTORE_MAX_VALUE_LEN)
-		ereport(ERROR,
+		ereturn(escontext, false,
 				(errcode(ERRCODE_STRING_DATA_RIGHT_TRUNCATION),
 				 errmsg("string too long for hstore value")));
-	return len;
+	*result = len;
+	return true;
 }
 
 
@@ -412,7 +462,7 @@ hstore_in(PG_FUNCTION_ARGS)
 
 	state.begin = PG_GETARG_CSTRING(0);
 
-	parse_hstore(&state);
+	PG_SAFE_CALL(parse_hstore, (&state, fcinfo->context));
 
 	state.pcur = hstoreUniquePairs(state.pairs, state.pcur, &buflen);
 

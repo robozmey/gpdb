@@ -617,7 +617,7 @@ varchar(PG_FUNCTION_ARGS)
 	{
 		for (i = maxmblen; i < len; i++)
 			if (s_data[i] != ' ')
-				ereport(ERROR,
+				PG_ERETURN(fcinfo->context,
 						(errcode(ERRCODE_STRING_DATA_RIGHT_TRUNCATION),
 					  errmsg("value too long for type character varying(%d)",
 							 maxlen)));

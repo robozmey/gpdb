@@ -37,10 +37,13 @@
 int32
 pg_atoi(char *s, int size, int c)
 {
-	return pg_atoi_safe(s, size, c, NULL);
+	int32 result = 0;
+	(void) pg_atoi_safe(s, size, c, &result, NULL);
+	return result;
 }
-int32
-pg_atoi_safe(char *s, int size, int c, Node* escontext)
+
+bool
+pg_atoi_safe(char *s, int size, int c, int32 *result, Node *escontext)
 {
 	long		l;
 	char	   *badp;
@@ -52,7 +55,7 @@ pg_atoi_safe(char *s, int size, int c, Node* escontext)
 	if (s == NULL)
 		elog(ERROR, "NULL pointer");
 	if (*s == 0)
-		ereturn(escontext, 0,
+		ereturn(escontext, false,
 				(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 				 errmsg("invalid input syntax for integer: \"%s\"",
 						s)));
@@ -62,7 +65,7 @@ pg_atoi_safe(char *s, int size, int c, Node* escontext)
 
 	/* We made no progress parsing the string, so bail out */
 	if (s == badp)
-		ereturn(escontext, 0,
+		ereturn(escontext, false,
 				(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 				 errmsg("invalid input syntax for integer: \"%s\"",
 						s)));
@@ -76,13 +79,13 @@ pg_atoi_safe(char *s, int size, int c, Node* escontext)
 				|| l < INT_MIN || l > INT_MAX
 #endif
 				)
-				ereturn(escontext, 0,
+				ereturn(escontext, false,
 						(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				errmsg("value \"%s\" is out of range for type integer", s)));
 			break;
 		case sizeof(int16):
 			if (errno == ERANGE || l < SHRT_MIN || l > SHRT_MAX)
-				ereturn(escontext, 0,
+				ereturn(escontext, false,
 						(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				errmsg("value \"%s\" is out of range for type smallint", s)));
 			break;
@@ -109,7 +112,8 @@ pg_atoi_safe(char *s, int size, int c, Node* escontext)
 				 errmsg("invalid input syntax for integer: \"%s\"",
 						s)));
 
-	return (int32) l;
+	*result = (int32) l;
+	return true;
 }
 
 /*
