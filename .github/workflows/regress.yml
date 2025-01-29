@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Regresstion testing
 
 on:
   push:
@@ -14,6 +14,36 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file docker/regress/Dockerfile --tag regress_test:1234 && docker run regress_test:1234
-    
+
+    - name: Build
+      run: docker build . --file docker/regress/Dockerfile --tag regress_test:1234
+
+    - name: Run Regression Tests
+      run: docker run --name regress_test_container regress_test:1234
+
+    - name: Get Regression Diffs from Docker Container
+      if: always()
+      run: |
+          docker ps -a
+          docker cp regress_test_container:/home/krebs/src/test/regress/regression.diffs regression.diffs
+
+    - name: Check and Display Regression Diffs
+      if: always()
+      run: |
+          # Search for regression.diffs recursively
+          found_file=$(find . -type f -name "regression.diffs" | head -n 1)
+          if [[ -n "$found_file" ]]; then
+            echo "Found regression.diffs at: $found_file"
+            cat "$found_file"
+          else
+            echo "No regression.diffs file found in the hierarchy."
+            cat /home/krebs/src/test/regress/regression.diffs
+          fi
+
+    - name: Upload Results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: yezzet-test-report
+        path: regression.diffs
+
