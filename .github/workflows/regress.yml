@@ -18,6 +18,7 @@ jobs:
       run: docker build . --file docker/regress/Dockerfile --tag regress_test:1234 && docker run regress_test:1234
     
     - name: Check and Display Regression Diffs
+      if: always()
       run: |
           # Search for regression.diffs recursively
           found_file=$(find . -type f -name "regression.diffs" | head -n 1)
