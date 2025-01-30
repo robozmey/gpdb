@@ -63,6 +63,5 @@ createdb $USER
 #run yproxy in daemon mode
 /usr/bin/yproxy -c /tmp/yproxy.yaml -ldebug > /dev/null 2>&1 &
 
-
 cd gpcontrib/yezzey
-make installcheck
+make installcheck || cat /home/krebs/gpcontrib/yezzey/regression.diffs && exit 1
