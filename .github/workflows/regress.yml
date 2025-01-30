@@ -85,6 +85,7 @@ jobs:
         path: regression.diffs
 
     - name: Check disk space
+      if: always()
       run: |
         sudo dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -nr | head
         df . -h
