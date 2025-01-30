@@ -42,6 +42,11 @@ RUN ["/home/krebs/generate_ssh_key.sh"]
 
 
 RUN cd /tmp/ \
+&& git clone https://github.com/greenplum-db/gp-xerces-archive.git \
+&& cd ./gp-xerces-archive/ && mkdir build && cd build && ../configure --prefix=/usr/local && make -j \
+&& sudo make install
+
+RUN cd /tmp/ \
 && git clone https://github.com/boundary/sigar.git \
 && cd ./sigar/ \
 && mkdir build && cd build && cmake .. && make \
@@ -65,7 +70,7 @@ RUN git clone https://github.com/open-gpdb/yezzey.git gpcontrib/yezzey -b ${YEZZ
 
 RUN sed -i '/^trusted/d' gpcontrib/yezzey/yezzey.control 
 RUN ./configure --with-perl --with-python --with-libxml --disable-orca --prefix=/usr/local/gpdb \
---enable-depend --enable-cassert --enable-debug --without-mdblocales --without-zstd --enable-debug-extensions CFLAGS='-fno-omit-frame-pointer -Wno-implicit-fallthrough -O3 -pthread' 
+--enable-depend --enable-cassert --enable-debug --without-mdblocales --with-zstd --enable-debug-extensions --enable-orca CFLAGS='-fno-omit-frame-pointer -Wno-implicit-fallthrough -O3 -pthread' 
 RUN make -j8 && make -j8 install
 
 ENTRYPOINT ["./docker/regress/run_tests.sh"]
