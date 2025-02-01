@@ -851,7 +851,7 @@ AppendOnlyStorageRead_ReadNextBlock(AppendOnlyStorageRead *storageRead)
 		if (!AppendOnlyStorageFormat_VerifyHeaderChecksum(header,
 														  &storedChecksum,
 														  &computedChecksum))
-			ereport(WARNING,
+			ereport(ERROR,
 					(errcode(ERRCODE_DATA_CORRUPTED),
 					 errmsg("header checksum does not match, expected 0x%08X and found 0x%08X",
 							storedChecksum, computedChecksum),
