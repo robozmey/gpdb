@@ -1564,10 +1564,10 @@ nodeSupportWorkfileCaching(PlanState *planstate)
 			IsA(planstate, MaterialState));
 }
 
-void
+static void
 cdbexplain_NodeSummary(ExplainState *es, CdbExplain_NodeSummary *ns) {
 	int			i;
-	char		aggbuf[100];
+	char		aggbuf[MAXPGPATH];
 	
 	if (es->format == EXPLAIN_FORMAT_TEXT)
 	{
