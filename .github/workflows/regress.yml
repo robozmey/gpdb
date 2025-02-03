@@ -25,7 +25,7 @@ jobs:
       if: always()
       run: |
           docker ps -a
-          docker cp regress_test_container:/home/krebs/src/test/regress/regression.diffs regression.diffs
+          docker cp regress_test_container:/home/gpadmin/src/test/regress/regression.diffs regression.diffs
 
     - name: Check and Display Regression Diffs
       if: always()
@@ -37,7 +37,7 @@ jobs:
             cat "$found_file"
           else
             echo "No regression.diffs file found in the hierarchy."
-            cat /home/krebs/src/test/regress/regression.diffs
+            cat /home/gpadmin/src/test/regress/regression.diffs
           fi
 
     - name: Upload Results
@@ -94,7 +94,7 @@ jobs:
       if: always()
       run: |
           docker ps -a
-          docker cp prc_test_container:/home/krebs/src/test/isolation2/regression.diffs regression.diffs || touch regression.diffs
+          docker cp prc_test_container:/home/gpadmin/src/test/isolation2/regression.diffs regression.diffs || touch regression.diffs
     - name: Check and Display Regression Diffs
       if: always()
       run: |
@@ -105,7 +105,7 @@ jobs:
             cat "$found_file"
           else
             echo "No regression.diffs file found in the hierarchy."
-            cat /home/krebs/src/test/isolation2/regression.diffs
+            cat /home/gpadmin/src/test/isolation2/regression.diffs
           fi
     - name: Upload Results
       uses: actions/upload-artifact@v4
