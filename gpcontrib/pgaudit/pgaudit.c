@@ -43,7 +43,6 @@ void _PG_init(void);
 
 PG_FUNCTION_INFO_V1(pgaudit_ddl_command_end);
 PG_FUNCTION_INFO_V1(pgaudit_sql_drop);
-PG_FUNCTION_INFO_V1(gp_event_trigger_ddl_commands);
 
 /*
  * Log Classes
@@ -1517,7 +1516,7 @@ pgaudit_ddl_command_end(PG_FUNCTION_ARGS)
     query = "SELECT pg_catalog.upper(object_type),\n"
             "       object_identity,\n"
             "       pg_catalog.upper(command_tag)\n"
-            "  FROM gp_event_trigger_ddl_commands()";
+            "  FROM pg_event_trigger_ddl_commands()";
 
     /* Attempt to connect */
     result = SPI_connect();
@@ -1661,13 +1660,6 @@ pgaudit_sql_drop(PG_FUNCTION_ARGS)
     /* No longer in an internal statement */
     internalStatement = false;
 
-    PG_RETURN_NULL();
-}
-
-Datum
-gp_event_trigger_ddl_commands(PG_FUNCTION_ARGS)
-{
-    (void)pg_event_trigger_ddl_commands(fcinfo);
     PG_RETURN_NULL();
 }
 

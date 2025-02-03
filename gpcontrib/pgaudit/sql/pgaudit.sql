@@ -1,6 +1,8 @@
 \set VERBOSITY terse
 
 -- Create pgaudit extension
+CREATE EXTENSION IF NOT EXISTS gp_aux_catalog;
+-- Create pgaudit extension
 CREATE EXTENSION IF NOT EXISTS pgaudit;
 
 -- Make sure events don't get logged twice when session logging
