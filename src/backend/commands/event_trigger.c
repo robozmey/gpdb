@@ -1209,6 +1209,8 @@ EventTriggerSupportsGrantObjectType(GrantObjectType objtype)
 	{
 		case ACL_OBJECT_DATABASE:
 		case ACL_OBJECT_TABLESPACE:
+		/* GPDB addon */
+		case ACL_OBJECT_EXTPROTOCOL:
 			/* no support for global objects */
 			return false;
 
