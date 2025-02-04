@@ -63,6 +63,8 @@ jobs:
       run: |
           docker ps -a
           docker cp regress_test_container:/home/gpadmin/src/test/regress/regression.diffs regression.diffs
+          docker cp regress_test_container:/home/gpadmin/src/test/regress/results results
+          docker cp regress_test_container:/home/gpadmin/gpAux gpAux
 
     - name: Check and Display Regression Diffs
       if: always()
@@ -77,12 +79,26 @@ jobs:
             cat /home/gpadmin/src/test/regress/regression.diffs
           fi
 
-    - name: Upload Results
+    - name: Upload Diffs
       uses: actions/upload-artifact@v4
       if: always()
       with:
         name: regress-test-report
         path: regression.diffs
+
+    - name: Upload Results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: regress-test-report
+        path: results
+
+    - name: Upload Logs
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: regress-test-report
+        path: gpAux
 
     - name: Check disk space
       if: always()
