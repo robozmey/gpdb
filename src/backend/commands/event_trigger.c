@@ -1216,6 +1216,7 @@ EventTriggerSupportsGrantObjectType(GrantObjectType objtype)
 		case ACL_OBJECT_RELATION:
 		case ACL_OBJECT_SEQUENCE:
 		case ACL_OBJECT_DOMAIN:
+		case ACL_OBJECT_EXTPROTOCOL:
 		case ACL_OBJECT_FDW:
 		case ACL_OBJECT_FOREIGN_SERVER:
 		case ACL_OBJECT_FUNCTION:
