@@ -878,8 +878,7 @@ QUERY PLAN
       ]
     },
     "Settings": {
-      "Optimizer": "Postgres query optimizer",
-      "Settings": ["optimizer=on"]
+      "Optimizer": "Postgres query optimizer"
     }
   }
 ]
