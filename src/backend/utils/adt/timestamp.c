@@ -70,22 +70,14 @@ typedef struct
 
 static TimeOffset time2t(const int hour, const int min, const int sec, const fsec_t fsec);
 static Timestamp dt2local(Timestamp dt, int timezone);
-// static void AdjustTimestampForTypmod(Timestamp *time, int32 typmod);
 static bool AdjustTimestampForTypmodSafe(Timestamp *time, int32 typmod, Node *escontext);
-// static void AdjustIntervalForTypmod(Interval *interval, int32 typmod);
 static bool AdjustIntervalForTypmodSafe(Interval *interval, int32 typmod, Node *escontext);
 static TimestampTz timestamp2timestamptz(Timestamp timestamp);
 static bool timestamp2timestamptz_safe(Timestamp timestamp, Timestamp *result, Node *escontext);
-// static inline Timestamp timestamp_offset_internal(Timestamp timestamp,
-// 						Interval *span);
 static inline bool timestamp_offset_internal_safe(Timestamp timestamp,
 						Interval *span, Timestamp *result, Node* escontext);
-// static inline Timestamp timestamp_offset_multiple(Timestamp base, Interval *unit,
-// 						int64 mul);
 static inline bool timestamp_offset_multiple_safe(Timestamp base, Interval *unit,
 						int64 mul, Timestamp *result, Node *escontext);
-// static inline TimestampTz timestamptz_offset_internal(TimestampTz timestamp,
-// 							Interval *span);
 static inline bool timestamptz_offset_internal_safe(TimestampTz timestamp,
 							Interval *span, TimestampTz *result, Node *escontext);
 static inline TimestampTz timestamptz_offset_multiple(TimestampTz base,
