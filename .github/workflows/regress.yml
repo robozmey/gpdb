@@ -83,21 +83,21 @@ jobs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: regress-test-report
+        name: regress-test-diffs-report
         path: regression.diffs
 
     - name: Upload Results
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: regress-test-report
+        name: regress-test-result-report
         path: results
 
     - name: Upload Logs
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: regress-test-report
+        name: regress-test-logs-report
         path: gpAux
 
     - name: Check disk space
