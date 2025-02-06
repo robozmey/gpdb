@@ -3458,8 +3458,7 @@ timestamp_to_char(PG_FUNCTION_ARGS)
 	tm->tm_wday = (thisdate + 1) % 7;
 	tm->tm_yday = thisdate - date2j(tm->tm_year, 1, 1) + 1;
 
-	if (!datetime_to_char_body_safe(&tmtc, fmt, false, PG_GET_COLLATION(), &res, fcinfo->context))
-		PG_RETURN_NULL();
+	PG_SAFE_CALL(datetime_to_char_body_safe, (&tmtc, fmt, false, PG_GET_COLLATION(), &res, fcinfo->context));
 
 	if (!res)
 		PG_RETURN_NULL();
@@ -3493,8 +3492,7 @@ timestamptz_to_char(PG_FUNCTION_ARGS)
 	tm->tm_wday = (thisdate + 1) % 7;
 	tm->tm_yday = thisdate - date2j(tm->tm_year, 1, 1) + 1;
 
-	if (!datetime_to_char_body_safe(&tmtc, fmt, false, PG_GET_COLLATION(), &res, fcinfo->context))
-		PG_RETURN_NULL();
+	PG_SAFE_CALL(datetime_to_char_body_safe, (&tmtc, fmt, false, PG_GET_COLLATION(), &res, fcinfo->context));
 
 	if (!res)
 		PG_RETURN_NULL();
@@ -3528,8 +3526,7 @@ interval_to_char(PG_FUNCTION_ARGS)
 	/* wday is meaningless, yday approximates the total span in days */
 	tm->tm_yday = (tm->tm_year * MONTHS_PER_YEAR + tm->tm_mon) * DAYS_PER_MONTH + tm->tm_mday;
 
-	if (!datetime_to_char_body_safe(&tmtc, fmt, true, PG_GET_COLLATION(), &res, fcinfo->context))
-		PG_RETURN_NULL();
+	PG_SAFE_CALL(datetime_to_char_body_safe, (&tmtc, fmt, true, PG_GET_COLLATION(), &res, fcinfo->context));
 
 	if (!res)
 		PG_RETURN_NULL();
@@ -3554,8 +3551,7 @@ to_timestamp(PG_FUNCTION_ARGS)
 	struct pg_tm tm;
 	fsec_t		fsec;
 
-	if (!do_to_timestamp_safe(date_txt, fmt, &tm, &fsec, fcinfo->context))
-		PG_RETURN_NULL();
+	PG_SAFE_CALL(do_to_timestamp_safe, (date_txt, fmt, &tm, &fsec, fcinfo->context));
 
 	tz = DetermineTimeZoneOffset(&tm, session_timezone);
 
@@ -3581,8 +3577,7 @@ to_date(PG_FUNCTION_ARGS)
 	struct pg_tm tm;
 	fsec_t		fsec;
 
-	if (!do_to_timestamp_safe(date_txt, fmt, &tm, &fsec, fcinfo->context))
-		PG_RETURN_NULL();
+	PG_SAFE_CALL(do_to_timestamp_safe, (date_txt, fmt, &tm, &fsec, fcinfo->context));
 
 	if (!IS_VALID_JULIAN(tm.tm_year, tm.tm_mon, tm.tm_mday))
 		PG_ERETURN(fcinfo->context,

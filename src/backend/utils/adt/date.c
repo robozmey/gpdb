@@ -1260,8 +1260,7 @@ timetypmodin(PG_FUNCTION_ARGS)
 
 	int32 typmod;
 
-	if (!anytime_typmodin_safe(false, ta, &typmod, fcinfo->context))
-		PG_RETURN_NULL();
+	PG_SAFE_CALL(anytime_typmodin_safe, (false, ta, &typmod, fcinfo->context));
 
 	PG_RETURN_INT32(typmod);
 }
@@ -2166,8 +2165,7 @@ timetztypmodin(PG_FUNCTION_ARGS)
 
 	int32 typmod;
 
-	if (!anytime_typmodin_safe(false, ta, &typmod, fcinfo->context))
-		PG_RETURN_NULL();
+	PG_SAFE_CALL(anytime_typmodin_safe, (false, ta, &typmod, fcinfo->context));
 
 	PG_RETURN_INT32(typmod);
 }

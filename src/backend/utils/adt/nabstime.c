@@ -712,8 +712,7 @@ tintervalin(PG_FUNCTION_ARGS)
 				t1,
 				t2;
 
-	if (!parsetinterval_safe(tintervalstr, &t1, &t2, fcinfo->context))
-		PG_RETURN_NULL();
+	PG_SAFE_CALL(parsetinterval_safe, (tintervalstr, &t1, &t2, fcinfo->context));
 
 	tinterval = (TimeInterval) palloc(sizeof(TimeIntervalData));
 
