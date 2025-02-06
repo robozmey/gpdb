@@ -93,19 +93,6 @@ jobs:
         name: regress-test-result-report
         path: results
 
-    - name: Upload Logs
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: regress-test-logs-report
-        path: |
-          gpAux/gpdemo/datadirs/qddir/demoDataDir-1/log/
-          gpAux/gpdemo/datadirs/dbfast1/demoDataDir0/log/
-          gpAux/gpdemo/datadirs/dbfast2/demoDataDir1/log/
-          gpAux/gpdemo/datadirs/dbfast3/demoDataDir2/log/
-          gpAux/gpdemo/datadirs/dbfast_mirror1/demoDataDir0/log/
-          gpAux/gpdemo/datadirs/dbfast_mirror2/demoDataDir1/log/
-          gpAux/gpdemo/datadirs/dbfast_mirror3/demoDataDir2/log/
 
     - name: Check disk space
       if: always()
