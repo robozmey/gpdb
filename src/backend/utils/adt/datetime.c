@@ -5062,8 +5062,7 @@ pg_timezone_abbrevs(PG_FUNCTION_ARGS)
 				int			isdst;
 				int 		ngmtoffset;
 
-				if (!FetchDynamicTimeZoneSafe(zoneabbrevtbl, tp, &tzp, fcinfo->context))
-					PG_RETURN_NULL();
+				PG_SAFE_CALL(FetchDynamicTimeZoneSafe, (zoneabbrevtbl, tp, &tzp, fcinfo->context));
 				now = GetCurrentTransactionStartTimestamp();
 				if (!DetermineTimeZoneAbbrevOffsetTSSafe(now,
 														 tp->token,

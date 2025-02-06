@@ -322,8 +322,7 @@ timestamptypmodin(PG_FUNCTION_ARGS)
 	ArrayType  *ta = PG_GETARG_ARRAYTYPE_P(0);
 
 	int32 typmod = 0;
-	if (!anytimestamp_typmodin_safe(false, ta, &typmod, fcinfo->context))
-		PG_RETURN_NULL();
+	PG_SAFE_CALL(anytimestamp_typmodin_safe, (false, ta, &typmod, fcinfo->context));
 
 	PG_RETURN_INT32(typmod);
 }
@@ -492,6 +491,8 @@ timestamp_interval_bound_shift(PG_FUNCTION_ARGS)
 
 	PG_SAFE_CALL(timestamp_interval_bound_common_safe, (
 				val, width, shift, reg, &result, fcinfo->context));
+
+	PG_RETURN_TIMESTAMP(result);
 }
 
 /*
@@ -525,6 +526,8 @@ timestamp_interval_bound_shift_reg(PG_FUNCTION_ARGS)
 
 	PG_SAFE_CALL(timestamp_interval_bound_common_safe, (
 				val, width, shift, reg, &result, fcinfo->context));
+
+	PG_RETURN_TIMESTAMP(result);
 }
 
 /*
@@ -1171,8 +1174,7 @@ make_timestamptz_at_timezone(PG_FUNCTION_ARGS)
 				(errcode(ERRCODE_DATETIME_VALUE_OUT_OF_RANGE),
 				 errmsg("timestamp out of range")));
 
-	if (!parse_sane_timezone_safe(&tt, zone, &tz, fcinfo->context))
-		PG_RETURN_NULL();
+	PG_SAFE_CALL(parse_sane_timezone_safe, (&tt, zone, &tz, fcinfo->context));
 
 	PG_RETURN_TIMESTAMPTZ((TimestampTz) dt2local(timestamp, -tz));
 }
@@ -1269,8 +1271,7 @@ timestamptztypmodin(PG_FUNCTION_ARGS)
 	ArrayType  *ta = PG_GETARG_ARRAYTYPE_P(0);
 
 	int32 typmod = 0;
-	if (!anytimestamp_typmodin_safe(true, ta, &typmod, fcinfo->context))
-		PG_RETURN_NULL();
+	PG_SAFE_CALL(anytimestamp_typmodin_safe, (true, ta, &typmod, fcinfo->context));
 
 	PG_RETURN_INT32(typmod);
 }
@@ -6123,8 +6124,7 @@ timestamptz_zone(PG_FUNCTION_ARGS)
 		/* dynamic-offset abbreviation, resolve using specified time */
 		int			isdst;
 
-		if (!DetermineTimeZoneAbbrevOffsetTSSafe(timestamp, tzname, tzp, &isdst, &tz, fcinfo->context))
-			PG_RETURN_NULL();
+		PG_SAFE_CALL(DetermineTimeZoneAbbrevOffsetTSSafe, (timestamp, tzname, tzp, &isdst, &tz, fcinfo->context));
 		result = dt2local(timestamp, tz);
 	}
 	else
