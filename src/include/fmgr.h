@@ -579,6 +579,8 @@ extern Datum OidFunctionCall9Coll(Oid functionId, Oid collation,
 					 Datum arg6, Datum arg7, Datum arg8,
 					 Datum arg9);
 
+extern Datum DirectFunctionCall1CollSafe(PGFunction func, Oid collation,
+						Datum arg1, fmNodePtr escontext);
 extern Datum OidFunctionCall3CollSafe(Oid functionId, Oid collation,
 					 Datum arg1, Datum arg2,
 					 Datum arg3, fmNodePtr escontext);
@@ -644,7 +646,8 @@ extern Datum OidFunctionCall3CollSafe(Oid functionId, Oid collation,
 #define OidFunctionCall9(functionId, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) \
 	OidFunctionCall9Coll(functionId, InvalidOid, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)
 
-
+#define DirectFunctionCall1Safe(func, arg1, context) \
+	DirectFunctionCall1CollSafe(func, InvalidOid, arg1, context)
 #define OidFunctionCall3Safe(functionId, arg1, arg2, arg3, escontext) \
 	OidFunctionCall3CollSafe(functionId, InvalidOid, arg1, arg2, arg3, escontext)
 

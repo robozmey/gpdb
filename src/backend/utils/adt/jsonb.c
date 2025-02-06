@@ -25,6 +25,7 @@ typedef struct JsonbInState
 } JsonbInState;
 
 static inline Datum jsonb_from_cstring(char *json, int len);
+static inline bool jsonb_from_cstring_safe(char *json, int len, Datum *result, Node *escontext);
 static size_t checkStringLen(size_t len);
 static void jsonb_in_object_start(void *pstate);
 static void jsonb_in_object_end(void *pstate);
@@ -42,7 +43,9 @@ jsonb_in(PG_FUNCTION_ARGS)
 {
 	char	   *json = PG_GETARG_CSTRING(0);
 
-	return jsonb_from_cstring(json, strlen(json));
+	Datum result;
+	PG_SAFE_CALL(jsonb_from_cstring_safe, (json, strlen(json), &result, fcinfo->context));
+	return result;
 }
 
 /*
@@ -170,6 +173,14 @@ jsonb_typeof(PG_FUNCTION_ARGS)
 static inline Datum
 jsonb_from_cstring(char *json, int len)
 {
+	Datum result = 0;
+	(void) jsonb_from_cstring_safe(json, len, &result, NULL);
+	return result;
+}
+
+static inline bool
+jsonb_from_cstring_safe(char *json, int len, Datum *result, Node *escontext)
+{
 	JsonLexContext *lex;
 	JsonbInState state;
 	JsonSemAction sem;
@@ -187,10 +198,11 @@ jsonb_from_cstring(char *json, int len)
 	sem.scalar = jsonb_in_scalar;
 	sem.object_field_start = jsonb_in_object_field_start;
 
-	pg_parse_json(lex, &sem);
+	safe_call(pg_parse_json_safe, (lex, &sem, escontext));
 
 	/* after parsing, the item member has the composed jsonb structure */
-	PG_RETURN_POINTER(JsonbValueToJsonb(state.res));
+	*result = PointerGetDatum(JsonbValueToJsonb(state.res));
+	return true;
 }
 
 static size_t

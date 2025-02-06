@@ -298,10 +298,16 @@ extern int ParseDateTime(const char *timestr, char *workbuf, size_t buflen,
 extern int DecodeDateTime(char **field, int *ftype,
 			   int nf, int *dtype,
 			   struct pg_tm * tm, fsec_t *fsec, int *tzp);
+extern bool DecodeDateTimeSafe(char **field, int *ftype,
+			   int nf, int *dtype,
+			   struct pg_tm * tm, fsec_t *fsec, int *tzp, int *result, Node *escontext);
 extern int	DecodeTimezone(char *str, int *tzp);
 extern int DecodeTimeOnly(char **field, int *ftype,
 			   int nf, int *dtype,
 			   struct pg_tm * tm, fsec_t *fsec, int *tzp);
+extern bool DecodeTimeOnlySafe(char **field, int *ftype,
+			   int nf, int *dtype,
+			   struct pg_tm * tm, fsec_t *fsec, int *tzp, int *result, Node *escontext);
 extern int DecodeInterval(char **field, int *ftype, int nf, int range,
 			   int *dtype, struct pg_tm * tm, fsec_t *fsec);
 extern int DecodeISO8601Interval(char *str,
@@ -309,11 +315,15 @@ extern int DecodeISO8601Interval(char *str,
 
 extern void DateTimeParseError(int dterr, const char *str,
 				   const char *datatype) __attribute__((noreturn));
+extern bool DateTimeParseErrorSafe(int dterr, const char *str,
+				   const char *datatype, Node *escontext);
 
 extern int	DetermineTimeZoneOffset(struct pg_tm * tm, pg_tz *tzp);
 extern int	DetermineTimeZoneAbbrevOffset(struct pg_tm * tm, const char *abbr, pg_tz *tzp);
 extern int DetermineTimeZoneAbbrevOffsetTS(TimestampTz ts, const char *abbr,
 								pg_tz *tzp, int *isdst);
+extern bool DetermineTimeZoneAbbrevOffsetTSSafe(TimestampTz ts, const char *abbr,
+								pg_tz *tzp, int *isdst, int *result, Node *escontext);
 
 extern void EncodeDateOnly(struct pg_tm * tm, int style, char *str);
 extern void EncodeTimeOnly(struct pg_tm * tm, fsec_t fsec, bool print_tz, int tz, int style, char *str);
@@ -326,6 +336,8 @@ extern int ValidateDate(int fmask, bool isjulian, bool is2digits, bool bc,
 
 extern int DecodeTimezoneAbbrev(int field, char *lowtoken,
 					 int *offset, pg_tz **tz);
+extern bool DecodeTimezoneAbbrevSafe(int field, char *lowtoken,
+					 int *offset, pg_tz **tz, int *result, Node *escontext);
 extern int	DecodeSpecial(int field, char *lowtoken, int *val);
 extern int	DecodeUnits(int field, char *lowtoken, int *val);
 

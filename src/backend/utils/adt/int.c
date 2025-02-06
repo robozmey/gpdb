@@ -62,7 +62,10 @@ int2in(PG_FUNCTION_ARGS)
 {
 	char	   *num = PG_GETARG_CSTRING(0);
 
-	PG_RETURN_INT16(pg_atoi_safe(num, sizeof(int16), '\0', fcinfo->context));
+	int32 result;
+	PG_SAFE_CALL(pg_atoi_safe, (num, sizeof(int16), '\0', &result, fcinfo->context));
+
+	PG_RETURN_INT16(result);
 }
 
 /*
@@ -157,7 +160,7 @@ int2vectorin(PG_FUNCTION_ARGS)
 	while (*intString && isspace((unsigned char) *intString))
 		intString++;
 	if (*intString)
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_INVALID_PARAMETER_VALUE),
 				 errmsg("int2vector has too many elements")));
 
@@ -232,13 +235,13 @@ int2vectorrecv(PG_FUNCTION_ARGS)
 		ARR_HASNULL(result) ||
 		ARR_ELEMTYPE(result) != INT2OID ||
 		ARR_LBOUND(result)[0] != 0)
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_INVALID_BINARY_REPRESENTATION),
 				 errmsg("invalid int2vector data")));
 
 	/* check length for consistency with int2vectorin() */
 	if (ARR_DIMS(result)[0] > FUNC_MAX_ARGS)
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_INVALID_PARAMETER_VALUE),
 				 errmsg("oidvector has too many elements")));
 
@@ -282,7 +285,10 @@ int4in(PG_FUNCTION_ARGS)
 {
 	char	   *num = PG_GETARG_CSTRING(0);
 
-	PG_RETURN_INT32(pg_atoi_safe(num, sizeof(int32), '\0', fcinfo->context));
+	int32 result;
+	PG_SAFE_CALL(pg_atoi_safe, (num, sizeof(int32), '\0', &result, fcinfo->context));
+
+	PG_RETURN_INT32(result);
 }
 
 /*
@@ -344,7 +350,7 @@ i4toi2(PG_FUNCTION_ARGS)
 	int32		arg1 = PG_GETARG_INT32(0);
 
 	if (arg1 < SHRT_MIN || arg1 > SHRT_MAX)
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("smallint out of range")));
 
@@ -618,7 +624,7 @@ int4um(PG_FUNCTION_ARGS)
 	result = -arg;
 	/* overflow check (needed for INT_MIN) */
 	if (arg != 0 && SAMESIGN(result, arg))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("integer out of range")));
 	PG_RETURN_INT32(result);
@@ -647,7 +653,7 @@ int4pl(PG_FUNCTION_ARGS)
 	 * better be that sign too.
 	 */
 	if (SAMESIGN(arg1, arg2) && !SAMESIGN(result, arg1))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("integer out of range")));
 	PG_RETURN_INT32(result);
@@ -668,7 +674,7 @@ int4mi(PG_FUNCTION_ARGS)
 	 * result should be of the same sign as the first input.
 	 */
 	if (!SAMESIGN(arg1, arg2) && !SAMESIGN(result, arg1))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("integer out of range")));
 	PG_RETURN_INT32(result);
@@ -699,7 +705,7 @@ int4mul(PG_FUNCTION_ARGS)
 		arg2 != 0 &&
 		((arg2 == -1 && arg1 < 0 && result < 0) ||
 		 result / arg2 != arg1))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("integer out of range")));
 	PG_RETURN_INT32(result);
@@ -714,7 +720,7 @@ int4div(PG_FUNCTION_ARGS)
 
 	if (arg2 == 0)
 	{
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_DIVISION_BY_ZERO),
 				 errmsg("division by zero")));
 		/* ensure compiler realizes we mustn't reach the division (gcc bug) */
@@ -732,7 +738,7 @@ int4div(PG_FUNCTION_ARGS)
 		result = -arg1;
 		/* overflow check (needed for INT_MIN) */
 		if (arg1 != 0 && SAMESIGN(result, arg1))
-			ereturn(fcinfo->context, 0,
+			PG_ERETURN(fcinfo->context,
 					(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 					 errmsg("integer out of range")));
 		PG_RETURN_INT32(result);
@@ -754,7 +760,7 @@ int4inc(PG_FUNCTION_ARGS)
 	result = arg + 1;
 	/* Overflow check */
 	if (arg > 0 && result < 0)
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("integer out of range")));
 
@@ -770,7 +776,7 @@ int2um(PG_FUNCTION_ARGS)
 	result = -arg;
 	/* overflow check (needed for SHRT_MIN) */
 	if (arg != 0 && SAMESIGN(result, arg))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("smallint out of range")));
 	PG_RETURN_INT16(result);
@@ -799,7 +805,7 @@ int2pl(PG_FUNCTION_ARGS)
 	 * better be that sign too.
 	 */
 	if (SAMESIGN(arg1, arg2) && !SAMESIGN(result, arg1))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("smallint out of range")));
 	PG_RETURN_INT16(result);
@@ -820,7 +826,7 @@ int2mi(PG_FUNCTION_ARGS)
 	 * result should be of the same sign as the first input.
 	 */
 	if (!SAMESIGN(arg1, arg2) && !SAMESIGN(result, arg1))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("smallint out of range")));
 	PG_RETURN_INT16(result);
@@ -840,7 +846,7 @@ int2mul(PG_FUNCTION_ARGS)
 	result32 = (int32) arg1 *(int32) arg2;
 
 	if (result32 < SHRT_MIN || result32 > SHRT_MAX)
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("smallint out of range")));
 
@@ -856,7 +862,7 @@ int2div(PG_FUNCTION_ARGS)
 
 	if (arg2 == 0)
 	{
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_DIVISION_BY_ZERO),
 				 errmsg("division by zero")));
 		/* ensure compiler realizes we mustn't reach the division (gcc bug) */
@@ -874,7 +880,7 @@ int2div(PG_FUNCTION_ARGS)
 		result = -arg1;
 		/* overflow check (needed for SHRT_MIN) */
 		if (arg1 != 0 && SAMESIGN(result, arg1))
-			ereturn(fcinfo->context, 0,
+			PG_ERETURN(fcinfo->context,
 					(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 					 errmsg("smallint out of range")));
 		PG_RETURN_INT16(result);
@@ -902,7 +908,7 @@ int24pl(PG_FUNCTION_ARGS)
 	 * better be that sign too.
 	 */
 	if (SAMESIGN(arg1, arg2) && !SAMESIGN(result, arg1))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("integer out of range")));
 	PG_RETURN_INT32(result);
@@ -923,7 +929,7 @@ int24mi(PG_FUNCTION_ARGS)
 	 * result should be of the same sign as the first input.
 	 */
 	if (!SAMESIGN(arg1, arg2) && !SAMESIGN(result, arg1))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("integer out of range")));
 	PG_RETURN_INT32(result);
@@ -950,7 +956,7 @@ int24mul(PG_FUNCTION_ARGS)
 	 */
 	if (!(arg2 >= (int32) SHRT_MIN && arg2 <= (int32) SHRT_MAX) &&
 		result / arg2 != arg1)
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("integer out of range")));
 	PG_RETURN_INT32(result);
@@ -964,7 +970,7 @@ int24div(PG_FUNCTION_ARGS)
 
 	if (arg2 == 0)
 	{
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_DIVISION_BY_ZERO),
 				 errmsg("division by zero")));
 		/* ensure compiler realizes we mustn't reach the division (gcc bug) */
@@ -990,7 +996,7 @@ int42pl(PG_FUNCTION_ARGS)
 	 * better be that sign too.
 	 */
 	if (SAMESIGN(arg1, arg2) && !SAMESIGN(result, arg1))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("integer out of range")));
 	PG_RETURN_INT32(result);
@@ -1011,7 +1017,7 @@ int42mi(PG_FUNCTION_ARGS)
 	 * result should be of the same sign as the first input.
 	 */
 	if (!SAMESIGN(arg1, arg2) && !SAMESIGN(result, arg1))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("integer out of range")));
 	PG_RETURN_INT32(result);
@@ -1038,7 +1044,7 @@ int42mul(PG_FUNCTION_ARGS)
 	 */
 	if (!(arg1 >= (int32) SHRT_MIN && arg1 <= (int32) SHRT_MAX) &&
 		result / arg1 != arg2)
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("integer out of range")));
 	PG_RETURN_INT32(result);
@@ -1053,7 +1059,7 @@ int42div(PG_FUNCTION_ARGS)
 
 	if (arg2 == 0)
 	{
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_DIVISION_BY_ZERO),
 				 errmsg("division by zero")));
 		/* ensure compiler realizes we mustn't reach the division (gcc bug) */
@@ -1071,7 +1077,7 @@ int42div(PG_FUNCTION_ARGS)
 		result = -arg1;
 		/* overflow check (needed for INT_MIN) */
 		if (arg1 != 0 && SAMESIGN(result, arg1))
-			ereturn(fcinfo->context, 0,
+			PG_ERETURN(fcinfo->context,
 					(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 					 errmsg("integer out of range")));
 		PG_RETURN_INT32(result);
@@ -1092,7 +1098,7 @@ int4mod(PG_FUNCTION_ARGS)
 
 	if (arg2 == 0)
 	{
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_DIVISION_BY_ZERO),
 				 errmsg("division by zero")));
 		/* ensure compiler realizes we mustn't reach the division (gcc bug) */
@@ -1120,7 +1126,7 @@ int2mod(PG_FUNCTION_ARGS)
 
 	if (arg2 == 0)
 	{
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_DIVISION_BY_ZERO),
 				 errmsg("division by zero")));
 		/* ensure compiler realizes we mustn't reach the division (gcc bug) */
@@ -1154,7 +1160,7 @@ int4abs(PG_FUNCTION_ARGS)
 	result = (arg1 < 0) ? -arg1 : arg1;
 	/* overflow check (needed for INT_MIN) */
 	if (result < 0)
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("integer out of range")));
 	PG_RETURN_INT32(result);
@@ -1169,7 +1175,7 @@ int2abs(PG_FUNCTION_ARGS)
 	result = (arg1 < 0) ? -arg1 : arg1;
 	/* overflow check (needed for SHRT_MIN) */
 	if (result < 0)
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("smallint out of range")));
 	PG_RETURN_INT16(result);

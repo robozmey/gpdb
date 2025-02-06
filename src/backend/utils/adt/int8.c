@@ -52,10 +52,13 @@ typedef struct
  * If errorOK is true, just return "false" for bad input.
  */
 bool
-scanint8(const char *str, bool errorOK, int64 *result)
-{
+scanint8(const char *str, bool errorOK, int64 *result) {
 	return scanint8_safe(str, errorOK, result, NULL);
 }
+
+/*
+ * Same as scanint8() but if escontext is ErrorSaveContext then saves error in context and exits
+ */
 bool
 scanint8_safe(const char *str, bool errorOK, int64 *result, Node* escontext)
 {
@@ -152,7 +155,7 @@ int8in(PG_FUNCTION_ARGS)
 	char	   *str = PG_GETARG_CSTRING(0);
 	int64		result;
 
-	(void) scanint8(str, false, &result);
+	(void) scanint8_safe(str, false, &result, fcinfo->context);
 	PG_RETURN_INT64(result);
 }
 
@@ -500,7 +503,7 @@ int8um(PG_FUNCTION_ARGS)
 	result = -arg;
 	/* overflow check (needed for INT64_MIN) */
 	if (arg != 0 && SAMESIGN(result, arg))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("bigint out of range")));
 	PG_RETURN_INT64(result);
@@ -529,7 +532,7 @@ int8pl(PG_FUNCTION_ARGS)
 	 * better be that sign too.
 	 */
 	if (SAMESIGN(arg1, arg2) && !SAMESIGN(result, arg1))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("bigint out of range")));
 	PG_RETURN_INT64(result);
@@ -550,7 +553,7 @@ int8mi(PG_FUNCTION_ARGS)
 	 * result should be of the same sign as the first input.
 	 */
 	if (!SAMESIGN(arg1, arg2) && !SAMESIGN(result, arg1))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("bigint out of range")));
 	PG_RETURN_INT64(result);
@@ -581,7 +584,7 @@ int8mul(PG_FUNCTION_ARGS)
 		if (arg2 != 0 &&
 			((arg2 == -1 && arg1 < 0 && result < 0) ||
 			 result / arg2 != arg1))
-			ereturn(fcinfo->context, 0,
+			PG_ERETURN(fcinfo->context,
 					(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 					 errmsg("bigint out of range")));
 	}
@@ -597,7 +600,7 @@ int8div(PG_FUNCTION_ARGS)
 
 	if (arg2 == 0)
 	{
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_DIVISION_BY_ZERO),
 				 errmsg("division by zero")));
 		/* ensure compiler realizes we mustn't reach the division (gcc bug) */
@@ -615,7 +618,7 @@ int8div(PG_FUNCTION_ARGS)
 		result = -arg1;
 		/* overflow check (needed for INT64_MIN) */
 		if (arg1 != 0 && SAMESIGN(result, arg1))
-			ereturn(fcinfo->context, 0,
+			PG_ERETURN(fcinfo->context,
 					(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 					 errmsg("bigint out of range")));
 		PG_RETURN_INT64(result);
@@ -640,7 +643,7 @@ int8abs(PG_FUNCTION_ARGS)
 	result = (arg1 < 0) ? -arg1 : arg1;
 	/* overflow check (needed for INT64_MIN) */
 	if (result < 0)
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("bigint out of range")));
 	PG_RETURN_INT64(result);
@@ -657,7 +660,7 @@ int8mod(PG_FUNCTION_ARGS)
 
 	if (arg2 == 0)
 	{
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_DIVISION_BY_ZERO),
 				 errmsg("division by zero")));
 		/* ensure compiler realizes we mustn't reach the division (gcc bug) */
@@ -697,7 +700,7 @@ int8inc(PG_FUNCTION_ARGS)
 		result = *arg + 1;
 		/* Overflow check */
 		if (result < 0 && *arg > 0)
-			ereturn(fcinfo->context, 0,
+			PG_ERETURN(fcinfo->context,
 					(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 					 errmsg("bigint out of range")));
 
@@ -714,7 +717,7 @@ int8inc(PG_FUNCTION_ARGS)
 		result = arg + 1;
 		/* Overflow check */
 		if (result < 0 && arg > 0)
-			ereturn(fcinfo->context, 0,
+			PG_ERETURN(fcinfo->context,
 					(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 					 errmsg("bigint out of range")));
 
@@ -741,7 +744,7 @@ int8dec(PG_FUNCTION_ARGS)
 		result = *arg - 1;
 		/* Overflow check */
 		if (result > 0 && *arg < 0)
-			ereturn(fcinfo->context, 0,
+			PG_ERETURN(fcinfo->context,
 					(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 					 errmsg("bigint out of range")));
 
@@ -758,7 +761,7 @@ int8dec(PG_FUNCTION_ARGS)
 		result = arg - 1;
 		/* Overflow check */
 		if (result > 0 && arg < 0)
-			ereturn(fcinfo->context, 0,
+			PG_ERETURN(fcinfo->context,
 					(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 					 errmsg("bigint out of range")));
 
@@ -834,7 +837,7 @@ int84pl(PG_FUNCTION_ARGS)
 	 * better be that sign too.
 	 */
 	if (SAMESIGN(arg1, arg2) && !SAMESIGN(result, arg1))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("bigint out of range")));
 	PG_RETURN_INT64(result);
@@ -855,7 +858,7 @@ int84mi(PG_FUNCTION_ARGS)
 	 * result should be of the same sign as the first input.
 	 */
 	if (!SAMESIGN(arg1, arg2) && !SAMESIGN(result, arg1))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("bigint out of range")));
 	PG_RETURN_INT64(result);
@@ -882,7 +885,7 @@ int84mul(PG_FUNCTION_ARGS)
 	 */
 	if (arg1 != (int64) ((int32) arg1) &&
 		result / arg1 != arg2)
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("bigint out of range")));
 	PG_RETURN_INT64(result);
@@ -897,7 +900,7 @@ int84div(PG_FUNCTION_ARGS)
 
 	if (arg2 == 0)
 	{
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_DIVISION_BY_ZERO),
 				 errmsg("division by zero")));
 		/* ensure compiler realizes we mustn't reach the division (gcc bug) */
@@ -915,7 +918,7 @@ int84div(PG_FUNCTION_ARGS)
 		result = -arg1;
 		/* overflow check (needed for INT64_MIN) */
 		if (arg1 != 0 && SAMESIGN(result, arg1))
-			ereturn(fcinfo->context, 0,
+			PG_ERETURN(fcinfo->context,
 					(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 					 errmsg("bigint out of range")));
 		PG_RETURN_INT64(result);
@@ -943,7 +946,7 @@ int48pl(PG_FUNCTION_ARGS)
 	 * better be that sign too.
 	 */
 	if (SAMESIGN(arg1, arg2) && !SAMESIGN(result, arg1))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("bigint out of range")));
 	PG_RETURN_INT64(result);
@@ -964,7 +967,7 @@ int48mi(PG_FUNCTION_ARGS)
 	 * result should be of the same sign as the first input.
 	 */
 	if (!SAMESIGN(arg1, arg2) && !SAMESIGN(result, arg1))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("bigint out of range")));
 	PG_RETURN_INT64(result);
@@ -991,7 +994,7 @@ int48mul(PG_FUNCTION_ARGS)
 	 */
 	if (arg2 != (int64) ((int32) arg2) &&
 		result / arg2 != arg1)
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("bigint out of range")));
 	PG_RETURN_INT64(result);
@@ -1005,7 +1008,7 @@ int48div(PG_FUNCTION_ARGS)
 
 	if (arg2 == 0)
 	{
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_DIVISION_BY_ZERO),
 				 errmsg("division by zero")));
 		/* ensure compiler realizes we mustn't reach the division (gcc bug) */
@@ -1031,7 +1034,7 @@ int82pl(PG_FUNCTION_ARGS)
 	 * better be that sign too.
 	 */
 	if (SAMESIGN(arg1, arg2) && !SAMESIGN(result, arg1))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("bigint out of range")));
 	PG_RETURN_INT64(result);
@@ -1052,7 +1055,7 @@ int82mi(PG_FUNCTION_ARGS)
 	 * result should be of the same sign as the first input.
 	 */
 	if (!SAMESIGN(arg1, arg2) && !SAMESIGN(result, arg1))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("bigint out of range")));
 	PG_RETURN_INT64(result);
@@ -1079,7 +1082,7 @@ int82mul(PG_FUNCTION_ARGS)
 	 */
 	if (arg1 != (int64) ((int32) arg1) &&
 		result / arg1 != arg2)
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("bigint out of range")));
 	PG_RETURN_INT64(result);
@@ -1094,7 +1097,7 @@ int82div(PG_FUNCTION_ARGS)
 
 	if (arg2 == 0)
 	{
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_DIVISION_BY_ZERO),
 				 errmsg("division by zero")));
 		/* ensure compiler realizes we mustn't reach the division (gcc bug) */
@@ -1112,7 +1115,7 @@ int82div(PG_FUNCTION_ARGS)
 		result = -arg1;
 		/* overflow check (needed for INT64_MIN) */
 		if (arg1 != 0 && SAMESIGN(result, arg1))
-			ereturn(fcinfo->context, 0,
+			PG_ERETURN(fcinfo->context,
 					(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 					 errmsg("bigint out of range")));
 		PG_RETURN_INT64(result);
@@ -1140,7 +1143,7 @@ int28pl(PG_FUNCTION_ARGS)
 	 * better be that sign too.
 	 */
 	if (SAMESIGN(arg1, arg2) && !SAMESIGN(result, arg1))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("bigint out of range")));
 	PG_RETURN_INT64(result);
@@ -1161,7 +1164,7 @@ int28mi(PG_FUNCTION_ARGS)
 	 * result should be of the same sign as the first input.
 	 */
 	if (!SAMESIGN(arg1, arg2) && !SAMESIGN(result, arg1))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("bigint out of range")));
 	PG_RETURN_INT64(result);
@@ -1188,7 +1191,7 @@ int28mul(PG_FUNCTION_ARGS)
 	 */
 	if (arg2 != (int64) ((int32) arg2) &&
 		result / arg2 != arg1)
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("bigint out of range")));
 	PG_RETURN_INT64(result);
@@ -1202,7 +1205,7 @@ int28div(PG_FUNCTION_ARGS)
 
 	if (arg2 == 0)
 	{
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_DIVISION_BY_ZERO),
 				 errmsg("division by zero")));
 		/* ensure compiler realizes we mustn't reach the division (gcc bug) */
@@ -1298,7 +1301,7 @@ int84(PG_FUNCTION_ARGS)
 
 	/* Test for overflow by reverse-conversion. */
 	if ((int64) result != arg)
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("integer out of range")));
 
@@ -1323,7 +1326,7 @@ int82(PG_FUNCTION_ARGS)
 
 	/* Test for overflow by reverse-conversion. */
 	if ((int64) result != arg)
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("smallint out of range")));
 
@@ -1358,7 +1361,7 @@ dtoi8(PG_FUNCTION_ARGS)
 
 	/* Range check */
 	if (isnan(num) || !FLOAT8_FITS_IN_INT64(num))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("bigint out of range")));
 
@@ -1393,7 +1396,7 @@ ftoi8(PG_FUNCTION_ARGS)
 
 	/* Range check */
 	if (isnan(num) || !FLOAT4_FITS_IN_INT64(num))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("bigint out of range")));
 
@@ -1410,7 +1413,7 @@ i8tooid(PG_FUNCTION_ARGS)
 
 	/* Test for overflow by reverse-conversion. */
 	if ((int64) result != arg)
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("OID out of range")));
 

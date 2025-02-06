@@ -194,7 +194,7 @@ float4in(PG_FUNCTION_ARGS)
 	 * strtod() on different platforms.
 	 */
 	if (*num == '\0')
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 				 errmsg("invalid input syntax for type real: \"%s\"",
 						orig_num)));
@@ -262,13 +262,13 @@ float4in(PG_FUNCTION_ARGS)
 			 * to see if the result is zero or huge.
 			 */
 			if (val == 0.0 || val >= HUGE_VAL || val <= -HUGE_VAL)
-				ereturn(fcinfo->context, 0,
+				PG_ERETURN(fcinfo->context,
 						(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 						 errmsg("\"%s\" is out of range for type real",
 								orig_num)));
 		}
 		else
-			ereturn(fcinfo->context, 0,
+			PG_ERETURN(fcinfo->context,
 					(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 					 errmsg("invalid input syntax for type real: \"%s\"",
 							orig_num)));
@@ -292,7 +292,7 @@ float4in(PG_FUNCTION_ARGS)
 
 	/* if there is any junk left at the end of the string, bail out */
 	if (*endptr != '\0')
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 				 errmsg("invalid input syntax for type real: \"%s\"",
 						orig_num)));
@@ -301,7 +301,7 @@ float4in(PG_FUNCTION_ARGS)
 	 * if we get here, we have a legal double, still need to check to see if
 	 * it's a legal float4
 	 */
-	CHECKFLOATVAL((float4) val, isinf(val), val == 0);
+	PG_CHECKFLOATVAL_SAFE((float4) val, isinf(val), val == 0);
 
 	PG_RETURN_FLOAT4((float4) val);
 }
@@ -394,7 +394,7 @@ float8in(PG_FUNCTION_ARGS)
 	 * strtod() on different platforms.
 	 */
 	if (*num == '\0')
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 			 errmsg("invalid input syntax for type double precision: \"%s\"",
 					orig_num)));
@@ -462,13 +462,13 @@ float8in(PG_FUNCTION_ARGS)
 			 * to see if the result is zero or huge.
 			 */
 			if (val == 0.0 || val >= HUGE_VAL || val <= -HUGE_VAL)
-				ereturn(fcinfo->context, 0,
+				PG_ERETURN(fcinfo->context,
 						(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				   errmsg("\"%s\" is out of range for type double precision",
 						  orig_num)));
 		}
 		else
-			ereturn(fcinfo->context, 0,
+			PG_ERETURN(fcinfo->context,
 					(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 			 errmsg("invalid input syntax for type double precision: \"%s\"",
 					orig_num)));
@@ -492,7 +492,7 @@ float8in(PG_FUNCTION_ARGS)
 
 	/* if there is any junk left at the end of the string, bail out */
 	if (*endptr != '\0')
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 			 errmsg("invalid input syntax for type double precision: \"%s\"",
 					orig_num)));
@@ -520,7 +520,7 @@ float8in(PG_FUNCTION_ARGS)
 		 pg_strncasecmp(num, "+Infinity", 9) != 0 && pg_strncasecmp(num, "+Inf", 4) != 0 )
 		literal_inf = false;
 
-	CHECKFLOATVAL((double) val, literal_inf, !(val > 0 || val < 0));
+	PG_CHECKFLOATVAL_SAFE((double) val, literal_inf, !(val > 0 || val < 0));
 
 	PG_RETURN_FLOAT8((double) val);
 }
@@ -751,7 +751,7 @@ float4pl(PG_FUNCTION_ARGS)
 	 * different, e.g. on x86, '1e-45'::float4 == '2e-45'::float4 ==
 	 * 1.4013e-45.
 	 */
-	CHECKFLOATVAL(result, isinf(arg1) || isinf(arg2), true);
+	PG_CHECKFLOATVAL_SAFE(result, isinf(arg1) || isinf(arg2), true);
 	PG_RETURN_FLOAT4(result);
 }
 
@@ -763,7 +763,7 @@ float4mi(PG_FUNCTION_ARGS)
 	float4		result;
 
 	result = arg1 - arg2;
-	CHECKFLOATVAL(result, isinf(arg1) || isinf(arg2), true);
+	PG_CHECKFLOATVAL_SAFE(result, isinf(arg1) || isinf(arg2), true);
 	PG_RETURN_FLOAT4(result);
 }
 
@@ -775,8 +775,8 @@ float4mul(PG_FUNCTION_ARGS)
 	float4		result;
 
 	result = arg1 * arg2;
-	CHECKFLOATVAL(result, isinf(arg1) || isinf(arg2),
-				  arg1 == 0 || arg2 == 0);
+	PG_CHECKFLOATVAL_SAFE(result, isinf(arg1) || isinf(arg2),
+				  		  arg1 == 0 || arg2 == 0);
 	PG_RETURN_FLOAT4(result);
 }
 
@@ -788,13 +788,13 @@ float4div(PG_FUNCTION_ARGS)
 	float4		result;
 
 	if (arg2 == 0.0)
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_DIVISION_BY_ZERO),
 				 errmsg("division by zero")));
 
 	result = arg1 / arg2;
 
-	CHECKFLOATVAL(result, isinf(arg1) || isinf(arg2), arg1 == 0);
+	PG_CHECKFLOATVAL_SAFE(result, isinf(arg1) || isinf(arg2), arg1 == 0);
 	PG_RETURN_FLOAT4(result);
 }
 
@@ -813,7 +813,7 @@ float8pl(PG_FUNCTION_ARGS)
 
 	result = arg1 + arg2;
 
-	CHECKFLOATVAL(result, isinf(arg1) || isinf(arg2), true);
+	PG_CHECKFLOATVAL_SAFE(result, isinf(arg1) || isinf(arg2), true);
 	PG_RETURN_FLOAT8(result);
 }
 
@@ -826,7 +826,7 @@ float8mi(PG_FUNCTION_ARGS)
 
 	result = arg1 - arg2;
 
-	CHECKFLOATVAL(result, isinf(arg1) || isinf(arg2), true);
+	PG_CHECKFLOATVAL_SAFE(result, isinf(arg1) || isinf(arg2), true);
 	PG_RETURN_FLOAT8(result);
 }
 
@@ -839,8 +839,8 @@ float8mul(PG_FUNCTION_ARGS)
 
 	result = arg1 * arg2;
 
-	CHECKFLOATVAL(result, isinf(arg1) || isinf(arg2),
-				  arg1 == 0 || arg2 == 0);
+	PG_CHECKFLOATVAL_SAFE(result, isinf(arg1) || isinf(arg2),
+				  		  arg1 == 0 || arg2 == 0);
 	PG_RETURN_FLOAT8(result);
 }
 
@@ -852,13 +852,13 @@ float8div(PG_FUNCTION_ARGS)
 	float8		result;
 
 	if (arg2 == 0.0)
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_DIVISION_BY_ZERO),
 				 errmsg("division by zero")));
 
 	result = arg1 / arg2;
 
-	CHECKFLOATVAL(result, isinf(arg1) || isinf(arg2), arg1 == 0);
+	PG_CHECKFLOATVAL_SAFE(result, isinf(arg1) || isinf(arg2), arg1 == 0);
 	PG_RETURN_FLOAT8(result);
 }
 
@@ -1144,7 +1144,7 @@ dtof(PG_FUNCTION_ARGS)
 {
 	float8		num = PG_GETARG_FLOAT8(0);
 
-	CHECKFLOATVAL((float4) num, isinf(num), num == 0);
+	PG_CHECKFLOATVAL_SAFE((float4) num, isinf(num), num == 0);
 
 	PG_RETURN_FLOAT4((float4) num);
 }
@@ -1167,7 +1167,7 @@ dtoi4(PG_FUNCTION_ARGS)
 
 	/* Range check */
 	if (isnan(num) || !FLOAT8_FITS_IN_INT32(num))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("integer out of range")));
 
@@ -1192,7 +1192,7 @@ dtoi2(PG_FUNCTION_ARGS)
 
 	/* Range check */
 	if (isnan(num) || !FLOAT8_FITS_IN_INT16(num))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("smallint out of range")));
 
@@ -1241,7 +1241,7 @@ ftoi4(PG_FUNCTION_ARGS)
 
 	/* Range check */
 	if (isnan(num) || !FLOAT4_FITS_IN_INT32(num))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("integer out of range")));
 
@@ -1266,7 +1266,7 @@ ftoi2(PG_FUNCTION_ARGS)
 
 	/* Range check */
 	if (isnan(num) || !FLOAT4_FITS_IN_INT16(num))
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_NUMERIC_VALUE_OUT_OF_RANGE),
 				 errmsg("smallint out of range")));
 
@@ -2647,7 +2647,7 @@ float48pl(PG_FUNCTION_ARGS)
 	float8		result;
 
 	result = arg1 + arg2;
-	CHECKFLOATVAL(result, isinf(arg1) || isinf(arg2), true);
+	PG_CHECKFLOATVAL_SAFE(result, isinf(arg1) || isinf(arg2), true);
 	PG_RETURN_FLOAT8(result);
 }
 
@@ -2659,7 +2659,7 @@ float48mi(PG_FUNCTION_ARGS)
 	float8		result;
 
 	result = arg1 - arg2;
-	CHECKFLOATVAL(result, isinf(arg1) || isinf(arg2), true);
+	PG_CHECKFLOATVAL_SAFE(result, isinf(arg1) || isinf(arg2), true);
 	PG_RETURN_FLOAT8(result);
 }
 
@@ -2671,7 +2671,7 @@ float48mul(PG_FUNCTION_ARGS)
 	float8		result;
 
 	result = arg1 * arg2;
-	CHECKFLOATVAL(result, isinf(arg1) || isinf(arg2),
+	PG_CHECKFLOATVAL_SAFE(result, isinf(arg1) || isinf(arg2),
 				  arg1 == 0 || arg2 == 0);
 	PG_RETURN_FLOAT8(result);
 }
@@ -2684,12 +2684,12 @@ float48div(PG_FUNCTION_ARGS)
 	float8		result;
 
 	if (arg2 == 0.0)
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_DIVISION_BY_ZERO),
 				 errmsg("division by zero")));
 
 	result = arg1 / arg2;
-	CHECKFLOATVAL(result, isinf(arg1) || isinf(arg2), arg1 == 0);
+	PG_CHECKFLOATVAL_SAFE(result, isinf(arg1) || isinf(arg2), arg1 == 0);
 	PG_RETURN_FLOAT8(result);
 }
 
@@ -2708,7 +2708,7 @@ float84pl(PG_FUNCTION_ARGS)
 
 	result = arg1 + arg2;
 
-	CHECKFLOATVAL(result, isinf(arg1) || isinf(arg2), true);
+	PG_CHECKFLOATVAL_SAFE(result, isinf(arg1) || isinf(arg2), true);
 	PG_RETURN_FLOAT8(result);
 }
 
@@ -2721,7 +2721,7 @@ float84mi(PG_FUNCTION_ARGS)
 
 	result = arg1 - arg2;
 
-	CHECKFLOATVAL(result, isinf(arg1) || isinf(arg2), true);
+	PG_CHECKFLOATVAL_SAFE(result, isinf(arg1) || isinf(arg2), true);
 	PG_RETURN_FLOAT8(result);
 }
 
@@ -2734,8 +2734,8 @@ float84mul(PG_FUNCTION_ARGS)
 
 	result = arg1 * arg2;
 
-	CHECKFLOATVAL(result, isinf(arg1) || isinf(arg2),
-				  arg1 == 0 || arg2 == 0);
+	PG_CHECKFLOATVAL_SAFE(result, isinf(arg1) || isinf(arg2),
+						  arg1 == 0 || arg2 == 0);
 	PG_RETURN_FLOAT8(result);
 }
 
@@ -2747,13 +2747,13 @@ float84div(PG_FUNCTION_ARGS)
 	float8		result;
 
 	if (arg2 == 0.0)
-		ereturn(fcinfo->context, 0,
+		PG_ERETURN(fcinfo->context,
 				(errcode(ERRCODE_DIVISION_BY_ZERO),
 				 errmsg("division by zero")));
 
 	result = arg1 / arg2;
 
-	CHECKFLOATVAL(result, isinf(arg1) || isinf(arg2), arg1 == 0);
+	PG_CHECKFLOATVAL_SAFE(result, isinf(arg1) || isinf(arg2), arg1 == 0);
 	PG_RETURN_FLOAT8(result);
 }
 

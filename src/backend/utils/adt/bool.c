@@ -148,7 +148,7 @@ boolin(PG_FUNCTION_ARGS)
 	if (parse_bool_with_len(str, len, &result))
 		PG_RETURN_BOOL(result);
 
-	ereport(ERROR,
+	PG_ERETURN(fcinfo->context,
 			(errcode(ERRCODE_INVALID_TEXT_REPRESENTATION),
 		   errmsg("invalid input syntax for type boolean: \"%s\"", in_str)));
 

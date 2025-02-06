@@ -102,6 +102,7 @@ typedef struct JsonSemAction
  * does nothing and just continues.
  */
 extern void pg_parse_json(JsonLexContext *lex, JsonSemAction *sem);
+extern bool pg_parse_json_safe(JsonLexContext *lex, JsonSemAction *sem, Node *escontext);
 
 /*
  * constructors for JsonLexContext, with or without strval element.
