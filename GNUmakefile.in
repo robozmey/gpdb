@@ -43,6 +43,7 @@ ifeq ($(with_openssl), yes)
 	$(MAKE) -C contrib/sslinfo all
 endif
 	$(MAKE) -C contrib/tablefunc all
+	$(MAKE) -C contrib/try_convert all
 ifneq ($(with_uuid),no)
 	$(MAKE) -C contrib/uuid-ossp all
 endif
@@ -96,6 +97,7 @@ ifeq ($(with_openssl), yes)
 	$(MAKE) -C contrib/sslinfo $@
 endif
 	$(MAKE) -C contrib/tablefunc $@
+	$(MAKE) -C contrib/try_convert $@
 ifneq ($(with_uuid),no)
 	$(MAKE) -C contrib/uuid-ossp $@
 endif
