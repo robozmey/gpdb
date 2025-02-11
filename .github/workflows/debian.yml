@@ -157,6 +157,13 @@ jobs:
         set -ex
 
         ls -la package-build
-        cd package-build
+        cd deb_file
 
         deb_file=$(ls *.deb)
+
+    - name: Upload Debian Package
+      uses: actions/upload-artifact@v4
+      with:
+        name: greenplum-db-6-${GPDB_PKG_VERSION}
+        path: |
+          deb_file/${deb_file}
