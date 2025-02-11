@@ -1,0 +1,146 @@
+name: Create debian package
+
+on:
+  push:
+    branches: [ "OPENGPDB_STABLE", "OPENGPDB_6_27_STABLE", "MDB_6_25_STABLE_YEZZEY" ]
+  pull_request:
+    branches: [ "OPENGPDB_STABLE", "OPENGPDB_6_27_STABLE", "MDB_6_25_STABLE_YEZZEY" ]
+
+jobs:
+
+  build_debian:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/checkout@v4
+      with:
+        repository: opengp/gpdb_deb
+        ref: 6_jammy_rachkin
+        path: greenplum-build
+
+    - name: prepare environment
+      run: |
+        set -ex
+
+        ls -al .
+
+        mv gpdb1/* gpdb/
+        mv gpdb1/.[!.]* gpdb/
+
+        ls -al .
+        ls -al ./*
+
+        du -h .
+        cd gpdb && git branch; cd ..
+        gpdb/getversion
+        git --git-dir=./gpdb/.git rev-list HEAD --count
+        echo 'deb http://yandex-cloud-jammy-secure.dist.yandex.ru/yandex-cloud-jammy-secure stable/all/' | tee -a /etc/apt/sources.list
+        sudo apt-get update && sudo apt-get install -y python devscripts debhelper dupload git pbuilder ca-certificates debsigs=0.1.26+yc1 reprepro
+        ssh -T -o StrictHostKeyChecking=no -l robot-yc-arcadia yandex-cloud.dupload.dist.yandex.ru || true
+        ssh -T -o StrictHostKeyChecking=no -l robot-yc-arcadia yandex-cloud-secure.dupload.dist.yandex.ru || true
+        ssh -T -o StrictHostKeyChecking=no -l robot-yc-arcadia mdb-jammy-secure.dupload.dist.yandex.ru || true
+
+        # provision dupload.conf
+        cat >~/.dupload.conf <<EOF
+        package config;
+
+        \$default_host = "mdb-jammy-secure";
+
+        \$cfg{'yandex-cloud'} = {
+            fqdn => "yandex-cloud.dupload.dist.yandex.ru",
+            method => "scpb",
+            incoming => "/repo/yandex-cloud/mini-dinstall/incoming/",
+            dinstall_runs => 0,
+            login => "${BUILD_USER}",
+        };
+
+        \$cfg{'yandex-cloud-secure'} = {
+            fqdn => "yandex-cloud-secure.dupload.dist.yandex.ru",
+            method => "scpb",
+            incoming => "/repo/yandex-cloud-secure/mini-dinstall/incoming/",
+            dinstall_runs => 0,
+            login => "${BUILD_USER}",
+        };
+
+        \$cfg{'mdb-jammy-secure'} = {
+            fqdn => "mdb-jammy-secure.dupload.dist.yandex.ru",
+            method => "scpb",
+            incoming => "/repo/mdb-jammy-secure/mini-dinstall/incoming/",
+            dinstall_runs => 0,
+            login => "${BUILD_USER}",
+        };
+        EOF
+
+        if [ "x${GIT_COMMIT_ID}" != "x" ]; then
+          git checkout ${GIT_COMMIT_ID}
+        fi
+
+    - name: generate debian, Dockerfile, etc.
+      run: |
+        set -ex
+
+        # cp /etc/yandex/robot-yc-infra/gpg/gpg_private .
+        
+        cat > changelog.sh <<EOF1
+        cat <<EOF
+        greenplum-db-6 (\${GPDB_PKG_VERSION}) stable; urgency=low
+
+          * Yandex autobuild
+        -- ${BUILD_USER} <${BUILD_USER}@$(hostname)>  $(date +'%a, %d %b %Y %H:%M:%S %z')
+        EOF
+        EOF1
+        chmod +x changelog.sh
+
+        cat > make_deb.sh <<EOF
+        #!/bin/bash
+
+        export GPDB_VERSION=\$(gpdb/getversion | cut -d'.' -f 1)
+        export GPDB_FULL_VERSION=\$(gpdb/getversion | cut -d'-' -f 1)
+        export GPDB_PKG_VERSION=\${GPDB_FULL_VERSION}-${BUILD_NUMBER}-yandex.\$(git --git-dir=./gpdb/.git rev-list HEAD --count).\$(git --git-dir=./gpdb/.git rev-parse --short HEAD)
+        echo "##teamcity[buildNumber '%build.counter%: \${GPDB_PKG_VERSION}']"
+
+        ./changelog.sh > gpdb/debian/changelog
+        cd gpdb && cat debian/changelog
+        mk-build-deps  --build-dep --install --tool='apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends --yes' debian/control
+        dpkg-buildpackage -us -uc
+        EOF
+        chmod +x make_deb.sh
+
+    - name: build and sign
+      run: |
+        set -ex
+
+        # export GNUPGHOME="$(mktemp -d)"
+        # gpg --import /etc/yandex/robot-yc-infra/gpg/gpg_private
+        # gpg --list-secret
+
+        [[ -z ${DOCKER_TAG} ]] && DOCKER_TAG=lolkekcheburek
+        # docker load -i ./gpdb/greenplum-build/gp-build-base.tar.gz
+        docker build --build-arg POSTGRES_VERSION=${POSTGRES_VERSION}  -f ./gpdb/greenplum-build/Dockerfile . --tag ${DOCKER_TAG}:1.0 --progress=plain && docker run ${DOCKER_TAG}:1.0
+        docker cp $(docker ps -a | grep ${DOCKER_TAG}  | awk '{print $1}' | head -1):/root/ ./package-build
+        cd package-build
+
+        keyVal=$(gpg --list-keys | head -4 | tail -1)
+        echo "$keyVal"
+        all_debs=$(ls *deb)
+        for a_deb in $all_debs
+        do
+          debsigs -v --sign=origin -k $keyVal $a_deb
+        done
+        all_changes=$(ls *.changes)
+        for a_changes in $all_changes
+        do
+          changestool $a_changes updatechecksums
+        done
+
+        [[ -z ${INNER_FOLDER} ]] || cd ${INNER_FOLDER}
+        cat debian/changelog
+        debsign -k$keyVal
+
+        for host in $(echo $PUBLISH_TO  | sed "s/,/ /g")
+        do
+            USER=$BUILD_USER debrelease --nomail --configfile ~/.dupload.conf --to ${host}
+        done
