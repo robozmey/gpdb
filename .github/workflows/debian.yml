@@ -27,7 +27,7 @@ jobs:
     - name: prepare environment
       run: |
         set -ex
-        mkdir gpdb
+
         mv gpdb1/* gpdb/
         mv gpdb1/.[!.]* gpdb/
 
