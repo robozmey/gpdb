@@ -32,7 +32,7 @@ jobs:
         git branch; cd ..
         gpdb/getversion
         git --git-dir=./gpdb/.git rev-list HEAD --count
-        echo 'deb http://yandex-cloud-jammy-secure.dist.yandex.ru/yandex-cloud-jammy-secure stable/all/' | tee -a /etc/apt/sources.list
+        # echo 'deb http://yandex-cloud-jammy-secure.dist.yandex.ru/yandex-cloud-jammy-secure stable/all/' | tee -a /etc/apt/sources.list
         sudo apt-get update && sudo apt-get install -y python devscripts debhelper dupload git pbuilder ca-certificates debsigs=0.1.26+yc1 reprepro
         ssh -T -o StrictHostKeyChecking=no -l robot-yc-arcadia yandex-cloud.dupload.dist.yandex.ru || true
         ssh -T -o StrictHostKeyChecking=no -l robot-yc-arcadia yandex-cloud-secure.dupload.dist.yandex.ru || true
