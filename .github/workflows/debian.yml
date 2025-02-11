@@ -36,6 +36,7 @@ jobs:
 
         du -h .
         cd gpdb && git branch; cd ..
+        git --git-dir=./gpdb/.git submodule update --init 
         gpdb/getversion
         git --git-dir=./gpdb/.git rev-list HEAD --count
         # echo 'deb http://yandex-cloud-jammy-secure.dist.yandex.ru/yandex-cloud-jammy-secure stable/all/' | tee -a /etc/apt/sources.list
@@ -147,3 +148,12 @@ jobs:
         do
             USER=$BUILD_USER debrelease --nomail --configfile ~/.dupload.conf --to ${host}
         done
+
+    - name: build and sign
+      run: |
+        set -ex
+
+        ls -la package-build
+        cd package-build
+
+        deb_file=$(ls *.deb)
