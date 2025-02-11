@@ -16,7 +16,7 @@ on:
       - YGP_6.27_STABLE
       - STABLE
       - STABLE_6.27
-      - OPENGPDB_STABLE
+      # - OPENGPDB_STABLE
     paths:
       - 'concourse/scripts/**'
       - 'src/**'
