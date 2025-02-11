@@ -14,22 +14,28 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        path: gpdb1
+
 
     - uses: actions/checkout@v4
       with:
         repository: open-gpdb/gpdb_deb
         ref: 6_jammy_rachkin
-        path: greenplum-build
+        path: gpdb/greenplum-build
 
     - name: prepare environment
       run: |
         set -ex
+        mkdir gpdb
+        mv gpdb1/* gpdb/
+        mv gpdb1/.[!.]* gpdb/
 
         ls -al .
         ls -al ./*
 
         du -h .
-        git branch; cd ..
+        cd gpdb && git branch; cd ..
         gpdb/getversion
         git --git-dir=./gpdb/.git rev-list HEAD --count
         # echo 'deb http://yandex-cloud-jammy-secure.dist.yandex.ru/yandex-cloud-jammy-secure stable/all/' | tee -a /etc/apt/sources.list
@@ -107,6 +113,8 @@ jobs:
     - name: build and sign
       run: |
         set -ex
+
+        ls ..
 
         # export GNUPGHOME="$(mktemp -d)"
         # gpg --import /etc/yandex/robot-yc-infra/gpg/gpg_private
