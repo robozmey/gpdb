@@ -26,15 +26,10 @@ jobs:
         set -ex
 
         ls -al .
-
-        mv gpdb1/* gpdb/
-        mv gpdb1/.[!.]* gpdb/
-
-        ls -al .
         ls -al ./*
 
         du -h .
-        cd gpdb && git branch; cd ..
+        git branch; cd ..
         gpdb/getversion
         git --git-dir=./gpdb/.git rev-list HEAD --count
         echo 'deb http://yandex-cloud-jammy-secure.dist.yandex.ru/yandex-cloud-jammy-secure stable/all/' | tee -a /etc/apt/sources.list
