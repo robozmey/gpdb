@@ -38,7 +38,7 @@ jobs:
         cd gpdb && git branch; cd ..
 
         rm -fr gpdb/gpcontrib/yezzey 
-        git clone https://github.com/open-gpdb/yezzey.git gpdb/gpcontrib/yezzey -b yezzeyRef:-v1.8_opengpdb
+        git clone https://github.com/open-gpdb/yezzey.git gpdb/gpcontrib/yezzey -b v1.8_opengpdb
 
         gpdb/getversion
         git --git-dir=./gpdb/.git rev-list HEAD --count
