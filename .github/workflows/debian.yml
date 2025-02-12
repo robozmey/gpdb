@@ -183,6 +183,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run:
+        cd gpdb
         gh release upload tmp_release package-build/${{ steps.get-package-name.outputs.package_name }}
 
   test_debian:
@@ -194,4 +195,19 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: ${{needs.build_debian.outputs.package_name}}
-        path: /tmp
+        path: greenplum-6-db.deb
+
+
+    - uses: actions/checkout@v4
+
+    - name: Get Debian Package name
+      id: get-package-name
+      run: |
+        set -ex
+
+        [[ -z ${DOCKER_TAG} ]] && DOCKER_TAG=lolkekcheburek
+        docker build --build-arg POSTGRES_VERSION=${POSTGRES_VERSION}  -f ./gpdb/docker/test_package/Dockerfile . --tag ${DOCKER_TAG}:1.0 --progress=plain 
+        docker run ${DOCKER_TAG}:1.0
+
+
+
