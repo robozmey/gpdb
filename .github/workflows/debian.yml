@@ -171,9 +171,9 @@ jobs:
     - name: Upload Debian Package
       uses: actions/upload-artifact@v4
       with:
-        name: greenplum-db-6-${GPDB_PKG_VERSION}
+        name: ${{ steps.get-package-name.outputs.package_name }}
         path: |
-          deb_file/${deb_file}
+          package-build/${{ steps.get-package-name.outputs.package_name }}
 
   test_debian:
     runs-on: ubuntu-22.04
@@ -183,5 +183,5 @@ jobs:
     - name: Download Debian Package
       uses: actions/download-artifact@v4
       with:
-        name: greenplum-db-6-${{needs.build_debian.outputs.package_name}}
+        name: ${{needs.build_debian.outputs.package_name}}
         path: /tmp
