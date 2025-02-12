@@ -322,6 +322,12 @@ jobs:
         fi
 
         exit $overall_status
+
+    - name: Get Regression Diffs from Docker Container
+      if: failure()
+      run: |
+          docker ps -a
+          docker cp test_test_container:/home/gpadmin /tmp
         
     - name: Check and Display Diffs
       if: always()
