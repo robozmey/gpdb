@@ -133,10 +133,10 @@ jobs:
         keyVal=$(gpg --list-keys | head -4 | tail -1)
         echo "$keyVal"
         all_debs=$(ls *deb)
-        for a_deb in $all_debs
-        do
-          debsigs --sign=origin -v $a_deb
-        done
+        # for a_deb in $all_debs
+        # do
+        #   debsigs --sign=origin -v $a_deb
+        # done
         all_changes=$(ls *.changes)
         for a_changes in $all_changes
         do
@@ -145,7 +145,7 @@ jobs:
 
         [[ -z ${INNER_FOLDER} ]] || cd ${INNER_FOLDER}
         cat debian/changelog
-        debsign -k$keyVal
+        # debsign -k$keyVal
 
         for host in $(echo $PUBLISH_TO  | sed "s/,/ /g")
         do
