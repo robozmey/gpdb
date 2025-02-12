@@ -12,6 +12,9 @@ jobs:
 
     runs-on: ubuntu-22.04
 
+    outputs:
+      package_name: ${{ steps.get-package-name.outputs.package_name }}
+
     steps:
     - uses: actions/checkout@v4
       with:
@@ -137,22 +140,23 @@ jobs:
         # do
         #   debsigs --sign=origin -v $a_deb
         # done
-        all_changes=$(ls *.changes)
-        for a_changes in $all_changes
-        do
-          changestool $a_changes updatechecksums
-        done
+        # all_changes=$(ls *.changes)
+        # for a_changes in $all_changes
+        # do
+        #   changestool $a_changes updatechecksums
+        # done
 
-        [[ -z ${INNER_FOLDER} ]] || cd ${INNER_FOLDER}
-        cat debian/changelog
-        # debsign -k$keyVal
+        # [[ -z ${INNER_FOLDER} ]] || cd ${INNER_FOLDER}
+        # cat debian/changelog
+        # # debsign -k$keyVal
 
-        for host in $(echo $PUBLISH_TO  | sed "s/,/ /g")
-        do
-            USER=$BUILD_USER debrelease --nomail --configfile ~/.dupload.conf --to ${host}
-        done
+        # for host in $(echo $PUBLISH_TO  | sed "s/,/ /g")
+        # do
+        #     USER=$BUILD_USER debrelease --nomail --configfile ~/.dupload.conf --to ${host}
+        # done
 
-    - name: build and sign
+    - name: Get Debian Package name
+      id: get-package-name
       run: |
         set -ex
 
@@ -161,9 +165,23 @@ jobs:
 
         deb_file=$(ls *.deb)
 
+        echo "package_name=${deb_file}" >> "$GITHUB_OUTPUT"
+        
+
     - name: Upload Debian Package
       uses: actions/upload-artifact@v4
       with:
         name: greenplum-db-6-${GPDB_PKG_VERSION}
         path: |
           deb_file/${deb_file}
+
+  test_debian:
+    runs-on: ubuntu-22.04
+    name: Test Debian Package
+    needs: [build_debian]
+    steps:
+    - name: Download Debian Package
+      uses: actions/download-artifact@v4
+      with:
+        name: greenplum-db-6-${{needs.build_debian.outputs.package_name}}
+        path: /tmp
