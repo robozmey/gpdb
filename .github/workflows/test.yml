@@ -290,14 +290,18 @@ jobs:
 
           config_log="build-logs/details/make-${{ matrix.test }}-config$i.log"
 
-          docker run \
-            -e TEST_DIR="${dir}" \
-            -e TEST_TARGET="${target}" \
-            -e PGOPTIONS="${PG_OPTS}" \
-            -e TEST_CGROUP="${TEST_CGROUP}" \
-            --name test_test_container test_test:1234 \
-            --privileged \
-            2>&1 | tee "$config_log"
+          if ! docker run \
+                -e TEST_DIR="${dir}" \
+                -e TEST_TARGET="${target}" \
+                -e PGOPTIONS="${PG_OPTS}" \
+                -e TEST_CGROUP="${TEST_CGROUP}" \
+                --name test_test_container test_test:1234 \
+                --privileged \
+                2>&1 | tee "$config_log"; then
+            echo "::warning::Test execution failed for configuration $((i+1)): make -C $dir $target"
+            overall_status=1
+          fi
+          
 
           RESULTS_PATH="build-results/results-${{ matrix.test }}-${dir}"
           mkdir -p $RESULTS_PATH
@@ -322,6 +326,15 @@ jobs:
         fi
 
         exit $overall_status
+
+    - name: Get Regression Diffs from Docker Container
+      if: failure()
+      run: |
+          docker ps -a
+          mkdir build-last-results
+          docker cp test_test_container:/home/gpadmin build-last-results/
+          ls build-last-results/
+          ls build-results/
         
     - name: Check and Display Diffs
       if: always()
@@ -361,14 +374,6 @@ jobs:
           **/regression.out
           **/regression.diffs
           **/results/
-          gpAux/gpdemo/datadirs/standby/log/
-          gpAux/gpdemo/datadirs/qddir/demoDataDir-1/log/
-          gpAux/gpdemo/datadirs/dbfast1/demoDataDir0/log/
-          gpAux/gpdemo/datadirs/dbfast2/demoDataDir1/log/
-          gpAux/gpdemo/datadirs/dbfast3/demoDataDir2/log/
-          gpAux/gpdemo/datadirs/dbfast_mirror1/demoDataDir0/log/
-          gpAux/gpdemo/datadirs/dbfast_mirror2/demoDataDir1/log/
-          gpAux/gpdemo/datadirs/dbfast_mirror3/demoDataDir2/log/
 
   ## ======================================================================
   ## Job: report
