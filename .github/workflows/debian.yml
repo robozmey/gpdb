@@ -161,7 +161,7 @@ jobs:
         set -ex
 
         ls -la package-build
-        cd deb_file
+        cd package-build
 
         deb_file=$(ls *.deb)
 
