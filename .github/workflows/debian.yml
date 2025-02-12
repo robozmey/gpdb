@@ -180,11 +180,12 @@ jobs:
           package-build/${{ steps.get-package-name.outputs.package_name }}
 
     - name: Upload Release Asset
+      continue-on-error: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         cd gpdb
-        gh release upload tmp_release package-build/${{ steps.get-package-name.outputs.package_name }}
+        gh release upload tmp_release ../package-build/${{ steps.get-package-name.outputs.package_name }}
 
   test_debian:
     runs-on: ubuntu-22.04
