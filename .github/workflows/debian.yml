@@ -135,7 +135,7 @@ jobs:
         all_debs=$(ls *deb)
         for a_deb in $all_debs
         do
-          debsigs -v --sign=origin -k $keyVal $a_deb
+          debsigs --sign=origin -v $a_deb
         done
         all_changes=$(ls *.changes)
         for a_changes in $all_changes
