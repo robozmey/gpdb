@@ -5,12 +5,16 @@ on:
     branches: [ "OPENGPDB_STABLE", "OPENGPDB_6_27_STABLE", "MDB_6_25_STABLE_YEZZEY" ]
   pull_request:
     branches: [ "OPENGPDB_STABLE", "OPENGPDB_6_27_STABLE", "MDB_6_25_STABLE_YEZZEY" ]
+  release:
+    types: [published]
 
 jobs:
 
   build_debian:
 
     runs-on: ubuntu-22.04
+
+    name: Build Debian Package
 
     outputs:
       package_name: ${{ steps.get-package-name.outputs.package_name }}
@@ -174,6 +178,12 @@ jobs:
         name: ${{ steps.get-package-name.outputs.package_name }}
         path: |
           package-build/${{ steps.get-package-name.outputs.package_name }}
+
+    - name: Upload Release Asset
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run:
+        gh release upload tmp_release package-build/${{ steps.get-package-name.outputs.package_name }}
 
   test_debian:
     runs-on: ubuntu-22.04
