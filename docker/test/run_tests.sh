@@ -47,13 +47,18 @@ EOF'
 # CREATE CGROUPS
 if [ "${TEST_CGROUP}" = "true" ]; then
     stat -fc %T /sys/fs/cgroup/
-    sudo mkdir -p /sys/fs/cgroup/
+    ls -l /sys/fs/cgroup/
     for cgroup_dir in cpu cpuacct cpuset memory
     do
-        sudo mkdir -p /sys/fs/cgroup/$cgroup_dir/
-        sudo mkdir /sys/fs/cgroup/$cgroup_dir/gpdb/
-        sudo chown -R <user> /sys/fs/cgroup/$cgroup_dir/gpdb/
+        sudo chmod -R 777 /sys/fs/cgroup/$cgroup_dir
+        sudo chown -R gpadmin /sys/fs/cgroup/$cgroup_dir
+
+        sudo mkdir -p /sys/fs/cgroup/$cgroup_dir/gpdb/
+        sudo chmod -R 777 /sys/fs/cgroup/$cgroup_dir/gpdb/
+        sudo chown -R gpadmin /sys/fs/cgroup/$cgroup_dir/gpdb/
+        ls -l /sys/fs/cgroup/$cgroup_dir/gpdb/
     done
+    ls -l /sys/fs/cgroup/
 fi
 
 
