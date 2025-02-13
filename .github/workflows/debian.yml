@@ -193,19 +193,21 @@ jobs:
     name: Test Debian Package
     needs: [build_debian]
     steps:
+
+    - uses: actions/checkout@v4
+
     - name: Download Debian Package
       uses: actions/download-artifact@v4
       with:
         name: ${{needs.build_debian.outputs.package_name}}
         path: greenplum-6-db.deb
 
-
-    - uses: actions/checkout@v4
-
     - name: Get Debian Package name
       id: get-package-name
       run: |
         set -ex
+
+        ls -l
 
         [[ -z ${DOCKER_TAG} ]] && DOCKER_TAG=lolkekcheburek
         docker build --build-arg POSTGRES_VERSION=${POSTGRES_VERSION}  -f ./docker/test_package/Dockerfile . --tag ${DOCKER_TAG}:1.0 --progress=plain 
