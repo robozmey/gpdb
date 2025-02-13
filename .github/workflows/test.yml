@@ -267,8 +267,6 @@ jobs:
         if [ "${{ matrix.enable_cgroups }}" = "true" ]; then
           TEST_CGROUP="true"
           stat -fc %T /sys/fs/cgroup/
-          grubby --update-kernel=/boot/vmlinuz-$(uname -r) --args="systemd.unified_cgroup_hierarchy=0 systemd.legacy_systemd_cgroup_controller"
-          stat -fc %T /sys/fs/cgroup/
         fi
 
         # Read configs into array
