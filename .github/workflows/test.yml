@@ -191,7 +191,7 @@ jobs:
   test:
     name: ${{ matrix.test }}
     needs: [build, prepare-test-matrix]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     timeout-minutes: 120
     # actionlint-allow matrix[*].pg_settings
     strategy:
@@ -296,6 +296,7 @@ jobs:
                 -e PGOPTIONS="${PG_OPTS}" \
                 -e TEST_CGROUP="${TEST_CGROUP}" \
                 --privileged \
+                --cgroupns=private \
                 --name test_test_container test_test:1234 \
                 2>&1 | tee "$config_log"; then
             echo "::warning::Test execution failed for configuration $((i+1)): make -C $dir $target"
