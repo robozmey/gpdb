@@ -185,6 +185,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         cd gpdb
+        gh release list
         gh release upload tmp_release ../package-build/${{ steps.get-package-name.outputs.package_name }}
 
   test_debian:

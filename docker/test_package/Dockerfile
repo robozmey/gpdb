@@ -59,7 +59,7 @@ COPY . /home/gpadmin
 RUN sudo DEBIAN_FRONTEND=noninteractive ./README.ubuntu22.bash \
 && sudo apt install -y libhyperic-sigar-java libaprutil1-dev libuv1-dev
 
-RUN debpkg -i greenplum-db-6_6.0.0--yandex.1.c17aabe_amd64.deb
+RUN sudo debpkg -i greenplum-db-6_6.0.0--yandex.1.c17aabe_amd64.deb
 
 
 ENTRYPOINT ["./run_tests.sh"]

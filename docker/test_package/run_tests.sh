@@ -57,5 +57,4 @@ gpstop -a -i && gpstart -a
 
 createdb $USER
 
-cd src/test/isolation2/
-PGPORT=6000 make installcheck-parallel-retrieve-cursor
+PGPORT=6000 make installcheck-good
