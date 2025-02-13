@@ -61,7 +61,7 @@ RUN sudo DEBIAN_FRONTEND=noninteractive ./README.ubuntu22.bash \
 
 RUN ls -l
 
-RUN sudo debpkg -i greenplum-db-6_6.0.0--yandex.1.c17aabe_amd64.deb
+RUN sudo debpkg -i greenplum-6-db.deb
 
 
 ENTRYPOINT ["./run_tests.sh"]
