@@ -191,7 +191,7 @@ jobs:
   test:
     name: ${{ matrix.test }}
     needs: [build, prepare-test-matrix]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 120
     # actionlint-allow matrix[*].pg_settings
     strategy:
