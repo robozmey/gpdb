@@ -47,8 +47,6 @@ EOF'
 # CREATE CGROUPS
 if [ "${TEST_CGROUP}" = "true" ]; then
     stat -fc %T /sys/fs/cgroup/
-    grubby --update-kernel=/boot/vmlinuz-$(uname -r) --args="systemd.unified_cgroup_hierarchy=0 systemd.legacy_systemd_cgroup_controller"
-    stat -fc %T /sys/fs/cgroup/
     ls -l /sys/fs/cgroup/
     for cgroup_dir in cpu cpuacct cpuset memory
     do
