@@ -72,7 +72,7 @@ RUN git clone https://github.com/open-gpdb/yezzey.git gpcontrib/yezzey -b ${YEZZ
 
 RUN sed -i '/^trusted/d' gpcontrib/yezzey/yezzey.control 
 RUN ./configure --with-perl --with-python --with-libxml --disable-orca --prefix=/usr/local/gpdb \
---enable-depend --enable-cassert --enable-debug --without-mdblocales --with-zstd --enable-debug-extensions --enable-orca CFLAGS='-fno-omit-frame-pointer -Wno-implicit-fallthrough -O3 -pthread' 
+--enable-depend --enable-cassert --without-mdblocales --with-zstd --enable-debug-extensions --enable-orca CFLAGS='-fno-omit-frame-pointer -Wno-implicit-fallthrough -O3 -pthread' 
 RUN make -j8 && make -j8 install
 
 ENTRYPOINT ["./docker/test/run_tests.sh"]

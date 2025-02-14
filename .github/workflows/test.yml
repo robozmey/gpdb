@@ -33,6 +33,7 @@ jobs:
           DEFAULT_ENABLE_CGROUPS=false
           DEFAULT_ENABLE_CORE_CHECK=true
           DEFAULT_PG_SETTINGS_OPTIMIZER=""
+          DEFAULT_RUNS_ON="ubuntu-latest"
 
           # Define base test configurations
           ALL_TESTS='{
@@ -47,7 +48,8 @@ jobs:
               },
               {"test":"ic-resgroup",
                "make_configs":["src/test/isolation2:installcheck-resgroup"],
-               "enable_cgroups":true
+               "enable_cgroups":true,
+               "runs_on":"ubuntu-20.04"
               },
               {"test":"ic-contrib",
                "make_configs":["contrib/auto_explain:installcheck",
@@ -81,10 +83,12 @@ jobs:
                            --argjson ec  "$DEFAULT_ENABLE_CGROUPS" \
                            --argjson ecc "$DEFAULT_ENABLE_CORE_CHECK" \
                            --arg     opt "$DEFAULT_PG_SETTINGS_OPTIMIZER" \
+                           --arg     ro  "$DEFAULT_RUNS_ON" \
               'def get_defaults:
                 {
                   num_primary_mirror_pairs: ($npm|tonumber),
                   enable_cgroups: $ec,
+                  runs_on: $ro,
                   enable_core_check: $ecc,
                   pg_settings: {
                     optimizer: $opt
@@ -192,7 +196,7 @@ jobs:
   test:
     name: ${{ matrix.test }}
     needs: [build, prepare-test-matrix]
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runs_on }}
     timeout-minutes: 120
     # actionlint-allow matrix[*].pg_settings
     strategy:
@@ -231,10 +235,7 @@ jobs:
         sudo apt-get autoclean -y >/dev/null 2>&1
         echo "some packages purged"
     - name: Check disk space
-      run: |
-        sudo dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -nr | head
-        df . -h
-        sudo du /usr/ -hx -d 4 --threshold=1G | sort -hr | head
+      run: df . -h
 
     - name: Download artifact
       uses: actions/download-artifact@v4
@@ -270,6 +271,11 @@ jobs:
         TEST_CGROUP=""
         if [ "${{ matrix.enable_cgroups }}" = "true" ]; then
           TEST_CGROUP="true"
+          stat -fc %T /sys/fs/cgroup/
+          docker info | grep Cgroup
+          stat -f /sys/fs/cgroup/unified
+          stat -f /sys/fs/cgroup
+          
         fi
 
         # Read configs into array
@@ -296,8 +302,9 @@ jobs:
                 -e TEST_TARGET="${target}" \
                 -e PGOPTIONS="${PG_OPTS}" \
                 -e TEST_CGROUP="${TEST_CGROUP}" \
-                --name test_test_container test_test:1234 \
                 --privileged \
+                --cgroupns=private \
+                --name test_test_container test_test:1234 \
                 2>&1 | tee "$config_log"; then
             echo "::warning::Test execution failed for configuration $((i+1)): make -C $dir $target"
             overall_status=1
@@ -327,15 +334,6 @@ jobs:
         fi
 
         exit $overall_status
-
-    - name: Get Regression Diffs from Docker Container
-      if: failure()
-      run: |
-          docker ps -a
-          mkdir build-last-results
-          docker cp test_test_container:/home/gpadmin build-last-results/
-          ls build-last-results/
-          ls build-results/
         
     - name: Check and Display Diffs
       if: always()
@@ -374,6 +372,7 @@ jobs:
         path: |
           **/regression.out
           **/regression.diffs
+          **/*.diffs
           **/results/
 
   ## ======================================================================
