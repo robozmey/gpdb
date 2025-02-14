@@ -179,10 +179,10 @@ jobs:
         path: |
           package-build/${{ steps.get-package-name.outputs.package_name }}
 
-    - name: Upload Release Asset
-      uses: softprops/action-gh-release@v2
-      with:
-        files: package-build/${{ steps.get-package-name.outputs.package_name }}
+    # - name: Upload Release Asset
+    #   uses: softprops/action-gh-release@v2
+    #   with:
+    #     files: package-build/${{ steps.get-package-name.outputs.package_name }}
 
   test_debian:
     runs-on: ubuntu-22.04
