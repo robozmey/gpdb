@@ -196,7 +196,6 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: ${{needs.build_debian.outputs.package_name}}
-        path: greenplum-6-db.deb
 
     - name: Get Debian Package name
       id: get-package-name
@@ -207,7 +206,9 @@ jobs:
 
         [[ -z ${DOCKER_TAG} ]] && DOCKER_TAG=lolkekcheburek
         docker build --build-arg POSTGRES_VERSION=${POSTGRES_VERSION}  -f ./docker/test_package/Dockerfile . --tag ${DOCKER_TAG}:1.0 --progress=plain 
-        docker run ${DOCKER_TAG}:1.0
+        docker run \
+          -e DEB_FILE="${{needs.build_debian.outputs.package_name}}" \
+          ${DOCKER_TAG}:1.0
 
 
 

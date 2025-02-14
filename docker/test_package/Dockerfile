@@ -61,7 +61,9 @@ RUN sudo DEBIAN_FRONTEND=noninteractive ./README.ubuntu22.bash \
 
 RUN ls -l
 
-RUN sudo debpkg -i greenplum-6-db.deb
+RUN echo "Debian package - ${DEB_FILE}"
+
+RUN sudo debpkg -i $DEB_FILE
 
 
 ENTRYPOINT ["./run_tests.sh"]
