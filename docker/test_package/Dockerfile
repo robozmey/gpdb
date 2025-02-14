@@ -61,7 +61,7 @@ RUN sudo DEBIAN_FRONTEND=noninteractive ./README.ubuntu22.bash \
 
 RUN ls -l
 
-RUN echo "Debian package - ${DEB_FILE}"
+RUN echo "Debian package - $DEB_FILE"
 
 RUN sudo debpkg -i $DEB_FILE
 
