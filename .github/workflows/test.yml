@@ -267,7 +267,10 @@ jobs:
         if [ "${{ matrix.enable_cgroups }}" = "true" ]; then
           TEST_CGROUP="true"
           stat -fc %T /sys/fs/cgroup/
-          sudo dockerd --exec-opt native.cgroupdriver=cgroupfs
+          docker info | grep Cgroup
+          stat -f /sys/fs/cgroup/unified
+          stat -f /sys/fs/cgroup
+          
         fi
 
         # Read configs into array
