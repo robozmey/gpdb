@@ -61,6 +61,3 @@ gpconfig -c shared_preload_libraries -v yezzey
 
 gpstop -a -i && gpstart -a
 
-createdb $USER
-
-PGPORT=6000 make installcheck

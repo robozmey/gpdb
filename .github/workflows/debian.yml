@@ -12,7 +12,7 @@ jobs:
 
   build_debian:
 
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     name: Build Debian Package
 
@@ -186,13 +186,8 @@ jobs:
         path: |
           package-build/${{ steps.get-package-name.outputs.package_name }}
 
-    # - name: Upload Release Asset
-    #   uses: softprops/action-gh-release@v2
-    #   with:
-    #     files: package-build/${{ steps.get-package-name.outputs.package_name }}
-
   test_debian:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     name: Test Debian Package
     needs: [build_debian]
     steps:
@@ -211,15 +206,31 @@ jobs:
 
         ls -l
 
-        echo "deb - ${{needs.build_debian.outputs.package_name}}"
+        echo "deb1 - ${{needs.build_debian.outputs.package_name}}"
 
-        DEB_FILE="${{needs.build_debian.outputs.package_name}}""
+        DEB_FILE="${{needs.build_debian.outputs.package_name}}"
 
-        echo "deb - ${DEB_FILE}"
+        echo "deb2 - $DEB_FILE"
 
         [[ -z ${DOCKER_TAG} ]] && DOCKER_TAG=lolkekcheburek
-        docker build --build-arg POSTGRES_VERSION=${POSTGRES_VERSION},DEB_FILE="${DEB_FILE}"  -f ./docker/test_package/Dockerfile . --tag ${DOCKER_TAG}:1.0 --progress=plain 
-        docker run -e DEB_FILE="${DEB_FILE}" ${DOCKER_TAG}:1.0
+        docker build --build-arg POSTGRES_VERSION=${POSTGRES_VERSION}  -f ./docker/test_package/Dockerfile . --tag ${DOCKER_TAG}:1.0 --progress=plain 
+        docker run -e DEB_FILE=$DEB_FILE ${DOCKER_TAG}:1.0
+
+  upload_debian:
+    runs-on: ubuntu-latest
+    name: Upload Debian Package
+    needs: [build_debian, test_debian]
+    steps:
+    - name: Download Debian Package
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{needs.build_debian.outputs.package_name}}
+
+    - name: Upload Release Asset
+      uses: softprops/action-gh-release@v2
+      with:
+        files: ${{needs.build_debian.outputs.package_name}}
+  
 
 
 
