@@ -1,6 +1,10 @@
 #!/bin/bash
 set -ex
 
+ls -l
+
+sudo groupadd gpadmin
+
 sudo debpkg -i $DEB_FILE
 
 eval "$(ssh-agent -s)"
@@ -46,7 +50,7 @@ sudo bash -c 'cat >> /etc/security/limits.conf <<-EOF
 
 EOF'
 
-export GPHOME=/usr/local/gpdb
+export GPHOME=/opt/greenplum-db-6
 source $GPHOME/greenplum_path.sh
 ulimit -n 65536
 make destroy-demo-cluster && make create-demo-cluster
@@ -59,4 +63,4 @@ gpstop -a -i && gpstart -a
 
 createdb $USER
 
-PGPORT=6000 make installcheck-good
+PGPORT=6000 make installcheck
