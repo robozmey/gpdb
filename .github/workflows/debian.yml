@@ -48,7 +48,7 @@ jobs:
         git clone https://github.com/open-gpdb/yezzey.git gpdb/gpcontrib/yezzey -b v1.8_opengpdb
 
         cd gpdb
-        git describe
+        git status
         cd ..
 
         gpdb/getversion
