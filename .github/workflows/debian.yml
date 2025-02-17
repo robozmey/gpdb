@@ -47,6 +47,7 @@ jobs:
         rm -fr gpdb/gpcontrib/yezzey 
         git clone https://github.com/open-gpdb/yezzey.git gpdb/gpcontrib/yezzey -b v1.8_opengpdb
 
+        git --git-dir=./gpdb/.git describe
         gpdb/getversion
         git --git-dir=./gpdb/.git rev-list HEAD --count
         # echo 'deb http://yandex-cloud-jammy-secure.dist.yandex.ru/yandex-cloud-jammy-secure stable/all/' | tee -a /etc/apt/sources.list
