@@ -218,7 +218,7 @@ jobs:
         echo "deb - ${DEB_FILE}"
 
         [[ -z ${DOCKER_TAG} ]] && DOCKER_TAG=lolkekcheburek
-        docker build --build-arg POSTGRES_VERSION=${POSTGRES_VERSION}  -f ./docker/test_package/Dockerfile . --tag ${DOCKER_TAG}:1.0 --progress=plain 
+        docker build --build-arg POSTGRES_VERSION=${POSTGRES_VERSION},DEB_FILE="${DEB_FILE}"  -f ./docker/test_package/Dockerfile . --tag ${DOCKER_TAG}:1.0 --progress=plain 
         docker run -e DEB_FILE="${DEB_FILE}" ${DOCKER_TAG}:1.0
 
 

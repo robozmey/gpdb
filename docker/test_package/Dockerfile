@@ -29,6 +29,8 @@ RUN ln -snf /usr/share/zoneinfo/Europe/London /etc/localtime && echo Europe/Lond
   libgpgme-dev libgpgme11 sudo iproute2 less software-properties-common \
   openssh-client openssh-server
 
+RUN apt-get install -y python3 devscripts debhelper dupload git pbuilder ca-certificates reprepro debsigs
+
 RUN apt-get install -y locales \
 && locale-gen "en_US.UTF-8" \
 && update-locale LC_ALL="en_US.UTF-8"
@@ -54,11 +56,15 @@ RUN cd /tmp/ \
 && mkdir build && cd build && cmake .. && make \
 && sudo make install
 
-COPY . /home/gpadmin
+COPY ./README.ubuntu22.bash /home/gpadmin
 
 RUN sudo DEBIAN_FRONTEND=noninteractive ./README.ubuntu22.bash \
 && sudo apt install -y libhyperic-sigar-java libaprutil1-dev libuv1-dev
 
+COPY ./docker/test_package/run_tests.sh /home/gpadmin
+
+COPY ./$DEB_FILE /home/gpadmin
+
 RUN ls -l
 
-ENTRYPOINT ["./docker/test_package/run_tests.sh"]
+ENTRYPOINT ["./run_tests.sh"]

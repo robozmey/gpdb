@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-RUN sudo debpkg -i $DEB_FILE
+sudo debpkg -i $DEB_FILE
 
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_rsa
