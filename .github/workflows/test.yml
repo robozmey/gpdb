@@ -46,6 +46,9 @@ jobs:
                "make_configs":["src/test/regress:installcheck-good"],
                "pg_settings":{"optimizer":"on"}
               },
+              {"test":"ic-expandshrink",
+               "make_configs":["src/test/isolation2:installcheck-expandshrink"]
+              },
               {"test":"ic-resgroup",
                "make_configs":["src/test/isolation2:installcheck-resgroup"],
                "enable_cgroups":true,
@@ -67,6 +70,13 @@ jobs:
                                "contrib/try_convert:installcheck",
                                "contrib/passwordcheck:installcheck",
                                "contrib/sslinfo:installcheck"]
+              },
+              {"test":"ic-gpcontrib",
+               "make_configs":["gpcontrib/orafce:installcheck",
+                               "gpcontrib/pxf_fdw:installcheck",
+                               "gpcontrib/zstd:installcheck",
+                               "gpcontrib/gp_sparse_vector:installcheck",
+                               "gpcontrib/gp_toolkit:installcheck"]
               },
               {"test":"ic-parallel-retrieve-cursor",
                "make_configs":["src/test/isolation2:installcheck-parallel-retrieve-cursor"]
