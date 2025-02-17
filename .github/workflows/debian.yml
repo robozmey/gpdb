@@ -49,7 +49,7 @@ jobs:
 
         cd gpdb
         git status
-        git describe
+        git describe --tags
         cd ..
 
         gpdb/getversion
