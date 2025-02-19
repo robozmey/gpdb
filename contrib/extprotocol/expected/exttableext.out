@@ -1762,7 +1762,7 @@ RESET ROLE;
     -- Should get: ERROR:  untrusted protocol "demoprot" can't be owned by non superuser
     -- Therefore the owner of trusted protocl demoprot is still the current superuser
     ALTER PROTOCOL demoprot OWNER TO demoprot_nopriv;
-ERROR:  untrusted protocol "demoprot" can't be owned by non superuser
+ERROR:  untrusted protocol "demoprot" can't be owned by non superuser or mdb_admin
     -- As superuser, GRANT SELECT permission on heap table "exttabtest"
     -- to non-privileged user "demoprot_nopriv" so that this user
     -- can try to create external table using format: (like exttabtest)
