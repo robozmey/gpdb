@@ -69,7 +69,7 @@ make destroy-demo-cluster && make create-demo-cluster
 export USER=gpadmin
 source gpAux/gpdemo/gpdemo-env.sh
 
-gpconfig -c shared_preload_libraries -v yezzey
+gpconfig -c shared_preload_libraries -v yezzey pgaudit
 
 # ADD CGROUPS
 if [ "${TEST_CGROUP}" = "true" ]; then

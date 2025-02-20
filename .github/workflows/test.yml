@@ -1,4 +1,4 @@
-name: Matrix testing
+name: Regression testing
 
 on:
   push:
@@ -332,7 +332,8 @@ jobs:
             echo "::warning::Test execution failed for configuration $((i+1)): make -C $dir $target"
             overall_status=1
           fi
-          
+
+          df . -h
 
           RESULTS_PATH="build-results/results-${{ matrix.test }}-${dir}"
           mkdir -p $RESULTS_PATH
