@@ -71,7 +71,7 @@ jobs:
                                "contrib/formatter_fixedwidth:installcheck",
                                "contrib/fuzzystrmatch:installcheck",
                                "contrib/hstore:installcheck",
-                               "contrib/indexscan:installcheck",
+                               "contrib/indexscan:installcheck"
                               #  "contrib/intarray:installcheck",
                               #  "contrib/isn:installcheck",
                               #  "contrib/ltree:installcheck",
@@ -109,7 +109,7 @@ jobs:
                                "gpcontrib/gpcloud:installcheck",
                                "gpcontrib/gpmapreduce:installcheck",
                                "gpcontrib/orafce:installcheck",
-                               "gpcontrib/pgaudit:installcheck",
+                               "gpcontrib/pgaudit:installcheck"
                               #  "gpcontrib/quicklz:installcheck",
                               #  "gpcontrib/sr_plan:installcheck",
                               #  "gpcontrib/zstd:installcheck"
