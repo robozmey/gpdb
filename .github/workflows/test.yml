@@ -318,6 +318,8 @@ jobs:
 
           config_log="build-logs/details/make-${{ matrix.test }}-config$i.log"
 
+          df . -h
+
           if ! docker run \
                 -e TEST_DIR="${dir}" \
                 -e TEST_TARGET="${target}" \
