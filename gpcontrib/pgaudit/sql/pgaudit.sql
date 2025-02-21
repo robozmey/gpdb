@@ -816,6 +816,7 @@ DROP TABLE wombat;
 
 SET pgaudit.log = 'NONE';
 DROP EXTENSION pgaudit;
+DROP EXTENSION gp_aux_catalog;
 
 DROP OPERATOR <> (text, text);
 DROP FUNCTION my_ne(text, text);

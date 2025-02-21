@@ -76,15 +76,13 @@ orafce:
 	fi
 
 sr_plan:
-	@if [ "$(enable_sr_plan)" == "yes" ]; then \
+	@if [ "$(enable_sr_plan)" = "yes" ]; then \
   		$(MAKE) -C sr_plan USE_PGXS=1 && \
-  		$(MAKE) -C sr_plan USE_PGXS=1 install; \
  	fi
 
 pgaudit:
-	@if [ "$(enable_pgaudit)" == "yes" ]; then \
+	@if [ "$(enable_pgaudit)" = "yes" ]; then \
   		$(MAKE) -C pgaudit USE_PGXS=1 && \
-  		$(MAKE) -C pgaudit USE_PGXS=1 install; \
  	fi
 
 
@@ -96,6 +94,12 @@ install:
 	@if [ "$(enable_yezzey)" = "yes" ]; then \
 		$(MAKE) -C yezzey install; \
 	fi
+	@if [ "$(enable_pgaudit)" = "yes" ]; then \
+  		$(MAKE) -C pgaudit USE_PGXS=1 install; \
+ 	fi
+	@if [ "$(enable_sr_plan)" = "yes" ]; then \
+  		$(MAKE) -C sr_plan USE_PGXS=1 install; \
+ 	fi
 	@if [ "$(enable_mapreduce)" = "yes" ]; then \
 		$(MAKE) -C gpmapreduce install; \
 	fi
@@ -117,6 +121,8 @@ distclean:
 	if [ "$(enable_gpcloud)" = "yes" ]; then $(MAKE) -C gpcloud distclean; fi
 	if [ "$(enable_yezzey)" = "yes" ]; then $(MAKE) -C yezzey distclean; fi
 	if [ "${enable_orafce}" = "yes" ]; then $(MAKE) -C orafce NO_PGXS=true distclean; fi
+	if [ "${enable_sr_plan}" = "yes" ]; then $(MAKE) -C sr_plan distclean; fi
+	if [ "${enable_pgaudit}" = "yes" ]; then $(MAKE) -C pgaudit distclean; fi
 
 installcheck:
 	$(MAKE) -C gp_internal_tools installcheck
