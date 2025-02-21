@@ -363,11 +363,13 @@ jobs:
       if: always()
       run: |
           # Search for regression.diffs recursively
-          found_files=$(find . -type f -name "regression.diffs")
-          if [[ -n "$found_file" ]]; then
-            for found_file in found_files
+          found_files=$(find . -type f -path "*/regression.diffs")
+          if [[ "x$found_files" != "x" ]]; then
+            for found_file in $found_files
             do
+              echo "-----------------------------------------------------"
               echo "Found regression.diffs at: $found_file"
+              echo "-----------------------------------------------------"
               cat "$found_file"
             done
           else
