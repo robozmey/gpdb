@@ -76,6 +76,16 @@ if [ "${TEST_CGROUP}" = "true" ]; then
     gpconfig -c gp_resource_manager -v "group"
 fi
 
+# Accept local connections for tests
+cat >>gpAux/gpdemo/datadirs/qddir/demoDataDir-1/pg_hba.conf <<EOL
+# "local" is for Unix domain socket connections only
+local   all             all                                     trust
+# IPv4 local connections:
+host    all             all             127.0.0.1/24            trust
+# IPv6 local connections:
+host    all             all             ::1/128                 trust
+EOL
+
 gpstop -a -i && gpstart -a
 
 createdb $USER
