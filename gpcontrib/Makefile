@@ -77,12 +77,12 @@ orafce:
 
 sr_plan:
 	@if [ "$(enable_sr_plan)" = "yes" ]; then \
-  		$(MAKE) -C sr_plan USE_PGXS=1 && \
+  		$(MAKE) -C sr_plan && \
  	fi
 
 pgaudit:
 	@if [ "$(enable_pgaudit)" = "yes" ]; then \
-  		$(MAKE) -C pgaudit USE_PGXS=1 && \
+  		$(MAKE) -C pgaudit && \
  	fi
 
 
@@ -95,10 +95,10 @@ install:
 		$(MAKE) -C yezzey install; \
 	fi
 	@if [ "$(enable_pgaudit)" = "yes" ]; then \
-  		$(MAKE) -C pgaudit USE_PGXS=1 install; \
+  		$(MAKE) -C pgaudit install; \
  	fi
 	@if [ "$(enable_sr_plan)" = "yes" ]; then \
-  		$(MAKE) -C sr_plan USE_PGXS=1 install; \
+  		$(MAKE) -C sr_plan install; \
  	fi
 	@if [ "$(enable_mapreduce)" = "yes" ]; then \
 		$(MAKE) -C gpmapreduce install; \
