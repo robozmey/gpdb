@@ -37,6 +37,9 @@
 #include "utils/syscache.h"
 #include "utils/timestamp.h"
 
+// For GpIdentity
+#include "cdb/cdbvars.h"
+
 PG_MODULE_MAGIC;
 
 void _PG_init(void);
@@ -1977,21 +1980,24 @@ _PG_init(void)
         GUC_NOT_IN_SAMPLE,
         NULL, NULL, NULL);
 
-    /*
-     * Install our hook functions after saving the existing pointers to
-     * preserve the chains.
-     */
-    next_ExecutorStart_hook = ExecutorStart_hook;
-    ExecutorStart_hook = pgaudit_ExecutorStart_hook;
 
-    next_ExecutorCheckPerms_hook = ExecutorCheckPerms_hook;
-    ExecutorCheckPerms_hook = pgaudit_ExecutorCheckPerms_hook;
+    if (GpIdentity.segindex == -1) {
+        /*
+        * Install our hook functions after saving the existing pointers to
+        * preserve the chains.
+        */
+        next_ExecutorStart_hook = ExecutorStart_hook;
+        ExecutorStart_hook = pgaudit_ExecutorStart_hook;
 
-    next_ProcessUtility_hook = ProcessUtility_hook;
-    ProcessUtility_hook = pgaudit_ProcessUtility_hook;
+        next_ExecutorCheckPerms_hook = ExecutorCheckPerms_hook;
+        ExecutorCheckPerms_hook = pgaudit_ExecutorCheckPerms_hook;
 
-    next_object_access_hook = object_access_hook;
-    object_access_hook = pgaudit_object_access_hook;
+        next_ProcessUtility_hook = ProcessUtility_hook;
+        ProcessUtility_hook = pgaudit_ProcessUtility_hook;
+
+        next_object_access_hook = object_access_hook;
+        object_access_hook = pgaudit_object_access_hook;
+    }
 
     /* Log that the extension has completed initialization */
 #ifndef EXEC_BACKEND

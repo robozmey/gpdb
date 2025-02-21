@@ -1177,6 +1177,7 @@ DROP TABLE wombat;
 NOTICE:  AUDIT: SESSION,70,1,DDL,DROP TABLE,TABLE,public.wombat,DROP TABLE wombat;,<none>
 SET pgaudit.log = 'NONE';
 DROP EXTENSION pgaudit;
+DROP EXTENSION gp_aux_catalog;
 DROP OPERATOR <> (text, text);
 ERROR:  cannot drop operator <>(text,text) because it is required by the database system
 DROP FUNCTION my_ne(text, text);
