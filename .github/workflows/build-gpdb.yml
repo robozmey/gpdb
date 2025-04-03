@@ -70,8 +70,14 @@ jobs:
           # Extract all valid build names from ALL_BUILDS
           VALID_BUILDS=$(echo "$ALL_BUILDS" | jq -r '.include[].build')
 
+          # Extract current build
+          CURRENT_BUILD="stable"
+          if [[ -n "${{ github.event.inputs.build_variant }}" ]]; then
+            CURRENT_BUILD="${{ github.event.inputs.build_variant }}"
+          fi
+
           # Parse input build selection
-          IFS=',' read -ra SELECTED_BUILDS <<< "${{ inputs.build_variant }},${{ inputs.build_variant }}-test"
+          IFS=',' read -ra SELECTED_BUILDS <<< "$CURRENT_BUILD,$CURRENT_BUILD-test"
 
           # Default to all builds if selection is empty or 'all'
           if [[ "${SELECTED_BUILDS[*]}" == "all" || -z "${SELECTED_BUILDS[*]}" ]]; then
