@@ -395,7 +395,7 @@ jobs:
           set -ex pipefail
           IFS=' ' read -r -a patches <<< "${{ join(matrix.patches, ' ') }}"
           for patch in "${patches[@]}"; do
-            if ! patch -p1 < "${GITHUB_WORKSPACE}/patches/${patch}"; then
+            if ! cat "${GITHUB_WORKSPACE}/patches/${patch}" | patch -p1; then
               echo "::error::Patch application failed"
               exit 1
             fi
