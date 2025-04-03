@@ -552,7 +552,7 @@ jobs:
           # replace not supported symbols in version
           GPDB_VERSION=$(echo "$GPDB_VERSION" | sed "s/\//./g")
           GPDB_VERSION=$(echo "$GPDB_VERSION" | sed "s/_/-/g")
-          if [[ ! $GPDB_VERSION =~ ^[0-9] ]]; then
+          if ! echo "$GPDB_VERSION" | grep -qE '^[0-9]'; then
               GPDB_VERSION="6.$GPDB_VERSION"
           fi
 
