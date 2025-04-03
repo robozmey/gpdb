@@ -56,7 +56,6 @@ jobs:
             {
               "build": "dwh",
               "extra_configure_flags": "--with-extended-namedatalen",
-              "custom_name": "dwh-greenplum-db-6",
               "patches": [
                 "auto_explain_comment_ExplainQueryText.patch"
               ]
