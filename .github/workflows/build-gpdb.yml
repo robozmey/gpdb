@@ -23,7 +23,7 @@ on:
         type: choice
         options:
         - stable
-        - namedatalen-128
+        - dwh
 
 jobs:
 
@@ -54,14 +54,15 @@ jobs:
               "extra_configure_flags": "--enable-debug-extensions"
             },
             {
-              "build": "namedatalen-128",
+              "build": "dwh",
               "extra_configure_flags": "--with-extended-namedatalen",
+              "custom_name": "dwh-greenplum-db-6"
               "patches": [
                 "auto_explain_comment_ExplainQueryText.patch"
               ]
             },
             {
-              "build": "namedatalen-128-test",
+              "build": "dwh-test",
               "extra_configure_flags": "--with-extended-namedatalen --enable-debug-extensions",
               "patches": [
                 "auto_explain_comment_ExplainQueryText.patch"
@@ -549,6 +550,15 @@ jobs:
           cp -r "${SRC_DIR}"/../gpdb-devops/packaging/deb/jammy/debian/* debian/
           chown -R "$(whoami)" debian
 
+
+          GPDB_PACKAGE="greenplum-db-6"
+
+          # check custom package name
+          if [ -n "${{ matrix.custom_name }}" ]; then
+            GPDB_PACKAGE="${{ matrix.custom_name }}"
+            EXTRA_DEB_FLAGS="--name ${{ matrix.custom_name }}"
+          fi
+
           # replace not supported symbols in version
           GPDB_VERSION=$(echo "$GPDB_VERSION" | sed "s/\//./g")
           GPDB_VERSION=$(echo "$GPDB_VERSION" | sed "s/_/-/g")
@@ -560,7 +570,7 @@ jobs:
           export BUILD_DESTINATION=${SRC_DIR}/debian/build
           export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${BUILD_DESTINATION}/lib
 
-          if ! ${SRC_DIR}/../gpdb-devops/scripts/build-deb.sh -v $GPDB_VERSION; then
+          if ! ${SRC_DIR}/../gpdb-devops/scripts/build-deb.sh -v $GPDB_VERSION ${EXTRA_DEB_FLAGS}; then
             echo "::error::Build script failed"
             exit 1
           fi
@@ -572,10 +582,10 @@ jobs:
           ls -l ../
 
           echo "Copy artifacts to current directory"
-          DEB_FILE="greenplum-db-6_${GPDB_PKG_VERSION}"_"${ARCH}".deb
-          DBG_DEB_FILE="greenplum-db-6-dbgsym_${GPDB_PKG_VERSION}"_"${ARCH}".ddeb
-          CHANGES_FILE="greenplum-db-6_${GPDB_PKG_VERSION}"_"${ARCH}".changes
-          SOURCE_FILE="greenplum-db-6_${GPDB_PKG_VERSION}".tar.xz
+          DEB_FILE="${GPDB_PACKAGE}_${GPDB_PKG_VERSION}"_"${ARCH}".deb
+          DBG_DEB_FILE="${GPDB_PACKAGE}-dbgsym_${GPDB_PKG_VERSION}"_"${ARCH}".ddeb
+          CHANGES_FILE="${GPDB_PACKAGE}_${GPDB_PKG_VERSION}"_"${ARCH}".changes
+          SOURCE_FILE="${GPDB_PACKAGE}_${GPDB_PKG_VERSION}".tar.xz
           cp ../"${DEB_FILE}" "${SRC_DIR}"
           cp ../"${DBG_DEB_FILE}" "${SRC_DIR}"
           cp ../"${CHANGES_FILE}" "${SRC_DIR}"
@@ -710,6 +720,7 @@ jobs:
             dpkg-deb -f "${DEB_FILE}"
 
             # Get key DEB attributes for verification
+            DEB_PACKAGE=$(dpkg-deb -f "${DEB_FILE}" Package)
             DEB_VERSION=$(dpkg-deb -f "${DEB_FILE}" Version | cut -d'-' -f 1)
             DEB_RELEASE=$(dpkg-deb -f "${DEB_FILE}" Version | cut -d'-' -f 3)
             echo "version=${DEB_VERSION}" >> "$GITHUB_OUTPUT"
@@ -751,11 +762,12 @@ jobs:
             echo "=== DEB Installation Log ==="
             echo "Timestamp: $(date -u)"
             echo "DEB File: ${DEB_FILE}"
+            echo "Package: ${DEB_PACKAGE}"
             echo "Version: ${DEB_VERSION}"
             echo "Release: ${DEB_RELEASE}"
 
             # Clean install location
-            rm -rf /opt/greenplum-db-6
+            rm -rf /opt/${DEB_PACKAGE}
 
             # Install DEB
             echo "Starting installation..."
@@ -765,9 +777,9 @@ jobs:
             fi
 
             echo "Installation completed successfully"
-            dpkg-query -s greenplum-db-6
+            dpkg-query -s ${DEB_PACKAGE}
             echo "Installed files:"
-            dpkg-query -L greenplum-db-6
+            dpkg-query -L ${DEB_PACKAGE}
           } 2>&1 | tee -a install-logs/details/deb-installation.log
 
       - name: Upload install logs
@@ -786,7 +798,7 @@ jobs:
             echo "# Installed Package Summary"
             echo "\`\`\`"
 
-            dpkg-query -s greenplum-db-6
+            dpkg-query -s ${DEB_PACKAGE}
             echo "\`\`\`"
           } >> "$GITHUB_STEP_SUMMARY" || true
 
@@ -968,6 +980,7 @@ jobs:
             dpkg-deb -f "${DEB_FILE}"
 
             # Get key DEB attributes for verification
+            DEB_PACKAGE=$(dpkg-deb -f "${DEB_FILE}" Package)
             DEB_VERSION=$(dpkg-deb -f "${DEB_FILE}" Version | cut -d'-' -f 1)
             DEB_RELEASE=$(dpkg-deb -f "${DEB_FILE}" Version | cut -d'-' -f 3)
             echo "version=${DEB_VERSION}" >> "$GITHUB_OUTPUT"
@@ -1009,11 +1022,12 @@ jobs:
             echo "=== DEB Installation Log ==="
             echo "Timestamp: $(date -u)"
             echo "DEB File: ${DEB_FILE}"
+            echo "Package: ${DEB_PACKAGE}"
             echo "Version: ${DEB_VERSION}"
             echo "Release: ${DEB_RELEASE}"
 
             # Clean install location
-            rm -rf /opt/greenplum-db-6
+            rm -rf /opt/${DEB_PACKAGE}
 
             # Install DEB
             echo "Starting installation..."
@@ -1023,9 +1037,9 @@ jobs:
             fi
 
             echo "Installation completed successfully"
-            dpkg-query -s greenplum-db-6
+            dpkg-query -s ${DEB_PACKAGE}
             echo "Installed files:"
-            dpkg-query -L greenplum-db-6
+            dpkg-query -L ${DEB_PACKAGE}
           } 2>&1 | tee -a build-logs/details/deb-installation.log
 
       - name: Extract source tarball
