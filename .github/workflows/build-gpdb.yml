@@ -55,11 +55,17 @@ jobs:
             },
             {
               "build": "namedatalen-128",
-              "extra_configure_flags": "--with-extended-namedatalen"
+              "extra_configure_flags": "--with-extended-namedatalen",
+              "patches": [
+                "auto_explain_comment_ExplainQueryText.patch"
+              ]
             },
             {
               "build": "namedatalen-128-test",
-              "extra_configure_flags": "--with-extended-namedatalen --enable-debug-extensions"
+              "extra_configure_flags": "--with-extended-namedatalen --enable-debug-extensions",
+              "patches": [
+                "auto_explain_comment_ExplainQueryText.patch"
+              ]
             }
           ]}'
 
@@ -100,7 +106,7 @@ jobs:
           if [[ ${#INVALID_BUILDS[@]} -gt 0 ]]; then
             echo "::error::Invalid build(s) selected: ${INVALID_BUILDS[*]}"
             echo "Valid builds are: $(echo "$VALID_BUILDS" | tr '\n' ', ')"
-            # exit 1
+            exit 1
           fi
 
           # Build result JSON with defaults applied
@@ -382,6 +388,18 @@ jobs:
             echo "::error::Container initialization failed"
             exit 1
           fi
+
+      - name: Apply patches
+        if: matrix.patches
+        run: |
+          set -ex pipefail
+          IFS=' ' read -r -a patches <<< "${{ join(matrix.patches, ' ') }}"
+          for patch in "${patches[@]}"; do
+            if ! patch -p1 < "${patch}"; then
+              echo "::error::Patch application failed"
+              exit 1
+            fi
+          done
 
       - name: Environment Initialization
         if: needs.check-skip.outputs.should_skip != 'true'
