@@ -39,6 +39,7 @@ jobs:
 
     outputs:
       build-matrix: ${{ steps.set-matrix.outputs.matrix }}
+      CURRENT_BUILD: ${CURRENT_BUILD}
 
     steps:
       - id: set-matrix
@@ -79,9 +80,9 @@ jobs:
           VALID_BUILDS=$(echo "$ALL_BUILDS" | jq -r '.include[].build')
 
           # Extract current build
-          CURRENT_BUILD="stable"
+          export CURRENT_BUILD="stable"
           if [[ -n "${{ github.event.inputs.build_variant }}" ]]; then
-            CURRENT_BUILD="${{ github.event.inputs.build_variant }}"
+            export CURRENT_BUILD="${{ github.event.inputs.build_variant }}"
           fi
 
           # Parse input build selection
@@ -860,10 +861,7 @@ jobs:
           pip2 install pyyaml
 
           # Extract current build
-          CURRENT_BUILD="stable"
-          if [[ -n "${{ github.event.inputs.build_variant }}" ]]; then
-            CURRENT_BUILD="${{ github.event.inputs.build_variant }}"
-          fi
+          export CURRENT_BUILD= ${{ needs.prepare-test-matrix.outputs.test-matrix.CURRENT_BUILD }}
 
           export LOGS_DIR=build-logs
 
