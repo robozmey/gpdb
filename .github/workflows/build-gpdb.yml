@@ -938,7 +938,7 @@ jobs:
       - name: Download Greenplum debian build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: debian-packages-${env.CURRENT_BUILD}-test
+          name: debian-packages-${{ env.CURRENT_BUILD }}-test
           path: ${{ github.workspace }}/deb_build_artifacts
           merge-multiple: false
 
