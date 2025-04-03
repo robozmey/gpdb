@@ -391,6 +391,7 @@ jobs:
 
       - name: Apply patches
         if: matrix.patches
+        shell: bash
         run: |
           set -ex pipefail
           IFS=' ' read -r -a patches <<< "${{ join(matrix.patches, ' ') }}"
