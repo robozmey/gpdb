@@ -22,7 +22,7 @@ on:
         default: 'default'
         type: choice
         options:
-        - default
+        - stable
         - t_dwh
 
 jobs:
@@ -52,6 +52,10 @@ jobs:
             {
               "name": "test",
               "extra_configure_flags": "--enable-debug-extensions"
+            },
+            {
+              "name": "namedatalen-128",
+              "extra_configure_flags": "--with-extended-namedatalen"
             }
           ]}'
           # Output the matrix for GitHub Actions
