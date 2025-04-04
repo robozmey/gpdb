@@ -70,7 +70,7 @@ jobs:
             echo "EOF"
 
             echo "CURRENT_REF<<EOF"
-            echo "$CURRENT_BUILD"
+            echo "$CURRENT_REF"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
           echo "=== Parameters Preparation Complete ==="
