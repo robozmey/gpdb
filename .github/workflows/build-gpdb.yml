@@ -53,7 +53,7 @@ jobs:
           # Extract current ref
           export CURRENT_REF="${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
           if [[ -n "${{ github.event.inputs.ref }}" ]]; then
-            export CURRENT_REF="${{ github.event.inputs.build_variant }}"
+            export CURRENT_REF="${{ github.event.inputs.ref }}"
           fi
 
           # Output the current build for GitHub Actions
