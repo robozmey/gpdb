@@ -1115,9 +1115,8 @@ make_timestamp(PG_FUNCTION_ARGS)
 	float8		sec = PG_GETARG_FLOAT8(5);
 	Timestamp	result;
 
-	if (!make_timestamp_internal_safe(year, month, mday,
-									 hour, min, sec, &result, fcinfo->context))
-		PG_RETURN_NULL();
+	PG_SAFE_CALL(make_timestamp_internal_safe, (year, month, mday,
+									 hour, min, sec, &result, fcinfo->context));
 
 	PG_RETURN_TIMESTAMP(result);
 }
@@ -1137,9 +1136,8 @@ make_timestamptz(PG_FUNCTION_ARGS)
 	Timestamp	result;
 	TimestampTz	result_tz;
 
-	if (!make_timestamp_internal_safe(year, month, mday,
-									 hour, min, sec, &result, fcinfo->context))
-		PG_RETURN_NULL();
+	PG_SAFE_CALL(make_timestamp_internal_safe, (year, month, mday,
+									 hour, min, sec, &result, fcinfo->context));
 
 	PG_SAFE_CALL(timestamp2timestamptz_safe, (result, &result_tz, fcinfo->context));
 
@@ -1165,9 +1163,8 @@ make_timestamptz_at_timezone(PG_FUNCTION_ARGS)
 	int			tz;
 	fsec_t		fsec;
 
-	if (!make_timestamp_internal_safe(year, month, mday,
-									 hour, min, sec, &timestamp, fcinfo->context))
-		PG_RETURN_NULL();
+	PG_SAFE_CALL(make_timestamp_internal_safe, (year, month, mday,
+									 hour, min, sec, &timestamp, fcinfo->context));
 
 	if (timestamp2tm(timestamp, NULL, &tt, &fsec, NULL, NULL) != 0)
 		PG_ERETURN(fcinfo->context,
