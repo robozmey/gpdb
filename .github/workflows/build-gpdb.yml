@@ -11,10 +11,10 @@ on:
     branches: [ "OPENGPDB_STABLE", "OPENGPDB_6_27_STABLE", "MDB_6_25_STABLE_YEZZEY" ]
   workflow_dispatch:
     inputs:
-      test_selection:
-        description: 'Select tests to run (comma-separated). Examples: ic-good-opt-off,ic-contrib'
+      ref:
+        description: 'Ref to build, leave empty to build on current branch'
         required: false
-        default: 'all'
+        default: ''
         type: string
       build_variant:
         description: 'Build variant'
@@ -28,18 +28,67 @@ on:
 jobs:
 
   ## ======================================================================
+  ## Job: prepare-paramenters
+  ## ======================================================================
+
+  prepare-parameters:
+
+    name: Prepare Parameters
+    runs-on: ubuntu-latest
+    outputs:
+      CURRENT_BUILD: ${{ steps.set-parameters.outputs.CURRENT_BUILD }}
+      CURRENT_REF: ${{ steps.set-parameters.outputs.CURRENT_REF }}
+
+    steps:
+      - id: set-parameters
+        run: |
+          echo "=== Parameters Preparation ==="
+
+          # Extract current build
+          export CURRENT_BUILD="stable"
+          if [[ -n "${{ github.event.inputs.build_variant }}" ]]; then
+            export CURRENT_BUILD="${{ github.event.inputs.build_variant }}"
+          fi
+
+          # Extract current ref
+          export CURRENT_REF="${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
+          if [[ -n "${{ github.event.inputs.ref }}" ]]; then
+            export CURRENT_REF="${{ github.event.inputs.build_variant }}"
+          fi
+
+          # Output the current build for GitHub Actions
+          echo "Current build configuration:"
+          echo "$CURRENT_BUILD"
+
+          # Output ref for GitHub Actions
+          echo "Current ref configuration:"
+          echo "$CURRENT_REF"
+          # Fix: Use block redirection
+          {
+            echo "CURRENT_BUILD<<EOF"
+            echo "$CURRENT_BUILD"
+            echo "EOF"
+
+            echo "CURRENT_REF<<EOF"
+            echo "$CURRENT_BUILD"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+          echo "=== Parameters Preparation Complete ==="
+
+
+  ## ======================================================================
   ## Job: prepare-build-matrix
   ## ======================================================================
 
   prepare-build-matrix:
 
+    needs: [prepare-parameters]
     name: Prepare Build Variations
-
     runs-on: ubuntu-latest
-
     outputs:
       build-matrix: ${{ steps.set-matrix.outputs.matrix }}
-      CURRENT_BUILD: ${{ steps.set-matrix.outputs.CURRENT_BUILD }}
+    env:
+      CURRENT_BUILD: ${{ needs.prepare-parameters.outputs.CURRENT_BUILD }}
 
     steps:
       - id: set-matrix
@@ -79,14 +128,8 @@ jobs:
           # Extract all valid build names from ALL_BUILDS
           VALID_BUILDS=$(echo "$ALL_BUILDS" | jq -r '.include[].build')
 
-          # Extract current build
-          export CURRENT_BUILD="stable"
-          if [[ -n "${{ github.event.inputs.build_variant }}" ]]; then
-            export CURRENT_BUILD="${{ github.event.inputs.build_variant }}"
-          fi
-
           # Parse input build selection
-          IFS=',' read -ra SELECTED_BUILDS <<< "$CURRENT_BUILD,$CURRENT_BUILD-test"
+          IFS=',' read -ra SELECTED_BUILDS <<< "${{ env.CURRENT_BUILD }},${{ env.CURRENT_BUILD }}-test"
 
           # Default to all builds if selection is empty or 'all'
           if [[ "${SELECTED_BUILDS[*]}" == "all" || -z "${SELECTED_BUILDS[*]}" ]]; then
@@ -135,10 +178,6 @@ jobs:
           {
             echo "matrix<<EOF"
             echo "$RESULT"
-            echo "EOF"
-
-            echo "CURRENT_BUILD<<EOF"
-            echo "$CURRENT_BUILD"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
           echo "=== Matrix Preparation Complete ==="
@@ -349,9 +388,10 @@ jobs:
 
   build:
     name: Build (${{ matrix.build }})
-    needs: [prepare-build-matrix]
+    needs: [prepare-parameters, prepare-build-matrix]
     env:
       JOB_TYPE: build
+      CURRENT_REF: ${{ needs.prepare-parameters.outputs.CURRENT_REF }}
     runs-on: ubuntu-latest
     timeout-minutes: 120
     outputs:
@@ -377,6 +417,7 @@ jobs:
       - name: Checkout Greenplum
         uses: actions/checkout@v4
         with:
+          ref: ${{ env.CURRENT_REF }}
           fetch-depth: 0
           submodules: true
 
@@ -384,7 +425,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: open-gpdb/gpdb-devops
-          ref: build-variation-names
+          ref: main
           path: gpdb-devops
           fetch-depth: 1
       
@@ -814,11 +855,11 @@ jobs:
 
   test:
     name: ${{ matrix.test }}
-    needs: [prepare-build-matrix, prepare-test-matrix, build]
+    needs: [prepare-parameters, prepare-build-matrix, prepare-test-matrix, build]
     runs-on: ${{ matrix.runs_on }}
     timeout-minutes: 120
     env:
-      CURRENT_BUILD: ${{ needs.prepare-build-matrix.outputs.CURRENT_BUILD }}
+      CURRENT_BUILD: ${{ needs.prepare-parameters.outputs.CURRENT_BUILD }}
 
     strategy:
       fail-fast: false  # Continue with other tests if one fails
@@ -865,9 +906,6 @@ jobs:
 
           apt install -y tzdata
           pip2 install pyyaml
-
-          # Extract current build
-          export CURRENT_BUILD= ${{ needs.prepare-test-matrix.outputs.test-matrix.CURRENT_BUILD }}
 
           export LOGS_DIR=build-logs
 
