@@ -473,7 +473,7 @@ jobs:
           IFS=' ' read -r -a patches <<< "${{ join(matrix.patches, ' ') }}"
 
           patch_dir="${GITHUB_WORKSPACE}/patches"
-          if [[ -z ${{ matrix.new-patches }} ]]; then
+          if [[ "${{ matrix.new-patches != '' }}" == "true" ]]; then
             patch_dir="${GITHUB_WORKSPACE}/new-patches/patches"
           fi
 
