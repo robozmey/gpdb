@@ -24,6 +24,7 @@ on:
         options:
         - stable
         - dwh
+        - dwh-patch
 
 jobs:
 
