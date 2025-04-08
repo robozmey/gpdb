@@ -460,7 +460,7 @@ jobs:
       - name: Checkout Greenplum Patches
         uses: actions/checkout@v4
         with:
-          filter: 'patches/*'
+          sparse-checkout: 'patches/*'
           path: new-patches
           fetch-depth: 0
           submodules: true
