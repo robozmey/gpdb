@@ -463,7 +463,6 @@ jobs:
           sparse-checkout: 'patches/*'
           path: new-patches
           fetch-depth: 0
-          submodules: true
 
       - name: Apply patches
         if: matrix.patches
@@ -475,7 +474,7 @@ jobs:
 
           patch_dir="${GITHUB_WORKSPACE}/patches"
           if [[ -z ${{ matrix.new-patches }} ]]; then
-            patch_dir="${GITHUB_WORKSPACE}/new-patches"
+            patch_dir="${GITHUB_WORKSPACE}/new-patches/patches"
           fi
 
           for patch in "${patches[@]}"; do
