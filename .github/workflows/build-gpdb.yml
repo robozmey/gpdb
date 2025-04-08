@@ -1557,3 +1557,40 @@ jobs:
           echo "Timestamp: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
           echo "Build Result: ${{ needs.build.result }}"
           echo "Test Result: ${{ needs.test.result }}"
+
+  ## ======================================================================
+  ## Job: upload_debian
+  ## ======================================================================
+
+  upload_debian:
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    name: Upload Debian Package
+    needs: [prepare-parameters, build, deb-install-test]
+    env:
+      CURRENT_BUILD: ${{ needs.prepare-parameters.outputs.CURRENT_BUILD }}
+    steps:
+      - name: Download Greenplum debian build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: debian-packages-${{ env.CURRENT_BUILD }}
+          path: ${{ github.workspace }}/deb_build_artifacts
+          merge-multiple: false
+
+      - name: Verify DEB artifacts
+        id: verify-artifacts
+        run: |
+          set -ex pipefail
+
+          DEB_FILE=$(ls "${GITHUB_WORKSPACE}"/deb_build_artifacts/*.deb)
+          if [ ! -f "${DEB_FILE}" ]; then
+            echo "::error::DEB file not found"
+            exit 1
+          fi
+
+          echo "deb_file=${DEB_FILE}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${DEB_FILE}
