@@ -26,6 +26,8 @@ on:
         - dwh
         - dwh-patch
 
+run-name: "Greenplum Build: ${{ github.event.inputs.ref }} / ${{ github.event.inputs.build_variant }}"
+
 jobs:
 
   ## ======================================================================
