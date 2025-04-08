@@ -118,6 +118,23 @@ jobs:
               "patches": [
                 "auto_explain_comment_ExplainQueryText.patch"
               ]
+            },
+            {
+              "build": "dwh-patch",
+              "custom_name": "dwh-greenplum-db-6",
+              "patches": [
+                "auto_explain_comment_ExplainQueryText.patch",
+                "namedatalen-128.patch"
+              ]
+            },
+            {
+              "build": "dwh-patch-test",
+              "extra_configure_flags": "--enable-debug-extensions",
+              "custom_name": "dwh-greenplum-db-6",
+              "patches": [
+                "auto_explain_comment_ExplainQueryText.patch",
+                "namedatalen-128.patch"
+              ]
             }
           ]}'
 
