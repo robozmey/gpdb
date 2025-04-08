@@ -123,6 +123,7 @@ jobs:
             {
               "build": "dwh-patch",
               "custom_name": "dwh-greenplum-db-6",
+              "new-patches": true,
               "patches": [
                 "auto_explain_comment_ExplainQueryText.patch",
                 "namedatalen-128.patch"
@@ -132,6 +133,7 @@ jobs:
               "build": "dwh-patch-test",
               "extra_configure_flags": "--enable-debug-extensions",
               "custom_name": "dwh-greenplum-db-6",
+              "new-patches": true,
               "patches": [
                 "auto_explain_comment_ExplainQueryText.patch",
                 "namedatalen-128.patch"
@@ -455,14 +457,29 @@ jobs:
             exit 1
           fi
 
+      - name: Checkout Greenplum Patches
+        uses: actions/checkout@v4
+        with:
+          filter: 'patches/**'
+          path: new-patches
+          fetch-depth: 0
+          submodules: true
+
       - name: Apply patches
         if: matrix.patches
         shell: bash
         run: |
           set -ex pipefail
+          
           IFS=' ' read -r -a patches <<< "${{ join(matrix.patches, ' ') }}"
+
+          patch_dir="${GITHUB_WORKSPACE}/patches"
+          if [[ -z ${{ matrix.new-patches }} ]]; then
+            patch_dir="${GITHUB_WORKSPACE}/new-patches"
+          fi
+
           for patch in "${patches[@]}"; do
-            if ! cat "${GITHUB_WORKSPACE}/patches/${patch}" | patch -p1; then
+            if ! cat "${patch_dir}/${patch}" | patch -p1; then
               echo "::error::Patch application failed"
               exit 1
             fi
