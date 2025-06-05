@@ -1437,7 +1437,7 @@ jobs:
         run: |
           set -ex pipefail
           
-          touch lolkek.txt
+          echo "LOLOLO" >> lolkek.txt
 
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v2
