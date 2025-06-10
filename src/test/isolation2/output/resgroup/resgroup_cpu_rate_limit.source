@@ -46,7 +46,7 @@ CREATE
 CREATE TABLE bigtable AS SELECT i AS c1, 'abc' AS c2 FROM generate_series(1,50000) i distributed randomly;
 CREATE 50000
 
-CREATE OR REPLACE FUNCTION complex_compute(i int) RETURNS int AS $$ results = 1 for j in range(1, 10000 + i): results = (results * j) % 35969 return results $$ LANGUAGE plpythonu;
+CREATE OR REPLACE FUNCTION complex_compute(i int) RETURNS int AS $$ results = 1 for j in range(1, 50000 + i): results = (results * j) % 35969 return results $$ LANGUAGE plpythonu;
 CREATE
 
 CREATE VIEW busy AS WITH t1 as (select random(), complex_compute(c1) from bigtable), t2 as (select random(), complex_compute(c1) from bigtable), t3 as (select random(), complex_compute(c1) from bigtable), t4 as (select random(), complex_compute(c1) from bigtable), t5 as (select random(), complex_compute(c1) from bigtable) SELECT count(*) FROM t1, t2, t3, t4, t5;
